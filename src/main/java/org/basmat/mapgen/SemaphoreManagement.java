@@ -12,7 +12,6 @@ public class SemaphoreManagement {
 		this.target = target;
 		this.s = s;
 		current = 0;
-		System.out.println("Good morning vietnam");
 	}
 	
 	public void increment() {
