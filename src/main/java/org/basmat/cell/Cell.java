@@ -25,12 +25,15 @@ public class Cell extends JPanel implements MouseListener{
 	private boolean latch;
 	private BufferedImage currentTexture;
 
+	private String owner;
+
 	public Cell(ECellType cellType, SemaphoreManagement sm) {
 		this.cellType = cellType;
 		this.sm = sm;
 		setSize(5, 5);
         setVisible(true);
         latch = true;
+		owner = "";
         try {
 			currentTexture = ImageIO.read(new File(cellType.getPath()));
 		} catch (IOException e) {
@@ -95,7 +98,15 @@ public class Cell extends JPanel implements MouseListener{
 			}
 		}
 	}
-	
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public String getOwner() {
+		return this.owner;
+	}
+
 	@Override
 	public void paintComponent(Graphics g) { 
 		g2d = (Graphics2D) g;

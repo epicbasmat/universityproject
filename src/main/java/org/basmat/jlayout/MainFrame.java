@@ -83,64 +83,43 @@ public class MainFrame extends JFrame {
 	    			System.out.println(semaphore.availablePermits());
 					semaphore.acquire();
 					System.out.println("First phase completed");
-					for (int i = 0; i < 50; i++) {
+					for (int i = 0; i < 20; i++) {
 						int j = (int)(Math.random()*(150-1 - 1+1)+1);
 						int k = (int)(Math.random()*(150-1 - 1+1)+1);
 						
 						Cell selectedCell = cellMatrix[j][k];
 						if (selectedCell.getCellType() == ECellType.GRASS) {
 							selectedCell.setCellType(ECellType.SOCIETYBLOCK);
-							
 							int radius = 12;
 							int tempRadius = radius;
-							for (int r = 0; r < tempRadius ; r++) {
-								int circleX = radius;
-								int circleY = 0;
-								int p = 1 - radius;
-								while (circleX > circleY) {
-									circleY++;
-									//Mid point inside/on perimeter
-									if (p <= 0) {
-										p = p + 2 * circleY + 1;
-									} 
-									//Midpoint outside perimeter
-									else {
-										circleX--;
-										p = p + 2 * circleY - 2 * circleX + 1;
-									};
-									if (circleX < circleY) {
-										break;
-									}
-									try {
-										if (cellMatrix[circleX + j][circleY + k].getCellType().isHabitable()) {cellMatrix[circleX + j][circleY + k].setTint(0x00ff10ff, 1);}
-										if (cellMatrix[-circleX + j][circleY + k].getCellType().isHabitable()) {cellMatrix[-circleX + j][circleY + k].setTint(0x00ff10ff, 1);}
-										if (cellMatrix[circleX + j][-circleY + k].getCellType().isHabitable()) {cellMatrix[circleX + j][-circleY + k].setTint(0x00ff10ff, 1);}
-										if (cellMatrix[-circleX + j][-circleY + k].getCellType().isHabitable()) {cellMatrix[-circleX + j][-circleY + k].setTint(0x00ff10ff, 1);}
-										if (circleX != circleY) {
-											if(cellMatrix[circleY + j][circleX + k].getCellType().isHabitable()) {cellMatrix[circleY + j][circleX + k].setTint(0x00ff10ff,1 );}
-											if(cellMatrix[-circleY + j][circleX + k].getCellType().isHabitable()) {cellMatrix[-circleY + j][circleX + k].setTint(0x00ff10ff,1 );}
-											if(cellMatrix[circleY + j][-circleX + k].getCellType().isHabitable()) {cellMatrix[circleY + j][-circleX + k].setTint(0x00ff10ff,1 );}
-											if(cellMatrix[-circleY + j][-circleX + k].getCellType().isHabitable()) {cellMatrix[-circleY + j][-circleX + k].setTint(0x00ff10ff,1 );} else {break;};
 
-										} else {
-											break;
+							for (int y = 0; y <= 180; y = y + 5) {
+								int circumferenceX = (int) (radius  * Math.cos(y * 3.141519 / 180));
+								int circumferenceY = (int) (radius  * Math.sin(y * 3.141519 / 180));
+								try{
+									for (int b = -circumferenceY; b <= circumferenceY; b++) {
+										for (int a = -circumferenceX; a <= circumferenceX; a++) {
+											Cell tempCell = cellMatrix[b + j][a + k];
+											if (tempCell.getOwner() == "" && tempCell.getCellType().isHabitable()) {
+												tempCell.setOwner("test");
+												tempCell.setTint(0, 1);
+											}
 										}
-										
-									} catch (Exception e) {
-										System.out.println("Error: " + e.getMessage());
 									}
-									
+								} catch (Exception e) {
 								}
-								radius--;
-							} 
-						} 
-					}
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+							}
+
+						}
 				}
-	    	} 
-	    });
+	    	} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+
+
+
 	    setVisible(true);
 	}
 }
