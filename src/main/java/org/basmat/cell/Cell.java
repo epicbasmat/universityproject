@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 
-
+@Deprecated
 public class Cell extends JPanel implements MouseListener{
 
 	private static final long serialVersionUID = -3017287192477717039L;
@@ -24,7 +24,6 @@ public class Cell extends JPanel implements MouseListener{
 	private SemaphoreManagement sm;
 	private boolean latch;
 	private BufferedImage currentTexture;
-
 	private String owner;
 
 	public Cell(ECellType cellType, SemaphoreManagement sm) {
@@ -39,6 +38,7 @@ public class Cell extends JPanel implements MouseListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.addMouseListener(this);
 	}
 	
 	public Cell(SemaphoreManagement sm) {
@@ -75,10 +75,10 @@ public class Cell extends JPanel implements MouseListener{
 	/**
 	 * Tints a texture according to the bitwise operator and mask, if needed
 	 * @param mask The mask to be applied to the texture
-	 * @param operand The operand to be applied to the texture
-	 *                1 = 2's complement
-	 *                2 = AND
-	 *                3 = XOR
+	 * @param operand The operand to be applied to the texture\n
+	 *                1 = 2's complement\n
+	 *                2 = AND\n
+	 *                3 = XOR\n
 	 */
 	public void setTint(int mask, int operand) {
 		for (int x = 0; x < currentTexture.getWidth(); x++) {
@@ -92,8 +92,6 @@ public class Cell extends JPanel implements MouseListener{
 						break;
 					case 3:
 						currentTexture.setRGB(x, y, currentTexture.getRGB(x, y) ^ mask);
-
-
 				}
 			}
 		}
@@ -122,8 +120,14 @@ public class Cell extends JPanel implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		Point p = e.getPoint();
-		if (((p.getX() < 0) &&  (p.getX() < 5)) && ((p.getY() < 0) && (p.getY() < 5))) {
-			System.out.println(cellType.getLocalizedName());
+		if (((p.getX() > 0) &&  (p.getX() < 5)) && ((p.getY() > 0) && (p.getY() < 5))) {
+			System.out.println("==Cell Data ==");
+			System.out.println("It is: " + cellType.getLocalizedName());
+			if (this.owner == "") {
+				System.out.println("This is not owned by anyone");
+			} else {
+				System.out.println("This is owned by: " + this.owner);
+			}
 		}
 	}
 

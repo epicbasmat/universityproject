@@ -138,7 +138,24 @@ public enum ECellType {
 		boolean isHabitable() {
 			return true;
 		}
+	},
+	NUTRIENTS{
+		@Override
+		public String getPath() {
+			return BASE_PATH.getPath() + "nutrient.png";
+		}
+
+		@Override
+		public String getLocalizedName() {
+			return "A bush of berries";
+		}
+
+		@Override
+		public boolean isHabitable() {
+			return true;
+		}
 	};
+
 
 	
 	abstract public String getPath();
