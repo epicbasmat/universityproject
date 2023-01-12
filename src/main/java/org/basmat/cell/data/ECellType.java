@@ -1,4 +1,4 @@
-package org.basmat.cell;
+package org.basmat.cell.data;
 
 public enum ECellType {
 	/**

@@ -1,25 +1,20 @@
-package org.basmat.cell;
+package org.basmat.cell.data;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.UUID;
 
 
-public class SocietyCell extends CellData implements ICell{
+public class SocietyCell extends CellData {
 
     private String societyName;
     private HashSet<NutrientCell> nutrientCells;
     private HashSet<WorldCell> worldCells;
 
 
-    SocietyCell(BufferedImage texture) throws IOException {
-        super(ECellType.SOCIETYBLOCK, texture);
+    public SocietyCell(String name) {
+        super(ECellType.SOCIETYBLOCK);
         societyName = UUID.randomUUID().toString();
+        this.societyName = name;
         nutrientCells = new HashSet<>();
     }
 
@@ -29,5 +24,10 @@ public class SocietyCell extends CellData implements ICell{
 
     public void addWorldCell(WorldCell worldCell) {
         worldCells.add(worldCell);
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + societyName;
     }
 }
