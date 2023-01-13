@@ -22,10 +22,10 @@ public class CellMatrixController {
     private CellSubscriber cellSubscriber;
     private UUID uuid;
 
-    public CellMatrixController(int sizeX, int sizeY) throws IOException {
+    public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws IOException {
         uuid = UUID.randomUUID();
-        cellMatrixPanel = new CellMatrixPanel(sizeX, sizeY);
-        cellControllerMatrix = new CellController[sizeX][sizeY];
+        cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight);
+        cellControllerMatrix = new CellController[cellMatrixWidth][cellMatrixHeight];
         cellSubscriber = new CellSubscriber();
         imageCache = new BufferedImage[ECellType.values().length];
         PanelContainer pc = new PanelContainer(cellMatrixPanel);
@@ -36,7 +36,7 @@ public class CellMatrixController {
         BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         cacheCellTextures();
         System.out.println("Generating gradient graph");
-        setupGradientGraph(1200, graph);
+        setupGradientGraph(-1, graph);
         System.out.println("Applying texture filter");
         applyTextureFilter(graph, 5);
         //System.out.println("Applying foundations");
@@ -94,7 +94,7 @@ public class CellMatrixController {
     }
 
     public void setupGradientGraph(int seed, BufferedImage noiseGraph) {
-        CubicInterpolation ci = new CubicInterpolation(seed);
+        CubicInterpolation ci = new CubicInterpolation((int)(Math.random()*(10000 - 1+1)+1));
         for (int i = 0; i < noiseGraph.getWidth(); i++) {
             for (int j = 0; j < noiseGraph.getHeight(); j++) {
                 double noise = ci.noiseGenerator(i, j, 100);
@@ -137,29 +137,29 @@ public class CellMatrixController {
     }
 
     public void applyTextureFilter(BufferedImage noiseGraph, int cellSize) {
-        for (int y = 0; y <= 150 - 5; y++) {
-            for (int z = 0; z <= 150 - 5; z++) {
+        for (int x = 0; x <= 150 - 5; x++) {
+            for (int y = 0; y <= 150 - 5; y++) {
                 int average = 0;
-                for (int i = y ; i < y + 5; i++) {
-                    for (int j = z; j < z + 5; j++) {
+                for (int i = x ; i < x + 5; i++) {
+                    for (int j = y; j < y + 5; j++) {
                         average += noiseGraph.getRGB(i * cellSize, j* cellSize);
                     }
                 }
                 Color averagedColour = new Color(average / (cellSize * cellSize));
                 if (averagedColour.getRed() > 230 &&(averagedColour.getGreen() < 10 &&(averagedColour.getBlue() < 10)))
                 { //Grass
-                    cellControllerMatrix[y][z] = new CellController<>(generateWorldCell(ECellType.GRASS), imageCache[3], this.cellMatrixPanel, y, z);
+                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.GRASS), imageCache[3], this.cellMatrixPanel, x, y);
                 } else if (averagedColour.getRed() > 230 &&(averagedColour.getGreen() > 230 &&(averagedColour.getBlue() < 230)))
                 { //Sand
-                    cellControllerMatrix[y][z] = new CellController<>(generateWorldCell(ECellType.SAND), imageCache[1], this.cellMatrixPanel, y, z);
+                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.SAND), imageCache[1], this.cellMatrixPanel, x, y);
                 } else if (averagedColour.getRed() < 8 &&(averagedColour.getGreen() < 8 &&(averagedColour.getBlue() < 8)))
                 { //Uninhabitable
-                    cellControllerMatrix[y][z] = new CellController<>(generateWorldCell(ECellType.UNINHABITABLE), imageCache[2], this.cellMatrixPanel, y, z);
+                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.UNINHABITABLE), imageCache[2], this.cellMatrixPanel, x, y);
                 } else if (averagedColour.getRed() > 200 &&(averagedColour.getGreen() > 200 &&(averagedColour.getBlue() > 200)))
                 { //Sea
-                    cellControllerMatrix[y][z] = new CellController<>(generateWorldCell(ECellType.SEA), imageCache[0], this.cellMatrixPanel, y, z);
+                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.SEA), imageCache[0], this.cellMatrixPanel, x, y);
                  } else {
-                    cellControllerMatrix[y][z] = new CellController<>(generateWorldCell(ECellType.GRADIENT), imageCache[4], this.cellMatrixPanel, y, z);
+                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.GRADIENT), imageCache[4], this.cellMatrixPanel, x, y);
                 }
             }
         }

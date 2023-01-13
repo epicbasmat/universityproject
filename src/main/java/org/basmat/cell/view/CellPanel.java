@@ -13,17 +13,6 @@ public class CellPanel extends JPanel implements MouseListener {
     private BufferedImage texture;
     private CellController cellMatrix;
     private Graphics2D g2d;
-    CellPanel(int sizeX, int sizeY, BufferedImage texture) {
-        setSize(sizeX, sizeY);
-        setVisible(true);
-        this.texture = texture;
-    }
-
-    /*public CellPanel(BufferedImage texture, CellController cellController) {
-        setSize(texture.getWidth(), texture.getHeight());
-        setVisible(true);
-        this.texture = texture;
-    }*/
 
     public <ChildCell extends CellData> CellPanel(BufferedImage texture, CellController<ChildCell> cellController) {
         setSize(texture.getWidth(), texture.getHeight());
@@ -61,8 +50,7 @@ public class CellPanel extends JPanel implements MouseListener {
     @Override
     public void paintComponent(Graphics g) {
         g2d = (Graphics2D) g;
-        if (g2d.drawImage(texture, 0, 0, null) == true) {
-
+        if (g2d.drawImage(texture, 0, 0, null)) {
         }
     }
 

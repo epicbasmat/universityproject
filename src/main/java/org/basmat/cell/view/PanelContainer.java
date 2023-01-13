@@ -6,8 +6,13 @@ import java.awt.*;
 public class PanelContainer extends JFrame {
     public PanelContainer(CellMatrixPanel cellMatrixPanel) {
         add(cellMatrixPanel);
-        setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(new Dimension(750, 750));
+        setPreferredSize(new Dimension(1000, 1000));
+        pack();
+        setVisible(true);
+    }
+
+    public void callRepaint() {
+        repaint();
     }
 }
