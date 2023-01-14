@@ -12,6 +12,8 @@ public class Main {
                 new CellMatrixController(150, 150);
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
     }

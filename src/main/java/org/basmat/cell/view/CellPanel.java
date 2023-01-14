@@ -14,7 +14,7 @@ public class CellPanel extends JPanel implements MouseListener {
     private CellController cellMatrix;
     private Graphics2D g2d;
 
-    public <ChildCell extends CellData> CellPanel(BufferedImage texture, CellController<ChildCell> cellController) {
+    public <ChildCell extends CellData> CellPanel(BufferedImage texture, CellController<ChildCell> cellController ) {
         setSize(texture.getWidth(), texture.getHeight());
         setVisible(true);
         //To copy a texture to be original for the class
@@ -25,21 +25,18 @@ public class CellPanel extends JPanel implements MouseListener {
         this.cellMatrix = cellController;
     }
 
+    /**
+     *
+     * @param mask 0xAARRGGBB - AA = Alpha, RR = Red, GG = Green, BB = Blue
+     * @param operand
+     */
     public void setTint(int mask, int operand) {
         for (int x = 0; x < texture.getWidth(); x++) {
             for (int y = 0; y < texture.getHeight(); y++) {
-                switch (operand) {
-                    case 1:
-                        texture.setRGB(x, y, ~texture.getRGB(x, y));
-                        break;
-                    case 2:
-                        texture.setRGB(x, y, texture.getRGB(x, y) & mask);
-                        break;
-                    case 3:
-                        texture.setRGB(x, y, texture.getRGB(x, y) ^ mask);
-                }
+                texture.setRGB(x, y , texture.getRGB(x, y) | mask);
             }
         }
+        repaint();
     }
 
     public void updateTexture(BufferedImage image) {
@@ -50,8 +47,7 @@ public class CellPanel extends JPanel implements MouseListener {
     @Override
     public void paintComponent(Graphics g) {
         g2d = (Graphics2D) g;
-        if (g2d.drawImage(texture, 0, 0, null)) {
-        }
+        if (g2d.drawImage(texture, 0, 0, null)) { }
     }
 
     @Override

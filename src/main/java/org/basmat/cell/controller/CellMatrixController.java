@@ -4,7 +4,7 @@ import org.basmat.cell.data.*;
 import org.basmat.cell.view.CellMatrixPanel;
 import org.basmat.cell.view.CellPanel;
 import org.basmat.cell.view.PanelContainer;
-import org.basmat.mapgen.CubicInterpolation;
+import org.basmat.cell.util.CubicInterpolation;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 
 public class CellMatrixController {
 
@@ -20,30 +21,31 @@ public class CellMatrixController {
     private CellController[][] cellControllerMatrix;
     //private BufferedImage[] imageCache;
     private CellMatrixPanel cellMatrixPanel;
+    private Semaphore s;
     private CellSubscriber cellSubscriber;
     private HashMap<ECellType, BufferedImage> imageCache;
     private UUID uuid;
 
-    public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws IOException {
+    public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws IOException, InterruptedException {
         uuid = UUID.randomUUID();
         cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight);
         cellControllerMatrix = new CellController[cellMatrixWidth][cellMatrixHeight];
         cellSubscriber = new CellSubscriber();
-        //imageCache = new BufferedImage[ECellType.values().length];
         imageCache = new HashMap<>();
         PanelContainer pc = new PanelContainer(cellMatrixPanel);
         initializer();
     }
 
-    public void initializer() {
+    public void initializer() throws InterruptedException {
         BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         cacheCellTextures();
         System.out.println("Generating gradient graph");
         setupGradientGraph(-1, graph);
         System.out.println("Applying texture filter");
         applyTextureFilter(graph, 5);
-        //System.out.println("Applying foundations");
-        //setupSocietyFoundations();
+        System.out.println("Applying foundations");
+        setupSocietyFoundations();
+
     }
 
     public void subscribePanelToJPanelMatrix(CellPanel cellView, int x, int y) {
@@ -55,7 +57,14 @@ public class CellMatrixController {
         for (ECellType cellType : ECellType.values()) {
             try {
                 if (cellType.getLocalizedName() != null) {
-                    imageCache.put(cellType, ImageIO.read(new File(cellType.getPath())));
+                    BufferedImage temp = ImageIO.read(new File(cellType.getPath()));
+                    BufferedImage texture = new BufferedImage(temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    for (int i = 0; i < temp.getWidth(); i++) {
+                        for (int j = 0; j < temp.getHeight(); j++) {
+                            texture.setRGB(i, j, temp.getRGB(i, j));
+                        }
+                    }
+                    imageCache.put(cellType, texture);
                 }
             } catch (Exception e) {
                 System.out.println("An error has occurred fetching textures: ");
@@ -162,37 +171,33 @@ public class CellMatrixController {
 
     public void setupSocietyFoundations() {
         for (int i = 0; i < 20; i++) {
-            int j = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
-            int k = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
-
+            int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             if (cellControllerMatrix[j][k].getCellTypeFromModel() == ECellType.GRASS) {
                 SocietyCell societyCell = generateSocietyCell("Test");
                 cellSubscriber.addToGlobalSocietyCells(societyCell);
+                cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
                 cellControllerMatrix[j][k] = new CellController<>(societyCell, imageCache.get(ECellType.SOCIETYBLOCK), this.cellMatrixPanel, j, k);
                 int radius = 12;
-                int tempRadius = radius;
-
-                for (int y = 0; y <= 180; y = y + 5) {
-                    int circumferenceX = (int) (radius * Math.cos(y * 3.141519 / 180));
-                    int circumferenceY = (int) (radius * Math.sin(y * 3.141519 / 180));
-                    try {
-                        for (int b = -circumferenceY; b <= circumferenceY; b++) {
-                            for (int a = -circumferenceX; a <= circumferenceX; a++) {
-                                /*Cell tempCell = cellMatrix[b + j][a + k];
-                                if (tempCell.getOwner() == "" && tempCell.getCellType().isHabitable()) {
-                                    tempCell.setOwner("test");
-                                    tempCell.setTint(0, 1);
-                                }*/
-                                WorldCell wc = (WorldCell) cellControllerMatrix[b + j][a + j].getChildCell();
-                                if (wc.getOwner() == null && wc.getCellType() == ECellType.GRASS) {
-                                    cellControllerMatrix[b + j][a + j].tellViewToTint();
-                                    wc.setOwner(societyCell);
+                for (int r = 0; r <= 180; r = r + 5) {
+                    int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
+                    int circumferenceY = (int) (radius * Math.sin(r * 3.141519 / 180));
+                    try{
+                        //Get the coordinate of the circumference of the circle and the diametric coordinate of the circle
+                        for (int x = -circumferenceX + j; x < circumferenceX + j; x++) {
+                            for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
+                                if (cellControllerMatrix[x][y].getChildCell().getCellType().isHabitable()) {
+                                    WorldCell wc = (WorldCell) cellControllerMatrix[x][y].getChildCell();
+                                    if (wc.getOwner() == null) {
+                                        cellControllerMatrix[x][y].tellViewToTint();
+                                    }
                                 }
                             }
                         }
-                    } catch (Exception e) {}
+
+
+                    } catch (Exception e) { }
                 }
-            } else {
             }
         }
     }

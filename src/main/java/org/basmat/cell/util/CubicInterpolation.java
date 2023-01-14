@@ -1,4 +1,4 @@
-package org.basmat.mapgen;
+package org.basmat.cell.util;
 
 public class CubicInterpolation {
 	

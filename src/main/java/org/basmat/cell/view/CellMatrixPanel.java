@@ -13,6 +13,9 @@ public class CellMatrixPanel extends JPanel {
         //c.fill = GridBagConstraints.BOTH;
     }
 
+    public void removeCell(CellPanel cellPanel) {
+        remove(cellPanel);
+    }
     public void addCellPanel(CellPanel cellPanel, int x, int y) {
         c.gridx = x;
         c.gridy = y;
