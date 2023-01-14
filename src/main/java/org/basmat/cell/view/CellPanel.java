@@ -56,7 +56,10 @@ public class CellPanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        Point p = e.getPoint();
+        if (((p.getX() < 0) &&  (p.getX() < 5)) && ((p.getY() < 0) && (p.getY() < 5))) {
+            System.out.println(cellMatrix.getStringFromModel());
+        }
     }
 
     @Override

@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Semaphore;
 
+import org.basmat.cell.data.ECellType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.basmat.cell.*;
-import org.basmat.mapgen.*;
 
 class CellTests {
 	
@@ -51,7 +51,7 @@ class CellTests {
 	void returnsUpdatedCellType_ECellTypeUninhabitable_True() {
 		Cell cell = new Cell(ECellType.UNINHABITABLE, sm);
 		cell.setCellType(ECellType.GRADIENT);
-		assertEquals(cell.getCellType(), ECellType.GRADIENT);
+		assertEquals(ECellType.GRADIENT, cell.getCellType());
 	}
 
 	@Test 

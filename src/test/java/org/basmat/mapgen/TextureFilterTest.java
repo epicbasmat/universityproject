@@ -1,6 +1,6 @@
 package org.basmat.mapgen;
 
-import org.basmat.cell.ECellType;
+import org.basmat.cell.data.ECellType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

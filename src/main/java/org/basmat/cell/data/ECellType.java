@@ -21,16 +21,16 @@ public enum ECellType {
 			return false;
 		}
 	},
-	SEA {
+	DEEP_WATER {
 		@Override
 		public
 		String getPath() {
-			return BASE_PATH.getPath() + "sea.png";
+			return BASE_PATH.getPath() + "deep_water.png";
 		}
 		@Override
 		public
 		String getLocalizedName() {
-			return "River";
+			return "Deep water, not crossable";
 		}
 		@Override
 		public
@@ -38,16 +38,16 @@ public enum ECellType {
 			return false;
 		}
 	},
-	SAND {
+	WATER {
 		@Override
 		public
 		String getPath() {
-			return BASE_PATH.getPath() + "sand.png";
+			return BASE_PATH.getPath() + "water.png";
 		}
 		@Override
 		public
 		String getLocalizedName() {
-			return "Sand";
+			return "Medium-depth water, not crossable";
 		}
 		@Override
 		public
@@ -55,16 +55,67 @@ public enum ECellType {
 			return false;
 		}
 	},
-	UNINHABITABLE {
+	LIGHT_WATER {
 		@Override
 		public
 		String getPath() {
-			return BASE_PATH.getPath() + "uninhabitable.png";
+			return BASE_PATH.getPath() + "light_water.png";
 		}
 		@Override
 		public
 		String getLocalizedName() {
-			return "Untraversable terrain";
+			return "Shallow water, crossable";
+		}
+		@Override
+		public
+		boolean isHabitable() {
+			return false;
+		}
+	},
+	MOUNTAIN_BASE {
+		@Override
+		public
+		String getPath() {
+			return BASE_PATH.getPath() + "mountain_base.png";
+		}
+		@Override
+		public
+		String getLocalizedName() {
+			return "A base of a mountain";
+		}
+		@Override
+		public
+		boolean isHabitable() {
+			return false;
+		}
+	},
+	MOUNTAIN_BODY {
+		@Override
+		public
+		String getPath() {
+			return BASE_PATH.getPath() + "mountain_body.png";
+		}
+		@Override
+		public
+		String getLocalizedName() {
+			return "The body of a mountain";
+		}
+		@Override
+		public
+		boolean isHabitable() {
+			return false;
+		}
+	},
+	MOUNTAIN_PEAK {
+		@Override
+		public
+		String getPath() {
+			return BASE_PATH.getPath() + "mountain_peak.png";
+		}
+		@Override
+		public
+		String getLocalizedName() {
+			return "A peak of a mountain";
 		}
 		@Override
 		public
@@ -89,20 +140,21 @@ public enum ECellType {
 			return true;
 		}
 	},
-	GRADIENT {
+	SAND {
 		@Override
 		public
 		String getPath() {
-			return BASE_PATH.getPath() + "gradient.png";
-		}		@Override
+			return BASE_PATH.getPath() + "sand.png";
+		}
+		@Override
 		public
 		String getLocalizedName() {
-			return "Patchy grass";
+			return "Sand";
 		}
 		@Override
 		public
 		boolean isHabitable() {
-			return true;
+			return false;
 		}
 	},
 	SOCIETYBLOCK {
@@ -120,23 +172,6 @@ public enum ECellType {
 		public
 		boolean isHabitable() {
 			return false;
-		}
-	},
-	SOCIETYRADIUS {
-		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "society_radius.png";
-		}		
-		@Override
-		public
-		String getLocalizedName() {
-			return "Society Radius";
-		}
-		@Override
-		public
-		boolean isHabitable() {
-			return true;
 		}
 	},
 	NUTRIENTS{
