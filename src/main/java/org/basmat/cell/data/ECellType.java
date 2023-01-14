@@ -12,9 +12,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
 			return null;
 		}
+
+		@Override
+		public String getCellName() {
+			return null;
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -29,9 +35,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
 			return "Deep water, not crossable";
 		}
+
+		@Override
+		public String getCellName() {
+			return "Deep water";
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -46,9 +58,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
 			return "Medium-depth water, not crossable";
 		}
+
+		@Override
+		public String getCellName() {
+			return "Water";
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -63,9 +81,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
-			return "Shallow water, crossable";
+		String getCellDescription() {
+			return "Shallow water, crossable for most";
 		}
+
+		@Override
+		public String getCellName() {
+			return "Shallow Water";
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -80,9 +104,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
-			return "A base of a mountain";
+		String getCellDescription() {
+			return "A base of a mountain, gravelly";
 		}
+
+		@Override
+		public String getCellName() {
+			return "Mountain Base";
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -97,9 +127,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
-			return "The body of a mountain";
+		String getCellDescription() {
+			return "The body of a mountain, very rocky";
 		}
+
+		@Override
+		public String getCellName() {
+			return "Mountain body";
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -114,9 +150,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
 			return "A peak of a mountain";
 		}
+
+		@Override
+		public String getCellName() {
+			return "Mountain peak";
+		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -131,9 +173,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
+			return "Grassy fields, easily traversable";
+		}
+
+		@Override
+		public String getCellName() {
 			return "Grass";
 		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -148,9 +196,14 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
+			return "The shore of a sea or river";
+		}
+		@Override
+		public String getCellName() {
 			return "Sand";
 		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -165,9 +218,15 @@ public enum ECellType {
 		}
 		@Override
 		public
-		String getLocalizedName() {
+		String getCellDescription() {
+			return "A town hall";
+		}
+
+		@Override
+		public String getCellName() {
 			return "Society Block";
 		}
+
 		@Override
 		public
 		boolean isHabitable() {
@@ -181,8 +240,13 @@ public enum ECellType {
 		}
 
 		@Override
-		public String getLocalizedName() {
+		public String getCellDescription() {
 			return "A bush of berries";
+		}
+
+		@Override
+		public String getCellName() {
+			return "Food Source";
 		}
 
 		@Override
@@ -194,6 +258,7 @@ public enum ECellType {
 
 	
 	abstract public String getPath();
-	abstract public  String getLocalizedName();
+	abstract public  String getCellDescription();
+	abstract public String getCellName();
 	abstract public boolean isHabitable();
 }

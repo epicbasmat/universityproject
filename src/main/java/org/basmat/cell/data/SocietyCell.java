@@ -13,7 +13,6 @@ public class SocietyCell extends CellData {
 
     public SocietyCell(String name) {
         super(ECellType.SOCIETYBLOCK);
-        societyName = UUID.randomUUID().toString();
         this.societyName = name;
         nutrientCells = new HashSet<>();
     }
@@ -26,8 +25,14 @@ public class SocietyCell extends CellData {
         worldCells.add(worldCell);
     }
 
+    public String getName() {
+        return this.societyName;
+    }
     @Override
     public String toString() {
-        return "Name: " + societyName;
+        return "Society Name: " + societyName + "\n" +
+                "Cell Name: " + getCellType().getCellName() + "\n" +
+                "Cell Description: " + getCellType().getCellDescription();
+
     }
 }

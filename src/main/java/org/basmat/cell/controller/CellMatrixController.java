@@ -2,12 +2,12 @@ package org.basmat.cell.controller;
 
 import org.basmat.cell.data.*;
 import org.basmat.cell.view.CellMatrixPanel;
-import org.basmat.cell.view.CellPanel;
 import org.basmat.cell.view.PanelContainer;
 import org.basmat.cell.util.CubicInterpolation;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -25,10 +25,9 @@ public class CellMatrixController {
     private CellSubscriber cellSubscriber;
     private HashMap<ECellType, BufferedImage> imageCache;
     private UUID uuid;
-
     public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws IOException, InterruptedException {
         uuid = UUID.randomUUID();
-        cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight);
+        cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight, this);
         cellControllerMatrix = new CellController[cellMatrixWidth][cellMatrixHeight];
         cellSubscriber = new CellSubscriber();
         imageCache = new HashMap<>();
@@ -42,21 +41,19 @@ public class CellMatrixController {
         System.out.println("Generating gradient graph");
         setupGradientGraph(-1, graph);
         System.out.println("Applying texture filter");
-        applyTextureFilter(graph, 5);
+        setupWorldCells(graph, 5);
         System.out.println("Applying foundations");
-        setupSocietyFoundations();
+        setupSocietyCells();
+        System.out.println("Applying nutrient cells");
+        setupNutrientCells();
 
     }
 
-    public void subscribePanelToJPanelMatrix(CellPanel cellView, int x, int y) {
-        cellMatrixPanel.addCellPanel(cellView, x, y);
-    }
-
-    public void cacheCellTextures() {
+    private void cacheCellTextures() {
         System.out.println("Grabbing textures");
         for (ECellType cellType : ECellType.values()) {
             try {
-                if (cellType.getLocalizedName() != null) {
+                if (cellType.getCellDescription() != null) {
                     BufferedImage temp = ImageIO.read(new File(cellType.getPath()));
                     BufferedImage texture = new BufferedImage(temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB);
                     for (int i = 0; i < temp.getWidth(); i++) {
@@ -92,7 +89,7 @@ public class CellMatrixController {
         return new WorldCell(cellType, null);
     }
 
-    public void setupGradientGraph(int seed, BufferedImage noiseGraph) {
+    private void setupGradientGraph(int seed, BufferedImage noiseGraph) {
         CubicInterpolation ci = new CubicInterpolation((int) (Math.random() * (10000 - 1 + 1) + 1));
         for (int i = 0; i < noiseGraph.getWidth(); i++) {
             for (int j = 0; j < noiseGraph.getHeight(); j++) {
@@ -136,7 +133,7 @@ public class CellMatrixController {
         }
     }
 
-    public void applyTextureFilter(BufferedImage noiseGraph, int cellSize) {
+    private void setupWorldCells(BufferedImage noiseGraph, int cellSize) {
         for (int x = 0; x <= 150 - 5; x++) {
             for (int y = 0; y <= 150 - 5; y++) {
                 int average = 0;
@@ -169,12 +166,13 @@ public class CellMatrixController {
         }
     }
 
-    public void setupSocietyFoundations() {
+    private void setupSocietyCells() {
         for (int i = 0; i < 20; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             if (cellControllerMatrix[j][k].getCellTypeFromModel() == ECellType.GRASS) {
-                SocietyCell societyCell = generateSocietyCell("Test");
+                SocietyCell societyCell = generateSocietyCell(UUID.randomUUID().toString());
+                //Add to cell subcriber and delete the cell that it is going to overwrite
                 cellSubscriber.addToGlobalSocietyCells(societyCell);
                 cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
                 cellControllerMatrix[j][k] = new CellController<>(societyCell, imageCache.get(ECellType.SOCIETYBLOCK), this.cellMatrixPanel, j, k);
@@ -183,22 +181,50 @@ public class CellMatrixController {
                     int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
                     int circumferenceY = (int) (radius * Math.sin(r * 3.141519 / 180));
                     try{
-                        //Get the coordinate of the circumference of the circle and the diametric coordinate of the circle
+                        //Get the coordinate of the circumference of the circle and the diametric coordinate of the circle, and fills in the cells between the two calculated coordinates
+                        //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
                         for (int x = -circumferenceX + j; x < circumferenceX + j; x++) {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
                                 if (cellControllerMatrix[x][y].getChildCell().getCellType().isHabitable()) {
                                     WorldCell wc = (WorldCell) cellControllerMatrix[x][y].getChildCell();
                                     if (wc.getOwner() == null) {
                                         cellControllerMatrix[x][y].tellViewToTint();
+                                        wc.setOwner(societyCell);
                                     }
                                 }
                             }
                         }
-
-
                     } catch (Exception e) { }
                 }
             }
         }
+    }
+
+    private void setupNutrientCells() {
+        for (int i = 0; i < 100; i++) {
+            int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            if (cellControllerMatrix[j][k].getCellTypeFromModel() == ECellType.GRASS) {
+                WorldCell wc = (WorldCell) cellControllerMatrix[j][k].getChildCell();
+                SocietyCell sc = wc.getOwner();
+                NutrientCell nutrientCell;
+                if (sc != null) {
+                    nutrientCell = new NutrientCell(sc);
+                } else {
+                    nutrientCell = new NutrientCell();
+                }
+                cellSubscriber.addToGlobalNutrientCells(nutrientCell);
+                cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
+                cellControllerMatrix[j][k] = new CellController<>(nutrientCell, imageCache.get(ECellType.NUTRIENTS), this.cellMatrixPanel, j, k);
+            }
+        }
+    }
+
+    public void displayData(MouseEvent e) {
+        int x = (int) e.getPoint().getX() / 5 - 27;
+        int y = (int) e.getPoint().getY() / 5 - 29;
+        System.out.println("==");
+        System.out.println(x + ", " + y);
+        System.out.println(cellControllerMatrix[x][y].getChildCell().toString());
     }
 }

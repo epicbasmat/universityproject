@@ -1,12 +1,18 @@
 package org.basmat.cell.view;
 
+import org.basmat.cell.controller.CellMatrixController;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class CellMatrixPanel extends JPanel {
+public class CellMatrixPanel extends JPanel implements MouseListener{
     private GridBagConstraints c;
-    public CellMatrixPanel(int sizeX, int sizeY) {
+    private CellMatrixController cellMatrixController;
+    public CellMatrixPanel(int sizeX, int sizeY, CellMatrixController cellMatrixController) {
         setSize(sizeX * 5, sizeY * 5);
+        this.cellMatrixController = cellMatrixController;
         setVisible(true);
         c = new GridBagConstraints();
         setLayout(new GridBagLayout());
@@ -24,5 +30,30 @@ public class CellMatrixPanel extends JPanel {
         this.add(cellPanel, c);
         this.revalidate();
         this.repaint();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        cellMatrixController.displayData(e);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
