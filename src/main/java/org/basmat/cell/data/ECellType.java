@@ -253,6 +253,27 @@ public enum ECellType {
 		public boolean isHabitable() {
 			return true;
 		}
+	},
+	MISSING_TEXTURE{
+		@Override
+		public String getPath() {
+			return BASE_PATH.getPath() + "missing_texture.png";
+		}
+
+		@Override
+		public String getCellDescription() {
+			return "Missing texture";
+		}
+
+		@Override
+		public String getCellName() {
+			return "Missing texture";
+		}
+
+		@Override
+		public boolean isHabitable() {
+			return false;
+		}
 	};
 
 

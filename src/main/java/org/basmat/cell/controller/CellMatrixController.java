@@ -147,20 +147,25 @@ public class CellMatrixController {
                 Color averagedColour = new Color(average / (cellSize * cellSize));
                 if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.DEEP_WATER), imageCache.get(ECellType.DEEP_WATER), this.cellMatrixPanel, x, y);
-                } if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
+                } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.WATER), imageCache.get(ECellType.WATER), this.cellMatrixPanel, x, y);
-                } if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
+                } else if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.LIGHT_WATER), imageCache.get(ECellType.LIGHT_WATER), this.cellMatrixPanel, x, y);
-                } if (averagedColour.getRed() > 0) {
+                } else if (averagedColour.getRed() > 0) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.SAND), imageCache.get(ECellType.SAND), this.cellMatrixPanel, x, y);
-                } if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) {
+                } else if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.GRASS), imageCache.get(ECellType.GRASS), this.cellMatrixPanel, x, y);
-                } if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) {
+                } else if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MOUNTAIN_BASE), imageCache.get(ECellType.MOUNTAIN_BASE), this.cellMatrixPanel, x, y);
-                } if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) {
+                } else if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MOUNTAIN_BODY), imageCache.get(ECellType.MOUNTAIN_BODY), this.cellMatrixPanel, x, y);
-                } if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) {
+                } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) {
                     cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MOUNTAIN_PEAK), imageCache.get(ECellType.MOUNTAIN_PEAK), this.cellMatrixPanel, x, y);
+                } else {
+                    System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
+                    System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]");
+                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MISSING_TEXTURE), imageCache.get(ECellType.MISSING_TEXTURE), this.cellMatrixPanel, x, y);
+
                 }
             }
         }
