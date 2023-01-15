@@ -1,13 +1,12 @@
 package org.basmat.mapgen;
 
-import org.basmat.cell.ECellType;
+import org.basmat.cell.data.ECellType;
+import org.basmat.cell.util.CubicInterpolation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TextureFilterTest {
     @BeforeAll

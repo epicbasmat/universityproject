@@ -1,13 +1,9 @@
-package org.basmat.mapgen;
+package org.basmat.cell.util;
 
 public class CubicInterpolation {
 	
 	private int seed;
-	
-	public CubicInterpolation() {
-		seed = (int)(Math.random()*(10000 - 1+1)+1);
-	}
-	
+
 	public CubicInterpolation(int seed) {
 		this.seed = seed;
 	}
@@ -15,7 +11,7 @@ public class CubicInterpolation {
 	public float hash(int x, int y) {
 		int n = x + y * seed;
 		n = (n << 13) ^ n; 
-	    return (float) (1.0-((n*(n*n*15731 + 789221)+1376312589)&0x7fffffff)/1073741824.0);	
+	    return (float) (1.0-((n*(n*n*15731 + 789221)+1376312589)&0x7fffffff)/1073741824.0);
 	}
 	
 	public float noiseGenerator(float floatX, float floatY, float stretch) {
