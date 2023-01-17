@@ -1,11 +1,17 @@
 package org.basmat.cell.data;
 
+/**
+ * WorldCell provides the foundation for terrain-type ECellTypes. Extends CellData
+ * @see ECellType
+ * @see CellData
+ */
 public class WorldCell extends CellData{
 
     private SocietyCell owner;
 
     /**
      * @param cellType the type of cell to be set
+     *
      */
     public WorldCell(ECellType cellType, SocietyCell owner) {
         super(cellType);

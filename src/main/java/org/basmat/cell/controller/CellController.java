@@ -36,7 +36,7 @@ public class CellController <ChildCell extends CellData>{
     public ECellType getCellTypeFromModel() { return childCell.getCellType(); };
     public void tellViewToTint() {
         //ff9fcc9f
-        cellView.setTint(0x0090cc90, 2);
+        cellView.setTint(0x0090cc90);
 
     };
     public ChildCell getChildCell() {

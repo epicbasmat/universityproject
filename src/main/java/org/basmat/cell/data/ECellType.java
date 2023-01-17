@@ -2,7 +2,7 @@ package org.basmat.cell.data;
 
 public enum ECellType {
 	/**
-	 * This Enum class contains the reference URI for a texture and provides a method to return it
+	 * This Enum class contains the reference URI for a texture, as well as any associated descriptions and names.
 	 */
 	
 	BASE_PATH {

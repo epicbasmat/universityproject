@@ -74,7 +74,7 @@ class CellTests {
 	void tintsTexture_CurrentTexture_True() {
 		Cell cell = new Cell(ECellType.GRASS, sm);
 		BufferedImage oldTexture = cell.getTexture();
-		cell.setTint(0x00ff10ff, 3);
+		cell.setTint(0x00ff10ff);
 		BufferedImage newTexture = cell.getTexture();
 		for (int x = 0; x > oldTexture.getWidth(); x++) {
 			for (int y = 0; y > oldTexture.getHeight(); y++) {

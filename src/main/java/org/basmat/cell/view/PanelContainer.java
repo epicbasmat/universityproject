@@ -13,8 +13,4 @@ public class PanelContainer extends JFrame {
         pack();
         setVisible(true);
     }
-
-    public void callRepaint() {
-        repaint();
-    }
 }

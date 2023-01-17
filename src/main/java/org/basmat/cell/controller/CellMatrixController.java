@@ -25,7 +25,16 @@ public class CellMatrixController {
     private CellSubscriber cellSubscriber;
     private HashMap<ECellType, BufferedImage> imageCache;
     private UUID uuid;
+
+    /**
+     * CellMatrixController provides the Controller aspect of the implemented M-C-V setup. This will also help control individual cell controllers.
+     * @param cellMatrixWidth the width of the cellMatrix to be generated
+     * @param cellMatrixHeight the height of the cellMatrix to be generated
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws IOException, InterruptedException {
+        //Initializing class-wide variables. 2
         uuid = UUID.randomUUID();
         cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight, this);
         cellControllerMatrix = new CellController[cellMatrixWidth][cellMatrixHeight];
@@ -35,6 +44,11 @@ public class CellMatrixController {
         initializer();
     }
 
+
+    /**
+     * Calls methods appropriate for rendering and setup for the matrix
+     * @throws InterruptedException
+     */
     public void initializer() throws InterruptedException {
         BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         cacheCellTextures();
@@ -49,12 +63,16 @@ public class CellMatrixController {
 
     }
 
+    /**
+     * Provides the setup to cache cell textures, must be called for the main class to function.
+     */
     private void cacheCellTextures() {
         System.out.println("Grabbing textures");
         for (ECellType cellType : ECellType.values()) {
             try {
                 if (cellType.getCellDescription() != null) {
                     BufferedImage temp = ImageIO.read(new File(cellType.getPath()));
+                    //A new texture has to be loaded from the original Image.IO read to determine the imagetype to enable alpha transparency.
                     BufferedImage texture = new BufferedImage(temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB);
                     for (int i = 0; i < temp.getWidth(); i++) {
                         for (int j = 0; j < temp.getHeight(); j++) {
@@ -89,11 +107,18 @@ public class CellMatrixController {
         return new WorldCell(cellType, null);
     }
 
+    /**
+     * This method provides the setup for the noise graph by applying an arbitrary algorithm to a supplied buffered image.
+     * @param seed the seed to provide the noise generator
+     * @param noiseGraph the BufferedImage to apply the noise to
+     */
     private void setupGradientGraph(int seed, BufferedImage noiseGraph) {
         CubicInterpolation ci = new CubicInterpolation((int) (Math.random() * (10000 - 1 + 1) + 1));
+        //For X and Y coordinate in the bufferedimage, apply a noise gradient filter to the x,y coords and set an RGB value applied to the coordinates
         for (int i = 0; i < noiseGraph.getWidth(); i++) {
             for (int j = 0; j < noiseGraph.getHeight(); j++) {
                 double noise = ci.noiseGenerator(i, j, 110);
+                // times by 200 to easily separate values when determining RGB values
                 int alphaValue = (int) Math.floor(noise * 200);
                 if (alphaValue <= -220) { //Deep water
                     noiseGraph.setRGB(i, j, new Color(0, 0, 100).getRGB());
@@ -133,6 +158,11 @@ public class CellMatrixController {
         }
     }
 
+    /**
+     * This methods sets up the world cell generation. A generated noise graph is provided alongside the X or Y size of the cell.
+     * @param noiseGraph The noise graph to provide
+     * @param cellSize The cell size to provide
+     */
     private void setupWorldCells(BufferedImage noiseGraph, int cellSize) {
         for (int x = 0; x <= 150 - 5; x++) {
             for (int y = 0; y <= 150 - 5; y++) {
@@ -171,13 +201,19 @@ public class CellMatrixController {
         }
     }
 
+    /**
+     * This method sets up the society cell generation.
+     */
     private void setupSocietyCells() {
+        //i = each iteration has a chance to spawn, so ideal spawn rate * 2 for i
+        //TODO: change to while loop for minimum amount to spawn
         for (int i = 0; i < 20; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             if (cellControllerMatrix[j][k].getCellTypeFromModel() == ECellType.GRASS) {
                 SocietyCell societyCell = generateSocietyCell(UUID.randomUUID().toString());
-                //Add to cell subcriber and delete the cell that it is going to overwrite
+                //Add to cell subscriber and delete the cell that it is going to overwrite
+                //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
                 cellSubscriber.addToGlobalSocietyCells(societyCell);
                 cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
                 cellControllerMatrix[j][k] = new CellController<>(societyCell, imageCache.get(ECellType.SOCIETYBLOCK), this.cellMatrixPanel, j, k);
@@ -192,6 +228,7 @@ public class CellMatrixController {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
                                 if (cellControllerMatrix[x][y].getChildCell().getCellType().isHabitable()) {
                                     WorldCell wc = (WorldCell) cellControllerMatrix[x][y].getChildCell();
+                                    //Set the owner of the cell, provided the cell has no owner
                                     if (wc.getOwner() == null) {
                                         cellControllerMatrix[x][y].tellViewToTint();
                                         wc.setOwner(societyCell);
@@ -205,19 +242,25 @@ public class CellMatrixController {
         }
     }
 
+    /**
+     * This method sets up nutrient cell generation, using a similar way of society cell generation.
+     */
     private void setupNutrientCells() {
         for (int i = 0; i < 100; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             if (cellControllerMatrix[j][k].getCellTypeFromModel() == ECellType.GRASS) {
+                //Initial cast is necessary to get owner.
                 WorldCell wc = (WorldCell) cellControllerMatrix[j][k].getChildCell();
                 SocietyCell sc = wc.getOwner();
                 NutrientCell nutrientCell;
+                //Checks to make sure nutrient cell generation will have owner, and if so provides the owner as an argument
                 if (sc != null) {
                     nutrientCell = new NutrientCell(sc);
                 } else {
                     nutrientCell = new NutrientCell();
                 }
+                //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
                 cellSubscriber.addToGlobalNutrientCells(nutrientCell);
                 cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
                 cellControllerMatrix[j][k] = new CellController<>(nutrientCell, imageCache.get(ECellType.NUTRIENTS), this.cellMatrixPanel, j, k);
@@ -225,6 +268,10 @@ public class CellMatrixController {
         }
     }
 
+    /**
+     * Provides a temporary method for viewing data requested by the cell matrix view.
+     * @param e the MouseEvent that the cell captures
+     */
     public void displayData(MouseEvent e) {
         int x = (int) e.getPoint().getX() / 5 - 27;
         int y = (int) e.getPoint().getY() / 5 - 29;

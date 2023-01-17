@@ -3,7 +3,9 @@ package org.basmat.cell.data;
 import java.util.HashSet;
 import java.util.UUID;
 
-
+/**
+ * SocietyCell provides a foundation where any life cells will get their data from.
+ */
 public class SocietyCell extends CellData {
 
     private String societyName;
@@ -11,6 +13,10 @@ public class SocietyCell extends CellData {
     private HashSet<WorldCell> worldCells;
 
 
+    /**
+     *
+     * @param name The name of the society.
+     */
     public SocietyCell(String name) {
         super(ECellType.SOCIETYBLOCK);
         this.societyName = name;
