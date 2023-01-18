@@ -1,6 +1,6 @@
 package org.basmat.cell.view;
 
-import org.basmat.cell.data.CellData;
+import org.basmat.cell.data.AbstractCell;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +17,7 @@ public class CellPanel extends JPanel {
      * Instantiate CellPanel with associated parameters
      * @param texture the texture to render for the cell
      */
-    public <ChildCell extends CellData> CellPanel(BufferedImage texture) {
+    public <ChildCell extends AbstractCell> CellPanel(BufferedImage texture) {
         setSize(texture.getWidth(), texture.getHeight());
         setVisible(true);
         //To copy a texture to be original for the class

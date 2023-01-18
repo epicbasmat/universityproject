@@ -3,9 +3,9 @@ package org.basmat.cell.data;
 /**
  * WorldCell provides the foundation for terrain-type ECellTypes. Extends CellData
  * @see ECellType
- * @see CellData
+ * @see AbstractCell
  */
-public class WorldCell extends CellData{
+public class WorldCell extends AbstractCell {
 
     private SocietyCell owner;
 

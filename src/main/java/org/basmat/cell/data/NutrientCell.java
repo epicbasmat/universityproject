@@ -1,15 +1,16 @@
 package org.basmat.cell.data;
 
-public class NutrientCell extends CellData {
+public class NutrientCell extends AbstractCell {
     private SocietyCell owner;
-    public NutrientCell(SocietyCell owner) {
-        super(ECellType.NUTRIENTS);
+    public NutrientCell(SocietyCell owner, ECellType cellType) {
+        super(cellType);
         this.owner = owner;
     }
 
-    public NutrientCell() {
-        this(null);
+    public NutrientCell(ECellType cellType) {
+        this( null, cellType);
     }
+
 
     public SocietyCell getOwner() {
         return owner;

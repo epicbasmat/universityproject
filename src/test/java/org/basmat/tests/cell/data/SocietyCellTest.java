@@ -3,7 +3,6 @@ package org.basmat.tests.cell.data;
 import org.basmat.cell.data.ECellType;
 import org.basmat.cell.data.NutrientCell;
 import org.basmat.cell.data.SocietyCell;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

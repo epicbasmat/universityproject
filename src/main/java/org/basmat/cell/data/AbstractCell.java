@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * CellData provides overarching methods that all cell data types should implement to help with model implementation
  */
-public abstract class CellData  {
+public abstract class AbstractCell {
 
     private ECellType cellType;
     private BufferedImage texture;
@@ -18,7 +18,7 @@ public abstract class CellData  {
     /**
      * @param cellType the ECellType to set
      */
-    CellData(ECellType cellType) {
+    AbstractCell(ECellType cellType) {
         this.cellType = cellType;
     }
 
