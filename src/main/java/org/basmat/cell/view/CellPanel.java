@@ -1,12 +1,9 @@
 package org.basmat.cell.view;
 
-import org.basmat.cell.controller.CellController;
 import org.basmat.cell.data.CellData;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 /**
@@ -14,15 +11,13 @@ import java.awt.image.BufferedImage;
  */
 public class CellPanel extends JPanel {
     private BufferedImage texture;
-    private CellController cellMatrix;
     private Graphics2D g2d;
 
     /**
      * Instantiate CellPanel with associated parameters
      * @param texture the texture to render for the cell
-     * @param cellController the parent controller that instantiated the class.
      */
-    public <ChildCell extends CellData> CellPanel(BufferedImage texture, CellController<ChildCell> cellController ) {
+    public <ChildCell extends CellData> CellPanel(BufferedImage texture) {
         setSize(texture.getWidth(), texture.getHeight());
         setVisible(true);
         //To copy a texture to be original for the class
@@ -30,7 +25,6 @@ public class CellPanel extends JPanel {
                 texture.copyData(null),
                 texture.getColorModel().isAlphaPremultiplied(),
                 null);
-        this.cellMatrix = cellController;
     }
 
     /**

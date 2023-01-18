@@ -2,8 +2,9 @@ package org.basmat.cell.controller;
 
 import org.basmat.cell.data.*;
 import org.basmat.cell.view.CellMatrixPanel;
-import org.basmat.cell.view.PanelContainer;
+import org.basmat.cell.view.CellPanel;
 import org.basmat.cell.util.CubicInterpolation;
+import org.basmat.cell.view.PanelContainer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,16 +14,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.Semaphore;
 
 public class CellMatrixController {
 
     public static final String output = "output/";
-    private CellController[][] cellControllerMatrix;
     //private BufferedImage[] imageCache;
     private CellMatrixPanel cellMatrixPanel;
     private CellSubscriber cellSubscriber;
     private HashMap<ECellType, BufferedImage> imageCache;
+    private HashMap<CellPanel, ? super CellData> mapViewToModel;
     private UUID uuid;
 
     /**
@@ -36,9 +36,11 @@ public class CellMatrixController {
         //Initializing class-wide variables. 2
         uuid = UUID.randomUUID();
         cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight, this);
-        cellControllerMatrix = new CellController[cellMatrixWidth][cellMatrixHeight];
         cellSubscriber = new CellSubscriber();
         imageCache = new HashMap<>();
+        //cellDataMap maps the view of cellpanel to the model that it renders
+        mapViewToModel = new HashMap<>();
+        PanelContainer pc = new PanelContainer(cellMatrixPanel);
         initializer();
     }
 
@@ -57,7 +59,7 @@ public class CellMatrixController {
         System.out.println("Applying foundations");
         setupSocietyCells();
         System.out.println("Applying nutrient cells");
-        setupNutrientCells();
+        //setupNutrientCells();
 
     }
 
@@ -173,30 +175,52 @@ public class CellMatrixController {
                 }
                 //Sets the texture according to the averaged colour's RGB bands
                 Color averagedColour = new Color(average / (cellSize * cellSize));
-                if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.DEEP_WATER), imageCache.get(ECellType.DEEP_WATER), this.cellMatrixPanel, x, y);
-                } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.WATER), imageCache.get(ECellType.WATER), this.cellMatrixPanel, x, y);
-                } else if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.LIGHT_WATER), imageCache.get(ECellType.LIGHT_WATER), this.cellMatrixPanel, x, y);
-                } else if (averagedColour.getRed() > 0) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.SAND), imageCache.get(ECellType.SAND), this.cellMatrixPanel, x, y);
-                } else if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.GRASS), imageCache.get(ECellType.GRASS), this.cellMatrixPanel, x, y);
-                } else if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MOUNTAIN_BASE), imageCache.get(ECellType.MOUNTAIN_BASE), this.cellMatrixPanel, x, y);
-                } else if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MOUNTAIN_BODY), imageCache.get(ECellType.MOUNTAIN_BODY), this.cellMatrixPanel, x, y);
-                } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) {
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MOUNTAIN_PEAK), imageCache.get(ECellType.MOUNTAIN_PEAK), this.cellMatrixPanel, x, y);
+                if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //DEEP_WATER
+                    setCellData(x, y, ECellType.DEEP_WATER);
+                } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //WATER
+                    setCellData(x, y, ECellType.WATER);
+                } else if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {// LIGHT WATER
+                    setCellData(x, y, ECellType.LIGHT_WATER);
+                } else if (averagedColour.getRed() > 0) { //SAND
+                    setCellData(x, y, ECellType.SAND);
+                } else if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) { //GRASS
+                    setCellData(x, y, ECellType.GRASS);
+                } else if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) { //MOUNTAIN BASE
+                    setCellData(x, y, ECellType.MOUNTAIN_BASE);
+                } else if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) { //MOUNTAIN BODY
+                    setCellData(x, y, ECellType.MOUNTAIN_BODY);
+                } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) { //MOUNTAIN PEAK
+                    setCellData(x, y, ECellType.MOUNTAIN_PEAK);
                 } else {
                     System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
-                    System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]");
-                    cellControllerMatrix[x][y] = new CellController<>(generateWorldCell(ECellType.MISSING_TEXTURE), imageCache.get(ECellType.MISSING_TEXTURE), this.cellMatrixPanel, x, y);
-
+                    System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
+                    setCellData(x, y, ECellType.MISSING_TEXTURE);
                 }
             }
         }
+    }
+
+    /**
+     * Deletes the current rendered panel in the class's instantiated cellMatrixPanel. Calls setCellData() after to set the new data
+     * @param x the x coordinate to delete and replace
+     * @param y the y coordinate to delete and replace
+     * @param cellType the cellType to replace
+     */
+    private void overwriteCellData(int x, int y, ECellType cellType) {
+        cellMatrixPanel.removeCell(cellMatrixPanel.getPanel(x, y));
+        setCellData(x, y, cellType);
+    }
+
+    /**
+     * Sets up a new JPanel for a cell and instantiates a new model, linking the two with an internal HashMap
+     * @param x the x coordinate to set in the matrix
+     * @param y the y coordinate to set in the matrix
+     * @param cellType the celltype to instantiate and set in the matrix.
+     */
+    private void setCellData(int x, int y, ECellType cellType) {
+        CellPanel cellPanel = new CellPanel(imageCache.get(cellType));
+        cellMatrixPanel.addCellPanel(cellPanel, x, y);
+        mapViewToModel.put(cellPanel, new WorldCell(cellType));
     }
 
     /**
@@ -208,13 +232,13 @@ public class CellMatrixController {
         for (int i = 0; i < 20; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
-            if (cellControllerMatrix[j][k].getCellTypeFromModel() == ECellType.GRASS) {
+            //get the panel from the matrix panel coordinates and then apply that to the map
+            if (mapViewToModel.get(cellMatrixPanel.getPanel(j, k)) == ECellType.GRASS) {
                 SocietyCell societyCell = generateSocietyCell(UUID.randomUUID().toString());
                 //Add to cell subscriber and delete the cell that it is going to overwrite
                 //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
                 cellSubscriber.addToGlobalSocietyCells(societyCell);
-                cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
-                cellControllerMatrix[j][k] = new CellController<>(societyCell, imageCache.get(ECellType.SOCIETYBLOCK), this.cellMatrixPanel, j, k);
+                overwriteCellData(j, k, ECellType.SOCIETYBLOCK);
                 int radius = 12;
                 for (int r = 0; r <= 180; r = r + 5) {
                     int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
@@ -224,12 +248,13 @@ public class CellMatrixController {
                         //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
                         for (int x = -circumferenceX + j; x < circumferenceX + j; x++) {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
-                                if (cellControllerMatrix[x][y].getChildCell().getCellType().isHabitable()) {
-                                    WorldCell wc = (WorldCell) cellControllerMatrix[x][y].getChildCell();
+                                //checking if the cell is habitable
+                                WorldCell worldCell = (WorldCell) mapViewToModel.get(cellMatrixPanel.getPanel(x, y));
+                                if (worldCell.getCellType().isHabitable()) {
                                     //Set the owner of the cell, provided the cell has no owner
-                                    if (wc.getOwner() == null) {
-                                        cellControllerMatrix[x][y].tellViewToTint();
-                                        wc.setOwner(societyCell);
+                                    if (worldCell.getOwner() == null) {
+                                        cellMatrixPanel.getPanel(x,y).setTint(0x0090cc90);
+                                        worldCell.setOwner(societyCell);
                                     }
                                 }
                             }
@@ -243,7 +268,7 @@ public class CellMatrixController {
     /**
      * This method sets up nutrient cell generation, using a similar way of society cell generation.
      */
-    private void setupNutrientCells() {
+    /*private void setupNutrientCells() {
         for (int i = 0; i < 100; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
@@ -264,7 +289,7 @@ public class CellMatrixController {
                 cellControllerMatrix[j][k] = new CellController<>(nutrientCell, imageCache.get(ECellType.NUTRIENTS), this.cellMatrixPanel, j, k);
             }
         }
-    }
+    }*/
 
     /**
      * Provides a temporary method for viewing data requested by the cell matrix view.
@@ -276,6 +301,6 @@ public class CellMatrixController {
         int y = (int) e.getPoint().getY() / 5 - 29;
         System.out.println("==");
         System.out.println(x + ", " + y);
-        System.out.println(cellControllerMatrix[x][y].getChildCell().toString());
+        System.out.println(mapViewToModel.get(cellMatrixPanel.getPanel(x, y)).toString());
     }
 }

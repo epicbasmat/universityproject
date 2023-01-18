@@ -14,20 +14,22 @@ import java.awt.event.MouseListener;
 public class CellMatrixPanel extends JPanel implements MouseListener{
     private GridBagConstraints c;
     private CellMatrixController cellMatrixController;
+    private CellPanel[][] cellPanelMatrix;
+
 
     /**
      * Instantiate the object with current parameters
-     * @param cellWidth the width of the matrix
-     * @param cellHeight the height of the matrix
-     * @param cellMatrixController
+     * @param matrixWidth the width of the matrix
+     * @param matrixHeight the height of the matrix
+     * @param cellMatrixController the cell controller matrix that instantiated this object
      */
-    public CellMatrixPanel(int cellWidth, int cellHeight, CellMatrixController cellMatrixController) {
-        setSize(cellWidth * 5, cellHeight * 5);
+    public CellMatrixPanel(int matrixWidth, int matrixHeight, CellMatrixController cellMatrixController) {
+        cellPanelMatrix = new CellPanel[matrixWidth][matrixHeight];
+        setSize(matrixWidth * 5, matrixHeight * 5);
         this.cellMatrixController = cellMatrixController;
         setVisible(true);
         c = new GridBagConstraints();
         setLayout(new GridBagLayout());
-        //c.fill = GridBagConstraints.BOTH;
     }
 
     /**
@@ -50,9 +52,14 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
         //Make the spacing between elements 0 (default is 5px?)
         c.ipadx = -5;
         c.ipady = -5;
+        this.cellPanelMatrix[x][y] = cellPanel;
         this.add(cellPanel, c);
         this.revalidate();
         this.repaint();
+    }
+
+    public CellPanel getPanel(int x, int y) {
+        return this.cellPanelMatrix[x][y];
     }
 
     @Override

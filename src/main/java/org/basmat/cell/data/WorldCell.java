@@ -18,6 +18,10 @@ public class WorldCell extends CellData{
         this.owner = owner;
     }
 
+    public WorldCell(ECellType cellType) {
+        this(cellType, null);
+    }
+
     public void setOwner(SocietyCell owner) {
         this.owner = owner;
     }
