@@ -21,7 +21,6 @@ public class CellMatrixController {
     private CellController[][] cellControllerMatrix;
     //private BufferedImage[] imageCache;
     private CellMatrixPanel cellMatrixPanel;
-    private Semaphore s;
     private CellSubscriber cellSubscriber;
     private HashMap<ECellType, BufferedImage> imageCache;
     private UUID uuid;
@@ -40,7 +39,6 @@ public class CellMatrixController {
         cellControllerMatrix = new CellController[cellMatrixWidth][cellMatrixHeight];
         cellSubscriber = new CellSubscriber();
         imageCache = new HashMap<>();
-        PanelContainer pc = new PanelContainer(cellMatrixPanel);
         initializer();
     }
 
@@ -273,6 +271,7 @@ public class CellMatrixController {
      * @param e the MouseEvent that the cell captures
      */
     public void displayData(MouseEvent e) {
+        //Weird subtractions are necessary to align click co-ordinate with cell matrix coordinate
         int x = (int) e.getPoint().getX() / 5 - 27;
         int y = (int) e.getPoint().getY() / 5 - 29;
         System.out.println("==");

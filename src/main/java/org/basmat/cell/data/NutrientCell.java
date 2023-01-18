@@ -17,14 +17,14 @@ public class NutrientCell extends CellData {
 
     @Override
     public String toString() {
-        if (getOwner() == null) {
-            return "Owner: " + "This cell has no owner" + "\n" +
-                    "Cell Name: " + getCellType().getCellName() + "\n" +
-                    "Cell Description: " + getCellType().getCellDescription();
-        } else {
-            return "Owner: " + getOwner().getName() + "\n" +
-                    "Cell Name: " + getCellType().getCellName() + "\n" +
-                    "Cell Description: " + getCellType().getCellDescription();
+        String ownerString;
+        if (this.owner == null) {
+            ownerString = "Owner: This cell has no owner";
+        }  else {
+            ownerString = "Owner: " + this.getOwner().getName();
         }
+        return ownerString + "\n" +
+                "Cell Name: " + getCellType().getCellName() + "\n" +
+                "Cell Description: " + getCellType().getCellDescription();
     }
 }

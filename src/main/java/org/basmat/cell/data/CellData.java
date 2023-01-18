@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * CellData provides overarching methods that all cell data types should implement to help with models
+ * CellData provides overarching methods that all cell data types should implement to help with model implementation
  */
 public abstract class CellData  {
 

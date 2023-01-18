@@ -25,17 +25,16 @@ public class WorldCell extends CellData{
     public SocietyCell getOwner() {return this.owner;}
     @Override
     public String toString() {
+        String ownerString;
         if (this.owner == null) {
-            return "Owner: " + "this cell has no owner" + "\n" +
-                    "Cell Name: " + getCellType().getCellName() + "\n" +
-                    "Cell Description: " + getCellType().getCellDescription() + "\n" +
-                    "Is habitable: " + getCellType().isHabitable();
+            ownerString = "Owner: This cell has no owner";
         }  else {
-            return "Owner: " + this.owner.getName() + "\n" +
-                    "Cell Name: " + getCellType().getCellName() + "\n" +
-                    "Cell Description: " + getCellType().getCellDescription() + "\n" +
-                    "Is habitable: " + getCellType().isHabitable();
+            ownerString = "Owner: " + this.getOwner().getName();
         }
+        return ownerString + "\n" +
+                "Cell Name: " + getCellType().getCellName() + "\n" +
+                "Cell Description: " + getCellType().getCellDescription() + "\n" +
+                "Is habitable: " + getCellType().isHabitable();
     }
 
 }

@@ -10,8 +10,6 @@ public class SocietyCell extends CellData {
 
     private String societyName;
     private HashSet<NutrientCell> nutrientCells;
-    private HashSet<WorldCell> worldCells;
-
 
     /**
      *
@@ -23,12 +21,10 @@ public class SocietyCell extends CellData {
         nutrientCells = new HashSet<>();
     }
 
+    public HashSet<NutrientCell> getNutrientHashSet() { return this.nutrientCells;}
+    public boolean getNutrientCell(NutrientCell nutrientCell) { return nutrientCells.contains(nutrientCell);}
     public void addNutrientCells(NutrientCell nutrientCell) {
         nutrientCells.add(nutrientCell);
-    }
-
-    public void addWorldCell(WorldCell worldCell) {
-        worldCells.add(worldCell);
     }
 
     public String getName() {

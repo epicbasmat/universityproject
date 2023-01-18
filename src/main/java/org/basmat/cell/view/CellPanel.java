@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 /**
  * CellPanel provides the view implementation for M-C-V for a specific cell, rendering an image provided a texture.
  */
-public class CellPanel extends JPanel implements MouseListener {
+public class CellPanel extends JPanel {
     private BufferedImage texture;
     private CellController cellMatrix;
     private Graphics2D g2d;
@@ -55,33 +55,5 @@ public class CellPanel extends JPanel implements MouseListener {
     public void paintComponent(Graphics g) {
         g2d = (Graphics2D) g;
         if (g2d.drawImage(texture, 0, 0, null)) { }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        Point p = e.getPoint();
-        if (((p.getX() < 0) &&  (p.getX() < 5)) && ((p.getY() < 0) && (p.getY() < 5))) {
-            System.out.println(cellMatrix.getStringFromModel());
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
     }
 }
