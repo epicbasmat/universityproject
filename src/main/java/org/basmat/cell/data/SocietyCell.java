@@ -1,28 +1,31 @@
 package org.basmat.cell.data;
 
+import org.basmat.cell.util.ECellType;
+
 import java.util.HashSet;
-import java.util.UUID;
 
-
-public class SocietyCell extends CellData {
+/**
+ * SocietyCell provides a foundation where any life cells will get their data from.
+ */
+public class SocietyCell extends AbstractCell {
 
     private String societyName;
     private HashSet<NutrientCell> nutrientCells;
-    private HashSet<WorldCell> worldCells;
 
-
-    public SocietyCell(String name) {
-        super(ECellType.SOCIETYBLOCK);
+    /**
+     * Constructs a society class with the name and the determined celltype, usually ECellType.SOCIETYCELL.
+     * @param name The name of the society.
+     */
+    public SocietyCell(String name, ECellType cellType) {
+        super(cellType);
         this.societyName = name;
         nutrientCells = new HashSet<>();
     }
 
+    public HashSet<NutrientCell> getNutrientHashSet() { return this.nutrientCells;}
+    public boolean getNutrientCell(NutrientCell nutrientCell) { return nutrientCells.contains(nutrientCell);}
     public void addNutrientCells(NutrientCell nutrientCell) {
         nutrientCells.add(nutrientCell);
-    }
-
-    public void addWorldCell(WorldCell worldCell) {
-        worldCells.add(worldCell);
     }
 
     public String getName() {
@@ -32,7 +35,8 @@ public class SocietyCell extends CellData {
     public String toString() {
         return "Society Name: " + societyName + "\n" +
                 "Cell Name: " + getCellType().getCellName() + "\n" +
-                "Cell Description: " + getCellType().getCellDescription();
+                "Cell Description: " + getCellType().getCellDescription() + "\n" +
+                "Nutrient cells owned: " + (long) getNutrientHashSet().size() + "\n";
 
     }
 }

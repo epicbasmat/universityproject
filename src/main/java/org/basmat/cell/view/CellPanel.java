@@ -1,20 +1,23 @@
 package org.basmat.cell.view;
 
-import org.basmat.cell.controller.CellController;
-import org.basmat.cell.data.CellData;
+import org.basmat.cell.data.AbstractCell;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
-public class CellPanel extends JPanel implements MouseListener {
+/**
+ * CellPanel provides the view implementation for M-C-V for a specific cell, rendering an image provided a texture.
+ */
+public class CellPanel extends JPanel {
     private BufferedImage texture;
-    private CellController cellMatrix;
     private Graphics2D g2d;
 
-    public <ChildCell extends CellData> CellPanel(BufferedImage texture, CellController<ChildCell> cellController ) {
+    /**
+     * Instantiate CellPanel with associated parameters
+     * @param texture the texture to render for the cell
+     */
+    public <ChildCell extends AbstractCell> CellPanel(BufferedImage texture) {
         setSize(texture.getWidth(), texture.getHeight());
         setVisible(true);
         //To copy a texture to be original for the class
@@ -22,15 +25,13 @@ public class CellPanel extends JPanel implements MouseListener {
                 texture.copyData(null),
                 texture.getColorModel().isAlphaPremultiplied(),
                 null);
-        this.cellMatrix = cellController;
     }
 
     /**
-     *
-     * @param mask 0xAARRGGBB - AA = Alpha, RR = Red, GG = Green, BB = Blue
-     * @param operand
+     * Tints the loaded bufferedimage from the view.
+     * @param mask The RGB value to mask the image with using an OR operator. \n 0xAARRGGBB - AA = Alpha, RR = Red, GG = Green, BB = Blue
      */
-    public void setTint(int mask, int operand) {
+    public void setTint(int mask) {
         for (int x = 0; x < texture.getWidth(); x++) {
             for (int y = 0; y < texture.getHeight(); y++) {
                 texture.setRGB(x, y , texture.getRGB(x, y) | mask);
@@ -48,33 +49,5 @@ public class CellPanel extends JPanel implements MouseListener {
     public void paintComponent(Graphics g) {
         g2d = (Graphics2D) g;
         if (g2d.drawImage(texture, 0, 0, null)) { }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        Point p = e.getPoint();
-        if (((p.getX() < 0) &&  (p.getX() < 5)) && ((p.getY() < 0) && (p.getY() < 5))) {
-            System.out.println(cellMatrix.getStringFromModel());
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
     }
 }

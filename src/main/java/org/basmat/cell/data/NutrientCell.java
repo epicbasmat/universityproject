@@ -1,14 +1,28 @@
 package org.basmat.cell.data;
 
-public class NutrientCell extends CellData {
+import org.basmat.cell.util.ECellType;
+
+public class NutrientCell extends AbstractCell {
     private SocietyCell owner;
-    public NutrientCell(SocietyCell owner) {
-        super(ECellType.NUTRIENTS);
+
+    /**
+     *
+     * @param owner The owner of the nutrient cell
+     * @param cellType The cellType of nutreint cell,
+     */
+    public NutrientCell(SocietyCell owner, ECellType cellType) {
+        super(cellType);
         this.owner = owner;
     }
 
+    public NutrientCell(SocietyCell cell) {
+        this(cell, ECellType.NUTRIENTS);
+    }
+
+
+
     public NutrientCell() {
-        this(null);
+        this( null, ECellType.NUTRIENTS);
     }
 
     public SocietyCell getOwner() {
@@ -17,14 +31,14 @@ public class NutrientCell extends CellData {
 
     @Override
     public String toString() {
-        if (getOwner() == null) {
-            return "Owner: " + "This cell has no owner" + "\n" +
-                    "Cell Name: " + getCellType().getCellName() + "\n" +
-                    "Cell Description: " + getCellType().getCellDescription();
-        } else {
-            return "Owner: " + getOwner().getName() + "\n" +
-                    "Cell Name: " + getCellType().getCellName() + "\n" +
-                    "Cell Description: " + getCellType().getCellDescription();
+        String ownerString;
+        if (this.owner == null) {
+            ownerString = "Owner: This cell has no owner";
+        }  else {
+            ownerString = "Owner: " + this.getOwner().getName();
         }
+        return ownerString + "\n" +
+                "Cell Name: " + getCellType().getCellName() + "\n" +
+                "Cell Description: " + getCellType().getCellDescription();
     }
 }

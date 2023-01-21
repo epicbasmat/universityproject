@@ -1,8 +1,8 @@
-package org.basmat.cell.data;
+package org.basmat.cell.util;
 
 public enum ECellType {
 	/**
-	 * This Enum class contains the reference URI for a texture and provides a method to return it
+	 * This Enum class contains the reference URI for a texture, as well as any associated descriptions and names.
 	 */
 	
 	BASE_PATH {
@@ -210,7 +210,7 @@ public enum ECellType {
 			return false;
 		}
 	},
-	SOCIETYBLOCK {
+	SOCIETY_CELL {
 		@Override
 		public
 		String getPath() {
@@ -252,6 +252,27 @@ public enum ECellType {
 		@Override
 		public boolean isHabitable() {
 			return true;
+		}
+	},
+	MISSING_TEXTURE{
+		@Override
+		public String getPath() {
+			return BASE_PATH.getPath() + "missing_texture.png";
+		}
+
+		@Override
+		public String getCellDescription() {
+			return "Missing texture";
+		}
+
+		@Override
+		public String getCellName() {
+			return "Missing texture";
+		}
+
+		@Override
+		public boolean isHabitable() {
+			return false;
 		}
 	};
 

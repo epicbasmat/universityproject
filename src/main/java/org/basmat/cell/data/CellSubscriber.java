@@ -1,7 +1,5 @@
 package org.basmat.cell.data;
 
-import java.awt.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 public class CellSubscriber {
