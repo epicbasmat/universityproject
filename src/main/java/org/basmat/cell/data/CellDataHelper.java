@@ -41,6 +41,12 @@ public class CellDataHelper {
      * Intermediate operation - removes a cell from the CellPanelMatrix with the coordinates provided from class initialization
      * @return this
      */
+
+    public CellDataHelper overwriteCellData() {
+        deleteCellData();
+        setCellData();
+        return this;
+    }
     public CellDataHelper deleteCellData() {
         cellMatrixPanel.removeCell(cellMatrixPanel.getPanel(x, y));
         return this;
@@ -48,7 +54,6 @@ public class CellDataHelper {
 
     /**
      * Intermediate operation - creates a new CellPanel with the data provided with class initialization
-     * @return
      */
     public CellDataHelper setCellData() {
         currentCellPanel = new CellPanel(imageCache.get(cellType));
@@ -70,11 +75,11 @@ public class CellDataHelper {
      * @see NutrientCell
      */
     public void mapNutrientCellToView(SocietyCell owner) {
-        dataMap.put(currentCellPanel, new NutrientCell(cellType));
+        dataMap.put(currentCellPanel, new NutrientCell(owner));
     }
 
     /**
-     * Terminal operation - Used to instantiate a new class of type SocietyCell
+     * Terminal operation - Used to instantiate a new class of type SocietyCell and map it to a key of the cellPanel
      * @param name The name of the society
      * @see SocietyCell
      */

@@ -59,7 +59,7 @@ public class CellMatrixController {
         System.out.println("Applying foundations");
         setupSocietyCells();
         System.out.println("Applying nutrient cells");
-        //setupNutrientCells();
+        setupNutrientCells();
 
     }
 
@@ -196,7 +196,7 @@ public class CellMatrixController {
             //get the panel from the matrix panel coordinates and then apply that to the map
             if (((WorldCell)mapViewToModel.get(cellMatrixPanel.getPanel(j, k))).getCellType() == ECellType.GRASS) {
                 //Create a new cell with specified type of societyblock, and pass the terminal method the name of the society
-                new CellDataHelper(ECellType.SOCIETYBLOCK, j, k, cellMatrixPanel, imageCache, mapViewToModel).deleteCellData().setCellData().mapSocietyCellToView(UUID.randomUUID().toString());
+                new CellDataHelper(ECellType.SOCIETYBLOCK, j, k, cellMatrixPanel, imageCache, mapViewToModel).overwriteCellData().mapSocietyCellToView(UUID.randomUUID().toString());
                 //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
                 SocietyCell societyCell = (SocietyCell) (mapViewToModel.get(cellMatrixPanel.getPanel(j, k)));
                 cellSubscriber.addToGlobalSocietyCells(societyCell);
@@ -209,7 +209,7 @@ public class CellMatrixController {
                         //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
                         for (int x = -circumferenceX + j; x < circumferenceX + j; x++) {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
-                                //Checks if the
+                                //Checks if retrieved value mapped to panelobject is instance of worldcell, owner is not null and is habitable
                                 if (mapViewToModel.get(cellMatrixPanel.getPanel(x, y)) instanceof WorldCell worldCell && worldCell.getOwner() == null && worldCell.getCellType().isHabitable()) {
                                     //Set the owner of the cell, provided the cell has no owner and is habitable
                                     cellMatrixPanel.getPanel(x, y).setTint(0x0090cc90);
@@ -226,34 +226,25 @@ public class CellMatrixController {
     /**
      * This method sets up nutrient cell generation, using a similar way of society cell generation.
      */
-    /*private void setupNutrientCells() {
+    private void setupNutrientCells() {
         for (int i = 0; i < 100; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             WorldCell worldCell = (WorldCell) mapViewToModel.get(cellMatrixPanel.getPanel(j, k));
             if (worldCell.getCellType() == ECellType.GRASS) {
-                SocietyCell sc = worldCell.getOwner();
-                NutrientCell nutrientCell;
-                //Checks to make sure nutrient cell generation will have owner, and if so provides the owner as an argument
-                if (sc != null) {
-                    nutrientCell = new NutrientCell(sc);
-                } else {
-                    nutrientCell = new NutrientCell();
-                }
                 //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
-                cellSubscriber.addToGlobalNutrientCells(nutrientCell);
-                cellMatrixPanel.removeCell(cellControllerMatrix[j][k].getView());
-                cellControllerMatrix[j][k] = new CellController<>(nutrientCell, imageCache.get(ECellType.NUTRIENTS), this.cellMatrixPanel, j, k);
+                new CellDataHelper(ECellType.NUTRIENTS, j, k, cellMatrixPanel, imageCache, mapViewToModel).overwriteCellData().mapNutrientCellToView(worldCell.getOwner());
+                cellSubscriber.addToGlobalNutrientCells((NutrientCell) mapViewToModel.get(cellMatrixPanel.getPanel(j, k)));
             }
         }
-    }*/
+    }
 
     /**
      * Provides a temporary method for viewing data requested by the cell matrix view.
      * @param e the MouseEvent that the cell captures
      */
     public void displayData(MouseEvent e) {
-        //Weird subtractions are necessary to align click co-ordinate with cell matrix coordinate
+        //Weird subtractions are necessary to align click co-ordinate with cell matrix co-ordinate
         int x = (int) e.getPoint().getX() / 5 - 27;
         int y = (int) e.getPoint().getY() / 5 - 29;
         System.out.println("==");
