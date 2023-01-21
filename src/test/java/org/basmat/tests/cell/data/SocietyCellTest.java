@@ -1,6 +1,6 @@
 package org.basmat.tests.cell.data;
 
-import org.basmat.cell.data.ECellType;
+import org.basmat.cell.util.ECellType;
 import org.basmat.cell.data.NutrientCell;
 import org.basmat.cell.data.SocietyCell;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ class SocietyCellTest {
     private SocietyCell sc;
 
     SocietyCellTest() {
-        sc = new SocietyCell("Test");
+        sc = new SocietyCell("Test", ECellType.SOCIETY_CELL);
     }
     @Test
     void SocietyCellAddNutrientCell_NutrientCellHashMap_True() {
@@ -33,7 +33,7 @@ class SocietyCellTest {
 
     @Test
     void SocietyCellSetsAppropriateEnum_CellDataECellType_True() {
-        assertEquals(ECellType.SOCIETYBLOCK, sc.getCellType());
+        assertEquals(ECellType.SOCIETY_CELL, sc.getCellType());
     }
 
     @Test

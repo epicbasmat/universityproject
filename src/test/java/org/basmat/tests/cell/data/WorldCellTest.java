@@ -1,6 +1,6 @@
 package org.basmat.tests.cell.data;
 
-import org.basmat.cell.data.ECellType;
+import org.basmat.cell.util.ECellType;
 import org.basmat.cell.data.SocietyCell;
 import org.basmat.cell.data.WorldCell;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class WorldCellTest {
 
     @Test
     void TestWorldCellReturnsOwner_WorldCellOwner_True() {
-        SocietyCell sc = new SocietyCell("Test");
+        SocietyCell sc = new SocietyCell("Test", ECellType.SOCIETY_CELL);
         water.setOwner(sc);
         assertEquals(water.getOwner(), sc);
     }

@@ -1,4 +1,4 @@
-package org.basmat.cell.data;
+package org.basmat.cell.util;
 
 public enum ECellType {
 	/**
@@ -210,7 +210,7 @@ public enum ECellType {
 			return false;
 		}
 	},
-	SOCIETYBLOCK {
+	SOCIETY_CELL {
 		@Override
 		public
 		String getPath() {

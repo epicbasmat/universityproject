@@ -1,5 +1,6 @@
 package org.basmat.cell.data;
 
+import org.basmat.cell.util.ECellType;
 import org.basmat.cell.view.CellMatrixPanel;
 import org.basmat.cell.view.CellPanel;
 

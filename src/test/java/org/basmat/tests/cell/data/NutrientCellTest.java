@@ -1,6 +1,6 @@
 package org.basmat.tests.cell.data;
 
-import org.basmat.cell.data.ECellType;
+import org.basmat.cell.util.ECellType;
 import org.basmat.cell.data.NutrientCell;
 import org.basmat.cell.data.SocietyCell;
 import org.junit.jupiter.api.Test;
@@ -16,8 +16,7 @@ class NutrientCellTest {
     NutrientCell ncOwner;
     NutrientCellTest() {
         nc = new NutrientCell();
-        ncOwner = new NutrientCell(new SocietyCell("Test"));
-
+        ncOwner = new NutrientCell(new SocietyCell("Test", ECellType.NUTRIENTS));
     }
 
     @Test

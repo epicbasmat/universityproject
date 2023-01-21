@@ -1,5 +1,7 @@
 package org.basmat.cell.data;
 
+import org.basmat.cell.util.ECellType;
+
 public class NutrientCell extends AbstractCell {
     private SocietyCell owner;
 

@@ -1,5 +1,7 @@
 package org.basmat.cell.data;
 
+import org.basmat.cell.util.ECellType;
+
 import java.util.HashSet;
 
 /**
@@ -11,7 +13,7 @@ public class SocietyCell extends AbstractCell {
     private HashSet<NutrientCell> nutrientCells;
 
     /**
-     *
+     * Constructs a society class with the name and the determined celltype, usually ECellType.SOCIETYCELL.
      * @param name The name of the society.
      */
     public SocietyCell(String name, ECellType cellType) {
@@ -33,7 +35,8 @@ public class SocietyCell extends AbstractCell {
     public String toString() {
         return "Society Name: " + societyName + "\n" +
                 "Cell Name: " + getCellType().getCellName() + "\n" +
-                "Cell Description: " + getCellType().getCellDescription();
+                "Cell Description: " + getCellType().getCellDescription() + "\n" +
+                "Nutrient cells owned: " + (long) getNutrientHashSet().size() + "\n";
 
     }
 }

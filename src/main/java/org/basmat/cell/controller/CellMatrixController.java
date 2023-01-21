@@ -1,6 +1,7 @@
 package org.basmat.cell.controller;
 
 import org.basmat.cell.data.*;
+import org.basmat.cell.util.ECellType;
 import org.basmat.cell.view.CellMatrixPanel;
 import org.basmat.cell.view.CellPanel;
 import org.basmat.cell.util.CubicInterpolation;
@@ -57,7 +58,7 @@ public class CellMatrixController {
         System.out.println("Applying texture filter");
         setupWorldCells(graph, 5);
         System.out.println("Applying foundations");
-        setupSocietyCells();
+        setupSocietyCells(7);
         System.out.println("Applying nutrient cells");
         setupNutrientCells();
 
@@ -143,7 +144,7 @@ public class CellMatrixController {
     }
 
     /**
-     * This methods sets up the world cell generation. A generated noise graph is provided alongside the X or Y size of the cell.
+     * Sets up the world cell generation and maps an RGB range to a cell type and texture.
      * @param noiseGraph The noise graph to provide
      * @param cellSize The cell size to provide
      */
@@ -186,20 +187,29 @@ public class CellMatrixController {
 
     /**
      * This method sets up the society cell generation by spawning society cells at random coordinates and generating an area of effect visualized through tinting all affected cells
+     * @param target The amount of society cells to generate
      */
-    private void setupSocietyCells() {
-        //i = each iteration has a chance to spawn, so ideal spawn rate * 2 for i
-        //TODO: change to while loop for minimum amount to spawn
-        for (int i = 0; i < 20; i++) {
+    private void setupSocietyCells(int target) {
+        int counter = 0;
+        while (counter < target) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             //get the panel from the matrix panel coordinates and then apply that to the map
-            if (((WorldCell)mapViewToModel.get(cellMatrixPanel.getPanel(j, k))).getCellType() == ECellType.GRASS) {
+            WorldCell worldCellCheck = (WorldCell) mapViewToModel.get(cellMatrixPanel.getPanel(j, k));
+            if (worldCellCheck.getCellType() == ECellType.GRASS && worldCellCheck.getOwner() == null) {
+                counter++;
                 //Create a new cell with specified type of societyblock, and pass the terminal method the name of the society
-                new CellDataHelper(ECellType.SOCIETYBLOCK, j, k, cellMatrixPanel, imageCache, mapViewToModel).overwriteCellData().mapSocietyCellToView(UUID.randomUUID().toString());
+                new CellDataHelper(ECellType.SOCIETY_CELL, j, k, cellMatrixPanel, imageCache, mapViewToModel).overwriteCellData().mapSocietyCellToView(UUID.randomUUID().toString());
                 //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
                 SocietyCell societyCell = (SocietyCell) (mapViewToModel.get(cellMatrixPanel.getPanel(j, k)));
                 cellSubscriber.addToGlobalSocietyCells(societyCell);
+
+                //Sets a tint in the style that is in standard with Javas ColorModel.
+                int tint = 0x00009000;
+                tint = tint | (int) (Math.random() * 255 - 150) + 150 << 16; //Set red and bit shift 16 places to align it with the red bytes
+                tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
+
+                //1 unit of radius is 1 cell
                 int radius = 12;
                 for (int r = 0; r <= 180; r = r + 5) {
                     int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
@@ -212,12 +222,13 @@ public class CellMatrixController {
                                 //Checks if retrieved value mapped to panelobject is instance of worldcell, owner is not null and is habitable
                                 if (mapViewToModel.get(cellMatrixPanel.getPanel(x, y)) instanceof WorldCell worldCell && worldCell.getOwner() == null && worldCell.getCellType().isHabitable()) {
                                     //Set the owner of the cell, provided the cell has no owner and is habitable
-                                    cellMatrixPanel.getPanel(x, y).setTint(0x0090cc90);
+                                    cellMatrixPanel.getPanel(x, y).setTint(tint);
                                     worldCell.setOwner(societyCell);
+                                    cellSubscriber.addToGlobalSocietyCells(societyCell);
                                 }
                             }
                         }
-                    } catch (Exception e) { System.out.println(e.getMessage()); }
+                    } catch (Exception e) {/* System.out.println(e.getMessage());*/ }
                 }
             }
         }
@@ -230,11 +241,11 @@ public class CellMatrixController {
         for (int i = 0; i < 100; i++) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
-            WorldCell worldCell = (WorldCell) mapViewToModel.get(cellMatrixPanel.getPanel(j, k));
-            if (worldCell.getCellType() == ECellType.GRASS) {
+            if (mapViewToModel.get(cellMatrixPanel.getPanel(j, k)) instanceof WorldCell worldCell && worldCell.getCellType() == ECellType.GRASS) {
                 //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
                 new CellDataHelper(ECellType.NUTRIENTS, j, k, cellMatrixPanel, imageCache, mapViewToModel).overwriteCellData().mapNutrientCellToView(worldCell.getOwner());
-                cellSubscriber.addToGlobalNutrientCells((NutrientCell) mapViewToModel.get(cellMatrixPanel.getPanel(j, k)));
+                NutrientCell nutrientCell = (NutrientCell) mapViewToModel.get(cellMatrixPanel.getPanel(j, k));
+                cellSubscriber.addToGlobalNutrientCells(nutrientCell);
             }
         }
     }

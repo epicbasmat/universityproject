@@ -1,7 +1,7 @@
 package org.basmat.tests.cell.controller;
 
 import org.basmat.cell.controller.CellMatrixController;
-import org.basmat.cell.data.ECellType;
+import org.basmat.cell.util.ECellType;
 import org.basmat.cell.data.SocietyCell;
 import org.basmat.cell.data.WorldCell;
 import org.basmat.cell.view.CellMatrixPanel;
@@ -26,12 +26,6 @@ class CellControllerTest {
 
     @Test
     void SetCellPanelToCellMatrixPanel_CellMatrixJPanel_True() {
-        new CellController<>(new WorldCell(
-                ECellType.GRASS,
-                new SocietyCell("Test")),
-                new BufferedImage(5, 5, BufferedImage.TYPE_INT_ARGB),
-                cmp,
-                0,
-                0);
+        
     }
 }

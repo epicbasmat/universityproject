@@ -7,7 +7,14 @@ public class CubicInterpolation {
 	public CubicInterpolation(int seed) {
 		this.seed = seed;
 	}
-	
+
+
+	/**
+	 * Hash courtesy of perlin noise @ Ken Perlin
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public float hash(int x, int y) {
 		int n = x + y * seed;
 		n = (n << 13) ^ n; 

@@ -1,5 +1,7 @@
 package org.basmat.cell.data;
 
+import org.basmat.cell.util.ECellType;
+
 /**
  * WorldCell provides the foundation for terrain-type ECellTypes. Extends CellData
  * @see ECellType

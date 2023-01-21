@@ -1,5 +1,7 @@
 package org.basmat.cell.data;
 
+import org.basmat.cell.util.ECellType;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
