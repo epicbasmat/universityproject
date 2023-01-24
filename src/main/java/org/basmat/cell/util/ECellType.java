@@ -207,7 +207,7 @@ public enum ECellType {
 		@Override
 		public
 		boolean isHabitable() {
-			return false;
+			return true;
 		}
 	},
 	SOCIETY_CELL {

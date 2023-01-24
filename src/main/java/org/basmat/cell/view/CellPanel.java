@@ -17,7 +17,7 @@ public class CellPanel extends JPanel {
      * Instantiate CellPanel with associated parameters
      * @param texture the texture to render for the cell
      */
-    public <ChildCell extends AbstractCell> CellPanel(BufferedImage texture) {
+    public CellPanel(BufferedImage texture) {
         setSize(texture.getWidth(), texture.getHeight());
         setVisible(true);
         //To copy a texture to be original for the class
