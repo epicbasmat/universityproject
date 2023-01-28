@@ -1,4 +1,7 @@
-package org.basmat.cell.data;
+package org.basmat.map.data;
+
+import org.basmat.map.cellfactory.NutrientCell;
+import org.basmat.map.cellfactory.SocietyCell;
 
 import java.util.LinkedList;
 

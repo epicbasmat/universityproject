@@ -1,4 +1,4 @@
-package org.basmat.cell.util.path;
+package org.basmat.map.util.path;
 
 import java.awt.*;
 

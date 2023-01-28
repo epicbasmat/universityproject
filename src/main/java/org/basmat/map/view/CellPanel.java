@@ -1,6 +1,4 @@
-package org.basmat.cell.view;
-
-import org.basmat.cell.data.AbstractCell;
+package org.basmat.map.view;
 
 import javax.swing.*;
 import java.awt.*;

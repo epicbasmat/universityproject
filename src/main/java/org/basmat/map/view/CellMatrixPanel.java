@@ -1,6 +1,6 @@
-package org.basmat.cell.view;
+package org.basmat.map.view;
 
-import org.basmat.cell.controller.CellMatrixController;
+import org.basmat.map.controller.CellMatrixController;
 
 import javax.swing.*;
 import java.awt.*;

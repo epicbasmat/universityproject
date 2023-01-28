@@ -1,11 +1,8 @@
 package org.basmat;
 
-import org.basmat.cell.controller.CellMatrixController;
-import org.basmat.cell.view.CellPanel;
+import org.basmat.map.controller.CellMatrixController;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.AWTEventListener;
 import java.io.IOException;
 
 public class Main {

@@ -1,8 +1,8 @@
-package org.basmat.cell.util.path;
+package org.basmat.map.util.path;
 
-import org.basmat.cell.controller.CellMatrixController;
-import org.basmat.cell.data.WorldCell;
-import org.basmat.cell.view.CellMatrixPanel;
+import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.cellfactory.WorldCell;
+import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
 import java.util.Arrays;

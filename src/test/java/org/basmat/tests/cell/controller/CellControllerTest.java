@@ -1,13 +1,9 @@
 package org.basmat.tests.cell.controller;
 
-import org.basmat.cell.controller.CellMatrixController;
-import org.basmat.cell.util.ECellType;
-import org.basmat.cell.data.SocietyCell;
-import org.basmat.cell.data.WorldCell;
-import org.basmat.cell.view.CellMatrixPanel;
+import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.view.CellMatrixPanel;
 import org.junit.jupiter.api.Test;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 class CellControllerTest {

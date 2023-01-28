@@ -1,85 +1,21 @@
-package org.basmat.cell.controller;
+package org.basmat.map.setup;
 
-import org.basmat.cell.data.*;
-import org.basmat.cell.util.ECellType;
-import org.basmat.cell.util.path.Pathfind;
-import org.basmat.cell.view.CellMatrixPanel;
-import org.basmat.cell.view.CellPanel;
-import org.basmat.cell.util.CubicInterpolation;
-import org.basmat.cell.view.PanelContainer;
+import org.basmat.map.cellfactory.NutrientCell;
+import org.basmat.map.cellfactory.SocietyCell;
+import org.basmat.map.cellfactory.WorldCell;
+import org.basmat.map.data.CellDataHelper;
+import org.basmat.map.util.CubicInterpolation;
+import org.basmat.map.util.ECellType;
+import org.basmat.map.util.path.CCL;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.UUID;
 
-/**
- * CellMatrixController provides the controller aspect of the implemented Model-View-Controller setup. n
- * This class provides the primary solution to deal with "data" - org.basmat.data - and the view - org.basmat.view.\n
- * This class also provides the methods to generate a map.\n
- * This is the primary staging point for how the system functions.\n
- */
-public class CellMatrixController {
-
-    /*
-    The basic premise of cell generation works through generating an object that contains data about that cell and saving it to an internal array in CellMatrixPanel, alongside rendering it.
-    To get the model associated with the view of an object, an internal map exists that maps a key, of CellPanel, to a value of an object that extends the AbstractCell.
-    With CellMatrixPanel, call the required coordinates and pass the returned object to the internal map to retrieve the model. Model references also exist within the class stored in their appropriate
-    HashMap to allow easier manipulation of certain cell types.
-     */
-
-    public static final String output = "output/";
-    //private BufferedImage[] imageCache;
-    private CellMatrixPanel cellMatrixPanel;
-    private CellSubscriber cellSubscriber;
-    private HashMap<ECellType, BufferedImage> imageCache;
-    private HashMap<CellPanel, ? super AbstractCell> mapViewToModel;
-    private UUID uuid;
-
-    /**
-     * CellMatrixController provides the Controller aspect of the implemented M-C-V setup. This will also help control individual cell controllers.
-     * @param cellMatrixWidth the width of the cellMatrix to be generated
-     * @param cellMatrixHeight the height of the cellMatrix to be generated
-     */
-    public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) {
-        //Initializing class-wide variables. 2
-        uuid = UUID.randomUUID();
-        cellMatrixPanel = new CellMatrixPanel(cellMatrixWidth, cellMatrixHeight, this);
-        cellSubscriber = new CellSubscriber();
-        imageCache = new HashMap<>();
-        //cellDataMap maps the view of cellpanel to the model that it renders
-        mapViewToModel = new HashMap<>();
-        PanelContainer pc = new PanelContainer(cellMatrixPanel);
-    }
-
-    public HashMap<CellPanel, ? super AbstractCell> getMapViewToModel() {
-        return this.mapViewToModel;
-    }
-
-
-
-    /**
-     * Calls methods appropriate for rendering and setup for the matrix
-     * @throws InterruptedException
-     */
-    public void setupMap() throws InterruptedException {
-        BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
-        cacheCellTextures();
-        System.out.println("Generating gradient graph");
-        setupGradientGraph(-1, graph);
-        System.out.println("Applying texture filter");
-        setupWorldCells(graph, 5);
-        System.out.println("Applying foundations");
-        setupSocietyCells(7);
-        System.out.println("Applying nutrient cells");
-        setupNutrientCells();
-        testPathfinder();
-
-    }
+public class MapSetup {
 
     /**
      * Provides the setup to cache cell textures, must be called for the main class to function.
@@ -106,6 +42,25 @@ public class CellMatrixController {
             }
         }
         System.out.println("Finished");
+    }
+
+    /**
+     * Calls methods appropriate for rendering and setup for the matrix
+     * @throws InterruptedException
+     */
+    public void setupMap() throws InterruptedException {
+        BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
+        cacheCellTextures();
+        System.out.println("Generating gradient graph");
+        setupGradientGraph(-1, graph);
+        System.out.println("Applying texture filter");
+        setupWorldCells(graph, 5);
+        System.out.println("Applying foundations");
+        setupSocietyCells(7);
+        System.out.println("Applying nutrient cells");
+        setupNutrientCells();
+        //testPathfinder();
+        new CCL(150, 150, cellMatrixPanel, this).recurseNeighbours(new Point(40, 40));
 
     }
 
@@ -265,26 +220,5 @@ public class CellMatrixController {
                 cellSubscriber.addToGlobalNutrientCells(nutrientCell);
             }
         }
-    }
-
-    public void testPathfinder() {
-        Pathfind pathfind = new Pathfind(cellMatrixPanel, this, new Point(40, 40), new Point(120, 120));
-        for(Point point : pathfind.aStarPathFind()) {
-            new CellDataHelper(ECellType.MISSING_TEXTURE, (int) point.getX(), (int) point.getY(), cellMatrixPanel, imageCache, mapViewToModel).overwriteCellData().mapWorldCellToView();
-        }
-    }
-
-
-    /**
-     * Provides a temporary method for viewing data requested by the cell matrix view.
-     * @param e the MouseEvent that the cell captures
-     */
-    public void displayData(MouseEvent e) {
-        //Weird subtractions are necessary to align click co-ordinate with cell matrix co-ordinate
-        int x = (int) e.getPoint().getX() / 5 - 27;
-        int y = (int) e.getPoint().getY() / 5 - 29;
-        System.out.println("==");
-        System.out.println(x + ", " + y);
-        System.out.println(mapViewToModel.get(cellMatrixPanel.getPanel(x, y)).toString());
     }
 }
