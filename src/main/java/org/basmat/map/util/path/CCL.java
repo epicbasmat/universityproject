@@ -41,7 +41,7 @@ public class CCL {
         }
     }*/
 
-    private LinkedList<Point> getNeighbours(Point current) {
+    /*private LinkedList<Point> getNeighbours(Point current) {
         int[][] coordinateRef = {{(int) current.getX(), (int) (current.getY() - 1)}, {(int) current.getX(), (int) (current.getY() + 1)}, {(int) (current.getX() - 1), (int) current.getY()}, {(int) (current.getX() + 1), (int) current.getY()},
                 {(int) (current.getX() + 1), (int) (current.getY() + 1)}, {(int) (current.getX() + 1), (int) (current.getY() - 1)}, {(int) (current.getX() - 1), (int) (current.getY() + 1)}, {(int) (current.getX() - 1), (int) (current.getY() - 1)}};
 
@@ -66,6 +66,6 @@ public class CCL {
             processedCoordinates.add(cellMatrixPanel.getPanel((int) point.getX(), (int) point.getY()));
             recurseNeighbours(point);
         }
-    }
+    }*/
 
 }

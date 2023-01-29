@@ -28,6 +28,10 @@ public class NutrientCell implements IOwnedCell {
         return owner;
     }
 
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
     public int getCapacity() {
         return this.capacity;
     }
@@ -40,11 +44,9 @@ public class NutrientCell implements IOwnedCell {
     @Override
     public String toString() {
         String ownerString;
-        if (this.owner == null) {
-            ownerString = "Owner: This cell has no owner";
-        }  else {
-            ownerString = "Owner: " + this.getOwner().getName();
-        }
+
+        ownerString = this.owner == null ? "Owner: This cell has no owner" : "Owner: " + this.getOwner().getName();
+
         return ownerString + "\n" +
                 "Cell Name: " + getECellType().getCellName() + "\n" +
                 "Cell Description: " + getECellType().getCellDescription();
@@ -52,7 +54,7 @@ public class NutrientCell implements IOwnedCell {
 
     @Override
     public ECellType getECellType() {
-        return ECellType.SOCIETY_CELL;
+        return ECellType.NUTRIENTS;
     }
 
     @Override

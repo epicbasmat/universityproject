@@ -48,7 +48,7 @@ public class Pathfind {
         return 1 * (dx + dy);
     }
 
-    public LinkedList<Point> aStarPathFind() {
+    /*public LinkedList<Point> aStarPathFind() {
         int x = 0;
         while (x < 10000) {
             //Get the current object to check
@@ -83,7 +83,7 @@ public class Pathfind {
                 }
             }x++;
         } return this.closedList;
-    }
+    }*/
 }
  class HeuristicComparator implements Comparator<Node> {
      @Override
