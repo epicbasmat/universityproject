@@ -1,18 +1,28 @@
 package org.basmat.map.controller;
 
 
+import org.basmat.map.cellfactory.NutrientCell;
+import org.basmat.map.cellfactory.SocietyCell;
+import org.basmat.map.cellfactory.WorldCell;
 import org.basmat.map.view.CellPanel;
 
+import javax.sound.sampled.Line;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class CellMatrixController {
 
-    //This HashMap binds the model to the view
-    private HashMap<?, Point> mvBinder;
+
+    //Binds a unique id to an instance of MVBinder
+    private HashMap<Integer, MVBinder<?>> bindingAgent;
+    private LinkedList<MVBinder<SocietyCell>> globalSocietyCellList;
+    private LinkedList<MVBinder<NutrientCell>> globalNutrientCellList;
 
     public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) {
-
+        bindingAgent = new HashMap<>();
+        globalSocietyCellList = new LinkedList<>();
+        globalNutrientCellList = new LinkedList<>();
     }
 
     /*public HashMap<CellPanel, ? super Cell> getMapViewToModel() {

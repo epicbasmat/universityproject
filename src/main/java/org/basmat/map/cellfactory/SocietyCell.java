@@ -10,17 +10,19 @@ import java.util.HashSet;
  * This class is a concrete implementation of IMapCell
  * @see IMapCell
  */
-class SocietyCell implements IMapCell {
+public class SocietyCell implements IMapCell {
 
     private String societyName;
+    private int id;
     private HashSet<NutrientCell> nutrientCells;
 
     /**
      * Constructs a society class with the name and the determined celltype, usually ECellType.SOCIETYCELL.
      * @param name The name of the society.
      */
-    public SocietyCell(String name) {
+    public SocietyCell(String name, int id) {
         this.societyName = name;
+        this.id = id;
         nutrientCells = new HashSet<>();
     }
     public void addNutrientCells(NutrientCell nutrientCell) {
@@ -43,5 +45,10 @@ class SocietyCell implements IMapCell {
     @Override
     public ECellType getECellType() {
         return ECellType.SOCIETY_CELL;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

@@ -42,17 +42,16 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
 
     /**
      *
-     * @param cellPanel the CellPanel to add to the CellMatrix
-     * @param x the x co-ordinate to set the CellPanel
-     * @param y the y co-ordinate to set the CellPanel
+     * @param cellPanel The cellPanel to add to this jframe
+     * @param point The point to which the cell panel will apply to
      */
-    public void addCellPanel(CellPanel cellPanel, int x, int y) {
-        c.gridx = x;
-        c.gridy = y;
+    public void addCellPanel(CellPanel cellPanel, Point point) {
+        c.gridx = (int) point.getX();
+        c.gridy = (int) point.getY();
         //Make the spacing between elements 0 (default is 5px?)
         c.ipadx = -5;
         c.ipady = -5;
-        this.cellPanelMatrix[x][y] = cellPanel;
+        this.cellPanelMatrix[(int) point.getX()][(int) point.getY()] = cellPanel;
         this.add(cellPanel, c);
         this.revalidate();
         this.repaint();
@@ -64,7 +63,7 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        cellMatrixController.displayData(e);
+        //cellMatrixController.displayData(e);
     }
 
     @Override

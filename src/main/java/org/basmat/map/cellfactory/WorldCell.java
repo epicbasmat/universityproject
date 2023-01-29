@@ -9,24 +9,26 @@ import java.awt.*;
  * WorldCell provides the foundation for terrain-type ECellTypes. Extends CellData
  * @see ECellType
  */
-class WorldCell implements IOwnedCell {
+public class WorldCell implements IOwnedCell {
     private SocietyCell owner;
+    private int id;
     private ECellType cellType;
 
     /**
      * @param cellType The ECellType of the WorldCell
      * @param owner The owner of the WorldCell
      */
-    public WorldCell(ECellType cellType, @Nullable SocietyCell owner) {
+    public WorldCell(ECellType cellType, @Nullable SocietyCell owner, int id) {
         this.cellType = cellType;
         this.owner = owner;
+        this.id = id;
     }
 
     /**
      * @param cellType The ECellType of the WorldCell
      */
-    public WorldCell(ECellType cellType) {
-        this(cellType, null);
+    public WorldCell(ECellType cellType, int id) {
+        this(cellType, null, id);
     }
 
     @Override
@@ -52,5 +54,10 @@ class WorldCell implements IOwnedCell {
     @Override
     public ECellType getECellType() {
         return cellType;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

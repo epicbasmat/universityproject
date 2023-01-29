@@ -9,16 +9,18 @@ import javax.annotation.Nullable;
  * This class is a concrete implementation of IOwnedCell
  * @see IOwnedCell
  */
-class NutrientCell implements IOwnedCell {
+public class NutrientCell implements IOwnedCell {
 
     private int capacity;
     private SocietyCell owner;
+    private int id;
 
     /**
      * @param owner The owner of the nutrient cell, can be null
      */
-    public NutrientCell(@Nullable SocietyCell owner) {
+    public NutrientCell(@Nullable SocietyCell owner, int id) {
         this.owner = owner;
+        this.id = id;
         this.capacity = 0;
     }
 
@@ -51,5 +53,10 @@ class NutrientCell implements IOwnedCell {
     @Override
     public ECellType getECellType() {
         return ECellType.SOCIETY_CELL;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

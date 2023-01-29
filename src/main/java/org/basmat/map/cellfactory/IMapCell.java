@@ -7,7 +7,8 @@ import java.awt.*;
 /**
  * This interface provides a construct for all map cells to implement
  */
-interface IMapCell {
+public interface IMapCell {
     @Override String toString();
     ECellType getECellType();
+    int getId();
 }

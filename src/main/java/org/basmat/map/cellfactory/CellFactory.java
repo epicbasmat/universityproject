@@ -9,17 +9,17 @@ import org.basmat.map.util.ECellType;
 public class CellFactory extends AbstractCellFactory {
 
     @Override
-    public NutrientCell createNutrientCell(SocietyCell owner) {
-        return new NutrientCell(owner);
+    public NutrientCell createNutrientCell(SocietyCell owner, int id) {
+        return new NutrientCell(owner, id);
     }
 
     @Override
-    public SocietyCell createSocietyCell(String name) {
-        return new SocietyCell(name);
+    public SocietyCell createSocietyCell(String name, int id) {
+        return new SocietyCell(name, id);
     }
 
     @Override
-    public WorldCell createWorldCell(ECellType cellType, SocietyCell owner) {
-        return new WorldCell(cellType, owner);
+    public WorldCell createWorldCell(ECellType cellType, SocietyCell owner, int id) {
+        return new WorldCell(cellType, owner, id);
     }
 }

@@ -10,12 +10,14 @@ import java.awt.image.BufferedImage;
 public class CellPanel extends JPanel {
     private BufferedImage texture;
     private Graphics2D g2d;
+    private int id;
 
     /**
      * Instantiate CellPanel with associated parameters
      * @param texture the texture to render for the cell
      */
-    public CellPanel(BufferedImage texture) {
+    public CellPanel(BufferedImage texture, int id) {
+        this.id = id;
         setSize(texture.getWidth(), texture.getHeight());
         setVisible(true);
         //To copy a texture to be original for the class
@@ -23,6 +25,10 @@ public class CellPanel extends JPanel {
                 texture.copyData(null),
                 texture.getColorModel().isAlphaPremultiplied(),
                 null);
+    }
+
+    public int getId() {
+        return id;
     }
 
     /**
