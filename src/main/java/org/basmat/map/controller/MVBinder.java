@@ -3,6 +3,7 @@ package org.basmat.map.controller;
 import org.basmat.map.cellfactory.IMapCell;
 
 import org.basmat.map.view.CellPanel;
+import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 

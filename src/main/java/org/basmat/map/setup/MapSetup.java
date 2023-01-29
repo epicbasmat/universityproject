@@ -39,12 +39,13 @@ public class MapSetup {
         imageCache = new HashMap<>();
         noiseGraph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         this.cellDataHelper = cellDataHelper;
+        cacheCellTextures();
     }
 
     /**
      * Provides the setup to cache cell textures, must be called for the main class to function.
      */
-    private void cacheCellTextures() {
+    public void cacheCellTextures() {
         System.out.println("Grabbing textures");
         for (ECellType cellType : ECellType.values()) {
             try {
@@ -66,6 +67,10 @@ public class MapSetup {
             }
         }
         System.out.println("Finished");
+    }
+
+    public HashMap<ECellType, BufferedImage> getImageCache() {
+        return imageCache;
     }
 
     /**
