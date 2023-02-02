@@ -63,20 +63,20 @@ public class FactoryTest {
     }
 
     @Test
-    public void ToStringReturnsExpectedNutrientCellNoOwner_ToString_True() {
+    public void ToStringReturnsExpectedNutrientCellNoOwner_WorldCellToString_True() {
         assertEquals("Owner: This cell has no owner\n" +  "Cell Name: " + ECellType.NUTRIENTS.getCellName() + "\n" +
                 "Cell Description: " + ECellType.NUTRIENTS.getCellDescription(), cellFactory.createNutrientCell(null, 0).toString());
     }
 
     @Test
-    public void ToStringReturnsExpectedNutrientCellHasOwner_ToString_True() {
+    public void ToStringReturnsExpectedNutrientCellHasOwner_WorldCellToString_True() {
         SocietyCell owner = cellFactory.createSocietyCell("test2", 0);
         assertEquals("Owner: " + owner.getName() + "\n" + "Cell Name: " + ECellType.NUTRIENTS.getCellName() + "\n" +
                 "Cell Description: " + ECellType.NUTRIENTS.getCellDescription(), cellFactory.createNutrientCell(owner, 0).toString());
     }
 
     @Test
-    public void SetWorldCellType_ECellType_True() {
+    public void SetWorldCellType_WorldCellECellType_True() {
         assertEquals(ECellType.GRASS, cellFactory.createWorldCell(ECellType.GRASS, null, 0).getECellType());
     }
 

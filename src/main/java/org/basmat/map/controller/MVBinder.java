@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 
 /**
- * MVBinder contains a simple data model to contain a model, view and points that are all associated.
+ * MVBinder contains a simple data model to contain a model, view and points which are all associated with each other.
  * @param <T>
  */
 public record MVBinder<T extends IMapCell>(T model, CellPanel view, Point point) {

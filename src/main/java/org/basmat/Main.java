@@ -11,7 +11,7 @@ public class Main {
         CellMatrixController cellMatrixController = new CellMatrixController(150, 150);
         SwingUtilities.invokeLater(() -> {
             try {
-                //cellMatrixController.setupMap();
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

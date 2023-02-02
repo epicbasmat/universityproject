@@ -33,41 +33,17 @@ public class MapSetup {
      * @param bindingAgent The HashMap for binding id's to new MVBinders
      * @param cellMatrixPanel The cellMatrixPanel for rendering new cells.
      */
-    public MapSetup(CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> bindingAgent, CellMatrixPanel cellMatrixPanel) {
+    public MapSetup(HashMap<ECellType, BufferedImage> imageCache, CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> bindingAgent, CellMatrixPanel cellMatrixPanel) {
         this.bindingAgent = bindingAgent;
         this.cellMatrixPanel = cellMatrixPanel;
-        imageCache = new HashMap<>();
+        this.imageCache = imageCache;
         noiseGraph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         this.cellDataHelper = cellDataHelper;
-        cacheCellTextures();
     }
 
     /**
      * Provides the setup to cache cell textures, must be called for the main class to function.
      */
-    public void cacheCellTextures() {
-        System.out.println("Grabbing textures");
-        for (ECellType cellType : ECellType.values()) {
-            try {
-                if (cellType.getCellDescription() != null) {
-                    BufferedImage temp = ImageIO.read(new File(cellType.getPath()));
-                    //A new texture has to be loaded from the original Image.IO read to determine the imagetype to enable alpha transparency.
-                    BufferedImage texture = new BufferedImage(temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    for (int i = 0; i < temp.getWidth(); i++) {
-                        for (int j = 0; j < temp.getHeight(); j++) {
-                            texture.setRGB(i, j, temp.getRGB(i, j));
-                        }
-                    }
-                    imageCache.put(cellType, texture);
-                }
-            } catch (Exception e) {
-                System.out.println("An error has occurred fetching textures: ");
-                System.out.println(e.getMessage());
-                System.out.println("Accessing file path: " + cellType.getPath());
-            }
-        }
-        System.out.println("Finished");
-    }
 
     public HashMap<ECellType, BufferedImage> getImageCache() {
         return imageCache;
@@ -79,11 +55,10 @@ public class MapSetup {
      */
     public void setupMap() throws InterruptedException {
         BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
-        cacheCellTextures();
         System.out.println("Generating gradient graph");
         setupGradientGraph(-1);
         System.out.println("Applying texture filter");
-        setupWorldCells(graph, 5);
+        setupWorldCells(5);
         System.out.println("Applying foundations");
         setupSocietyCells(7);
         System.out.println("Applying nutrient cells");
@@ -132,10 +107,9 @@ public class MapSetup {
 
     /**
      * Sets up the world cell generation and maps an RGB range to a cell type and texture.
-     * @param noiseGraph The noise graph to provide
      * @param cellSize The cell size to provide
      */
-    private void setupWorldCells(BufferedImage noiseGraph, int cellSize) {
+    private void setupWorldCells(int cellSize) {
         for (int x = 0; x <= 150 - 5; x++) {
             for (int y = 0; y <= 150 - 5; y++) {
                 int average = 0;

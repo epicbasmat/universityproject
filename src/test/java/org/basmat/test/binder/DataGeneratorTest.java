@@ -28,7 +28,7 @@ public class DataGeneratorTest {
 
     DataGeneratorTest() {
         this.cellFactory = new CellFactory();
-        cache = new MapSetup(null, null, null).getImageCache();
+        cache = new MapSetup(null, null, null, null).getImageCache();
         cellMatrixPanel = new CellMatrixPanel(750, 750, null);
         cellDataHelper = new CellDataHelper(cellMatrixPanel, cache);
         view = new CellPanel(cache.get(ECellType.GRASS), 400);

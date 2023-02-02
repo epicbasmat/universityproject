@@ -55,6 +55,11 @@ public class CellDataHelper {
         return mvBinder;
     }
 
+    /**
+     * Sets the cell view to the given point in the cell matrix panel
+     * @param mvBinder
+     * @return
+     */
     public MVBinder<?> setCellData(MVBinder<?> mvBinder) {
         cellMatrixPanel.addCellPanel(mvBinder.view(), mvBinder.point());
         return mvBinder;
