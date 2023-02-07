@@ -1,29 +1,30 @@
-package org.basmat.cell.data;
+package org.basmat.map.cellfactory;
 
-import org.basmat.cell.util.ECellType;
+import org.basmat.map.util.ECellType;
 
+import java.awt.*;
 import java.util.HashSet;
 
 /**
  * SocietyCell provides a foundation where any life cells will get their data from.
+ * This class is a concrete implementation of IMapCell
+ * @see IMapCell
  */
-public class SocietyCell extends AbstractCell {
+public class SocietyCell implements IMapCell {
 
     private String societyName;
+    private int id;
     private HashSet<NutrientCell> nutrientCells;
 
     /**
      * Constructs a society class with the name and the determined celltype, usually ECellType.SOCIETYCELL.
      * @param name The name of the society.
      */
-    public SocietyCell(String name, ECellType cellType) {
-        super(cellType);
+    public SocietyCell(String name, int id) {
         this.societyName = name;
+        this.id = id;
         nutrientCells = new HashSet<>();
     }
-
-    public HashSet<NutrientCell> getNutrientHashSet() { return this.nutrientCells;}
-    public boolean getNutrientCell(NutrientCell nutrientCell) { return nutrientCells.contains(nutrientCell);}
     public void addNutrientCells(NutrientCell nutrientCell) {
         nutrientCells.add(nutrientCell);
     }
@@ -31,12 +32,23 @@ public class SocietyCell extends AbstractCell {
     public String getName() {
         return this.societyName;
     }
+
     @Override
     public String toString() {
         return "Society Name: " + societyName + "\n" +
-                "Cell Name: " + getCellType().getCellName() + "\n" +
-                "Cell Description: " + getCellType().getCellDescription() + "\n" +
-                "Nutrient cells owned: " + (long) getNutrientHashSet().size() + "\n";
+                "Cell Name: " + getECellType().getCellName() + "\n" +
+                "Cell Description: " + getECellType().getCellDescription() + "\n" +
+                "Owned nutrient cells: " + nutrientCells.size();
 
+    }
+
+    @Override
+    public ECellType getECellType() {
+        return ECellType.SOCIETY_CELL;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

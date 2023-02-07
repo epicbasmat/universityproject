@@ -1,8 +1,9 @@
-package org.basmat.cell.view;
+package org.basmat.userui;
+
+import org.basmat.map.view.CellMatrixPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 /**
  * Parent JFrame to hold all components of the simulation UI, such as the matrix, outputs, buttons etc.

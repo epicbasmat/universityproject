@@ -1,4 +1,4 @@
-package org.basmat.cell.util;
+package org.basmat.map.util;
 
 public enum ECellType {
 	/**
@@ -26,6 +26,11 @@ public enum ECellType {
 		boolean isHabitable() {
 			return false;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return null;
+		}
 	},
 	DEEP_WATER {
 		@Override
@@ -48,6 +53,11 @@ public enum ECellType {
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public ECellType getParent() {
+			return WATER;
 		}
 	},
 	WATER {
@@ -72,6 +82,11 @@ public enum ECellType {
 		boolean isHabitable() {
 			return false;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return this;
+		}
 	},
 	LIGHT_WATER {
 		@Override
@@ -94,6 +109,11 @@ public enum ECellType {
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public ECellType getParent() {
+			return WATER;
 		}
 	},
 	MOUNTAIN_BASE {
@@ -118,6 +138,11 @@ public enum ECellType {
 		boolean isHabitable() {
 			return false;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return this;
+		}
 	},
 	MOUNTAIN_BODY {
 		@Override
@@ -140,6 +165,11 @@ public enum ECellType {
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public ECellType getParent() {
+			return MOUNTAIN_BASE;
 		}
 	},
 	MOUNTAIN_PEAK {
@@ -164,6 +194,11 @@ public enum ECellType {
 		boolean isHabitable() {
 			return false;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return MOUNTAIN_BASE;
+		}
 	},
 	GRASS {
 		@Override
@@ -187,6 +222,11 @@ public enum ECellType {
 		boolean isHabitable() {
 			return true;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return this;
+		}
 	},
 	SAND {
 		@Override
@@ -207,7 +247,12 @@ public enum ECellType {
 		@Override
 		public
 		boolean isHabitable() {
-			return false;
+			return true;
+		}
+
+		@Override
+		public ECellType getParent() {
+			return GRASS;
 		}
 	},
 	SOCIETY_CELL {
@@ -232,6 +277,11 @@ public enum ECellType {
 		boolean isHabitable() {
 			return false;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return GRASS;
+		}
 	},
 	NUTRIENTS{
 		@Override
@@ -252,6 +302,11 @@ public enum ECellType {
 		@Override
 		public boolean isHabitable() {
 			return true;
+		}
+
+		@Override
+		public ECellType getParent() {
+			return GRASS;
 		}
 	},
 	MISSING_TEXTURE{
@@ -274,6 +329,11 @@ public enum ECellType {
 		public boolean isHabitable() {
 			return false;
 		}
+
+		@Override
+		public ECellType getParent() {
+			return null;
+		}
 	};
 
 
@@ -282,4 +342,5 @@ public enum ECellType {
 	abstract public  String getCellDescription();
 	abstract public String getCellName();
 	abstract public boolean isHabitable();
+	abstract public ECellType getParent();
 }
