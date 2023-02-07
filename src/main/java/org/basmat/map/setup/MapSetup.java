@@ -162,7 +162,7 @@ public class MapSetup {
                 int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
                 counter++;
                 //Create a new cell that overwrites the cell that currently inhabits the coordinates
-                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, new Point(j, k))));
+                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j,k).getId())));
                 //TODO: ADD MVBINDER TO GLOBAL ARRAY
                 //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
                 //bindingAgent.get(cellMatrixPanel.getPanel(j, k))
@@ -175,7 +175,7 @@ public class MapSetup {
 
                 //1 unit of radius is 1 cell
                 int radius = 12;
-                for (int r = 0; r <= 180; r = r + 5) {
+                for (int r = 0; r <= 180; r += 5) {
                     int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
                     int circumferenceY = (int) (radius * Math.sin(r * 3.141519 / 180));
                     try{
@@ -183,15 +183,16 @@ public class MapSetup {
                         //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
                         for (int x = -circumferenceX + j; x < circumferenceX + j; x++) {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
-                                //Checks if retrieved value mapped to panelobject is instance of worldcell, owner is not null and is habitable
-                                if (bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell worldCell && worldCell.getOwner() == null && worldCell.getECellType().isHabitable()) {
+                                //Checks to make sure the x and y are not out of bounds, the currently selected cell is of type worldcell, it has no owner and that it is habitable
+                                if (x <= 145 && y <= 145 && x >= 0 && y >= 0 && bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType().isHabitable() && worldCell.getOwner() == null) {
                                     //Set the owner of the cell, provided the cell has no owner and is habitable
                                     cellMatrixPanel.getPanel(x, y).setTint(tint);
+                                    //Get the value of the id associated with the society cell from the earlier generation
                                     worldCell.setOwner((SocietyCell) bindingAgent.get(id).model());
                                 }
                             }
                         }
-                    } catch (Exception e) {/* System.out.println(e.getMessage());*/ }
+                    } catch (Exception e) { System.out.println(e.getMessage());}
                 }
             }
         }
@@ -207,7 +208,7 @@ public class MapSetup {
             int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
             if (bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType() == ECellType.GRASS) {
                 //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
-                cellDataHelper.overwriteCellData(cellDataHelper.generateNutrientBinder(worldCell.getOwner(), id, new Point(j, k)));
+                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateNutrientBinder(worldCell.getOwner(), id, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId())));
                 //TODO: ADD MVBINDER TO GLOBAL ARRAY
                 //cellSubscriber.addToGlobalNutrientCells(nutrientCell);
             }

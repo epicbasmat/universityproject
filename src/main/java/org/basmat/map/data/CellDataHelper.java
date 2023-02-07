@@ -49,10 +49,16 @@ public class CellDataHelper {
         return new MVBinder<>(cellFactory.createWorldCell(worldCell, null, id), new CellPanel(imageCache.get(worldCell), id), point);
     }
 
-    public MVBinder<?> overwriteCellData(MVBinder<?> mvBinder) {
-        cellMatrixPanel.removeCell(mvBinder.view());
-        setCellData(mvBinder);
-        return mvBinder;
+    /**
+     *
+     * @param set The MVBinder to set
+     * @param remove The MVBinder to remove
+     * @return
+     */
+    public MVBinder<?> overwriteCellData(MVBinder<?> set, MVBinder<?> remove) {
+        cellMatrixPanel.removeCell(remove.view());
+        setCellData(set);
+        return set;
     }
 
     /**

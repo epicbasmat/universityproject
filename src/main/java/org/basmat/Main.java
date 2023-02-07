@@ -9,12 +9,5 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException, IOException {
         CellMatrixController cellMatrixController = new CellMatrixController(150, 150);
-        SwingUtilities.invokeLater(() -> {
-            try {
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 }

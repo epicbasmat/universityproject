@@ -38,6 +38,7 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
      */
     public void removeCell(CellPanel cellPanel) {
         remove(cellPanel);
+        repaint();
     }
 
     /**
@@ -63,7 +64,7 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        //cellMatrixController.displayData(e);
+        cellMatrixController.displayData(e);
     }
 
     @Override
