@@ -1,8 +1,6 @@
 package org.basmat.map.controller;
 
 
-import org.basmat.map.cellfactory.NutrientCell;
-import org.basmat.map.cellfactory.SocietyCell;
 import org.basmat.map.data.CellDataHelper;
 import org.basmat.map.setup.MapSetup;
 import org.basmat.map.util.ECellType;
@@ -23,8 +21,8 @@ public class CellMatrixController {
     private final CellMatrixPanel cellMatrixPanel;
     //Binds a unique id to an instance of MVBinder
     private HashMap<Integer, MVBinder<?>> bindingAgent;
-    private LinkedList<MVBinder<SocietyCell>> globalSocietyCellList;
-    private LinkedList<MVBinder<NutrientCell>> globalNutrientCellList;
+    private LinkedList<Integer> globalSocietyCellList;
+    private LinkedList<Integer> globalNutrientCellList;
 
 
     public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
@@ -35,24 +33,17 @@ public class CellMatrixController {
         cellMatrixPanel = new CellMatrixPanel(150, 150, this);
         CellDataHelper cellDataHelper = new CellDataHelper(cellMatrixPanel, imageCache);
         bindingAgent = new HashMap<>();
-        MapSetup setup = new MapSetup(imageCache, cellDataHelper, bindingAgent, cellMatrixPanel);
+        MapSetup setup = new MapSetup(imageCache, cellDataHelper, bindingAgent, cellMatrixPanel, globalNutrientCellList, globalSocietyCellList);
         PanelContainer panelContainer = new PanelContainer(cellMatrixPanel);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    setup.setupMap();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                setup.setupMap();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
     }
 
-
-    /*public HashMap<CellPanel, ? super Cell> getMapViewToModel() {
-        return this.mapViewToModel;
-    }
 
     /**
      * Provides a temporary method for viewing data requested by the cell matrix view.

@@ -1,28 +1,27 @@
 package org.basmat.map.setup;
 
-import org.basmat.map.cellfactory.NutrientCell;
-import org.basmat.map.cellfactory.SocietyCell;
-import org.basmat.map.cellfactory.WorldCell;
+import org.basmat.map.cellfactory.cells.LifeCell;
+import org.basmat.map.cellfactory.cells.NutrientCell;
+import org.basmat.map.cellfactory.cells.SocietyCell;
+import org.basmat.map.cellfactory.cells.WorldCell;
 import org.basmat.map.controller.MVBinder;
 import org.basmat.map.data.CellDataHelper;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
-import org.basmat.map.util.path.CCL;
 import org.basmat.map.view.CellMatrixPanel;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.Buffer;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.UUID;
 
 public class MapSetup {
 
     private BufferedImage noiseGraph;
     private final HashMap<ECellType, BufferedImage> imageCache;
+    private LinkedList<Integer> globalSocietyCellList;
+    private LinkedList<Integer> globalNutrientCellList;
     private CellDataHelper cellDataHelper;
     private HashMap<Integer, MVBinder<?>> bindingAgent;
     private CellMatrixPanel cellMatrixPanel;
@@ -33,10 +32,12 @@ public class MapSetup {
      * @param bindingAgent The HashMap for binding id's to new MVBinders
      * @param cellMatrixPanel The cellMatrixPanel for rendering new cells.
      */
-    public MapSetup(HashMap<ECellType, BufferedImage> imageCache, CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> bindingAgent, CellMatrixPanel cellMatrixPanel) {
+    public MapSetup(HashMap<ECellType, BufferedImage> imageCache, CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> bindingAgent, CellMatrixPanel cellMatrixPanel, LinkedList<Integer> globalSocietyCellList, LinkedList<Integer> globalNutrientCellList) {
         this.bindingAgent = bindingAgent;
         this.cellMatrixPanel = cellMatrixPanel;
         this.imageCache = imageCache;
+        this.globalSocietyCellList = globalSocietyCellList;
+        this.globalNutrientCellList = globalNutrientCellList;
         noiseGraph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         this.cellDataHelper = cellDataHelper;
     }
@@ -59,10 +60,12 @@ public class MapSetup {
         setupGradientGraph(-1);
         System.out.println("Applying texture filter");
         setupWorldCells(5);
-        System.out.println("Applying foundations");
+        System.out.println("Applying society cells and rendering area of effect");
         setupSocietyCells(7);
         System.out.println("Applying nutrient cells");
         setupNutrientCells();
+        System.out.println("Appyling life cells to society cells");
+        setupLifeCells();
     }
 
     /**
@@ -121,7 +124,7 @@ public class MapSetup {
                 }
                 //Sets the texture according to the averaged colour's RGB bands
                 Color averagedColour = new Color(average / (cellSize * cellSize));
-                int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
+                int id = (int) (Math.random() * (100000000 - 1) + 1);
                 if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //DEEP_WATER
                     bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.DEEP_WATER, id, new Point(x, y))));
                 } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //WATER
@@ -154,6 +157,7 @@ public class MapSetup {
     private void setupSocietyCells(int target) {
         //The counter provides an incrementing integer for each time a successful society creation occurs
         int counter = 0;
+        int radius = 12;
         while (counter < target) {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
@@ -162,8 +166,8 @@ public class MapSetup {
                 int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
                 counter++;
                 //Create a new cell that overwrites the cell that currently inhabits the coordinates
-                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j,k).getId())));
-                //TODO: ADD MVBINDER TO GLOBAL ARRAY
+                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, 12, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j,k).getId())));
+                globalSocietyCellList.add(id);
                 //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
                 //bindingAgent.get(cellMatrixPanel.getPanel(j, k))
                 //cellSubscriber.addToGlobalSocietyCells(societyCell);
@@ -174,7 +178,6 @@ public class MapSetup {
                 tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
 
                 //1 unit of radius is 1 cell
-                int radius = 12;
                 for (int r = 0; r <= 180; r += 5) {
                     int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
                     int circumferenceY = (int) (radius * Math.sin(r * 3.141519 / 180));
@@ -209,8 +212,26 @@ public class MapSetup {
             if (bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType() == ECellType.GRASS) {
                 //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
                 bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateNutrientBinder(worldCell.getOwner(), id, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId())));
-                //TODO: ADD MVBINDER TO GLOBAL ARRAY
-                //cellSubscriber.addToGlobalNutrientCells(nutrientCell);
+                globalNutrientCellList.add(id);
+                if (worldCell.getOwner() != null) {
+                    worldCell.getOwner().addNutrientCells((NutrientCell) bindingAgent.get(id).model());
+                }
+            }
+        }
+    }
+
+    private void setupLifeCells() {
+        for (int id : globalSocietyCellList) {
+            for (int i = 0; i < Math.random() * (6) + 1; i++) {
+                MVBinder<?> binder = bindingAgent.get(id);
+                int x = ((int) binder.point().getX()) + (int) (Math.random() * (((SocietyCell) binder.model()).getRadius()) - 1) + 1;
+                int y = ((int) binder.point().getY()) + (int) (Math.random() * (((SocietyCell) binder.model()).getRadius()) - 1) + 1;
+                int lifeid = (int) (Math.random() * (100000000 - 1 + 1) + 1);
+                MVBinder<?> remove = bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId());
+                if (remove.model().getECellType().isHabitable() && x <= 145 && y <= 145 && x >= 0 && y >= 0 ) {
+                    bindingAgent.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(x, y)), remove));
+                    ((SocietyCell) binder.model()).addLifeCells((LifeCell) bindingAgent.get(lifeid).model());
+                }
             }
         }
     }

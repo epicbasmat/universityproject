@@ -1,7 +1,6 @@
 package org.basmat.map.util.path;
 
 import org.basmat.map.controller.CellMatrixController;
-import org.basmat.map.cellfactory.WorldCell;
 import org.basmat.map.view.CellMatrixPanel;
 import org.basmat.map.view.CellPanel;
 

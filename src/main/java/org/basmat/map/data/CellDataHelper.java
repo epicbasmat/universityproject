@@ -2,14 +2,11 @@ package org.basmat.map.data;
 
 
 import org.basmat.map.cellfactory.CellFactory;
-import org.basmat.map.cellfactory.NutrientCell;
-import org.basmat.map.cellfactory.SocietyCell;
-import org.basmat.map.cellfactory.WorldCell;
+import org.basmat.map.cellfactory.cells.SocietyCell;
 import org.basmat.map.controller.MVBinder;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.view.CellMatrixPanel;
 import org.basmat.map.view.CellPanel;
-import org.checkerframework.checker.units.qual.C;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -35,8 +32,13 @@ public class CellDataHelper {
         return new MVBinder<>(cellFactory.createNutrientCell(owner, id), new CellPanel(imageCache.get(ECellType.NUTRIENTS), id), point);
     }
 
-    public MVBinder<?> generateSocietyBinder(String name, int id, Point point) {
-        return new MVBinder<>(cellFactory.createSocietyCell(name, id), new CellPanel(imageCache.get(ECellType.SOCIETY_CELL), id), point);
+    public MVBinder<?> generateSocietyBinder(String name, int id, int radius, Point point) {
+        return new MVBinder<>(cellFactory.createSocietyCell(name, id, radius), new CellPanel(imageCache.get(ECellType.SOCIETY_CELL), id), point);
+    }
+
+    public MVBinder<?> generateLifeBinder(SocietyCell societyCell, int id, Point point) {
+        return new MVBinder<>(cellFactory.createLifeCell(societyCell, id), new CellPanel(imageCache.get(ECellType.LIFE_CELL), id), point);
+
     }
 
     /**

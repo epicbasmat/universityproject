@@ -1,9 +1,9 @@
-package org.basmat.map.cellfactory;
+package org.basmat.map.cellfactory.cells;
 
+import org.basmat.map.cellfactory.IOwnedCell;
 import org.basmat.map.util.ECellType;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 
 /**
  * WorldCell provides the foundation for terrain-type ECellTypes. Extends CellData

@@ -309,6 +309,33 @@ public enum ECellType {
 			return GRASS;
 		}
 	},
+
+	LIFE_CELL {
+		@Override
+		public String getPath() {
+			return BASE_PATH.getPath() + "./life.png";
+		}
+
+		@Override
+		public String getCellDescription() {
+			return "A cell that is sentient and requires food to live.";
+		}
+
+		@Override
+		public String getCellName() {
+			return "Life cell";
+		}
+
+		@Override
+		public boolean isHabitable() {
+			return false;
+		}
+
+		@Override
+		public ECellType getParent() {
+			return this;
+		}
+	},
 	MISSING_TEXTURE{
 		@Override
 		public String getPath() {
@@ -336,10 +363,9 @@ public enum ECellType {
 		}
 	};
 
-
 	
 	abstract public String getPath();
-	abstract public  String getCellDescription();
+	abstract public String getCellDescription();
 	abstract public String getCellName();
 	abstract public boolean isHabitable();
 	abstract public ECellType getParent();

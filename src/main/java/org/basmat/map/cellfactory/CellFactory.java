@@ -1,5 +1,9 @@
 package org.basmat.map.cellfactory;
 
+import org.basmat.map.cellfactory.cells.LifeCell;
+import org.basmat.map.cellfactory.cells.NutrientCell;
+import org.basmat.map.cellfactory.cells.SocietyCell;
+import org.basmat.map.cellfactory.cells.WorldCell;
 import org.basmat.map.util.ECellType;
 
 
@@ -14,12 +18,17 @@ public class CellFactory extends AbstractCellFactory {
     }
 
     @Override
-    public SocietyCell createSocietyCell(String name, int id) {
-        return new SocietyCell(name, id);
+    public SocietyCell createSocietyCell(String name, int id, int radius) {
+        return new SocietyCell(name, id, radius);
     }
 
     @Override
     public WorldCell createWorldCell(ECellType cellType, SocietyCell owner, int id) {
         return new WorldCell(cellType, owner, id);
+    }
+
+    @Override
+    public IMapCell createLifeCell(SocietyCell societyCell, int id) {
+        return new LifeCell(societyCell, id);
     }
 }

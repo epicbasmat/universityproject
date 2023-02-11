@@ -1,7 +1,7 @@
 package org.basmat.test.binder;
 
 import org.basmat.map.cellfactory.CellFactory;
-import org.basmat.map.cellfactory.WorldCell;
+import org.basmat.map.cellfactory.cells.WorldCell;
 import org.basmat.map.controller.MVBinder;
 import org.basmat.map.data.CellDataHelper;
 import org.basmat.map.setup.MapSetup;
@@ -28,7 +28,7 @@ public class DataGeneratorTest {
 
     DataGeneratorTest() {
         this.cellFactory = new CellFactory();
-        cache = new MapSetup(null, null, null, null).getImageCache();
+        cache = new MapSetup(null, null, null, null, null, null).getImageCache();
         cellMatrixPanel = new CellMatrixPanel(750, 750, null);
         cellDataHelper = new CellDataHelper(cellMatrixPanel, cache);
         view = new CellPanel(cache.get(ECellType.GRASS), 400);
@@ -56,7 +56,7 @@ public class DataGeneratorTest {
 
     @Test
     void CreateSocietyBinder_CellDataHelperGenerators_True() {
-        MVBinder<?> name = cellDataHelper.generateSocietyBinder("name", 600, new Point(45, 45));
+        MVBinder<?> name = cellDataHelper.generateSocietyBinder("name", 600, 12, new Point(45, 45));
         assertInstanceOf(MVBinder.class, name);
         assertEquals(ECellType.SOCIETY_CELL, name.model().getECellType());
     }

@@ -1,9 +1,9 @@
 package org.basmat.test.factory;
 
 import org.basmat.map.cellfactory.CellFactory;
-import org.basmat.map.cellfactory.NutrientCell;
-import org.basmat.map.cellfactory.SocietyCell;
-import org.basmat.map.cellfactory.WorldCell;
+import org.basmat.map.cellfactory.cells.NutrientCell;
+import org.basmat.map.cellfactory.cells.SocietyCell;
+import org.basmat.map.cellfactory.cells.WorldCell;
 import org.basmat.map.controller.MVBinder;
 import org.basmat.map.util.ECellType;
 import org.junit.jupiter.api.Test;

@@ -1,5 +1,6 @@
-package org.basmat.map.cellfactory;
+package org.basmat.map.cellfactory.cells;
 
+import org.basmat.map.cellfactory.IOwnedCell;
 import org.basmat.map.util.ECellType;
 
 import javax.annotation.Nullable;
@@ -12,6 +13,7 @@ import javax.annotation.Nullable;
 public class NutrientCell implements IOwnedCell {
 
     private int capacity;
+    private int supporting;
     private SocietyCell owner;
     private int id;
 
@@ -21,7 +23,8 @@ public class NutrientCell implements IOwnedCell {
     public NutrientCell(@Nullable SocietyCell owner, int id) {
         this.owner = owner;
         this.id = id;
-        this.capacity = 0;
+        this.capacity = (int) (Math.random() * 7 - 1) + 1;
+        this.supporting = 0;
     }
 
     public SocietyCell getOwner() {
@@ -41,6 +44,23 @@ public class NutrientCell implements IOwnedCell {
         this.owner = owner;
     }
 
+    /**
+     * This gets the current nutrition cells supported life cell count. Once this hits the maximum capacity this cell allows, it cannot support any more cells
+     * @return the currently supported amount of life cells
+     */
+    public int getSupportingCount() {
+        return supporting;
+    }
+
+    /**
+     * Increments the amount of nutrient cells that are being supported by one. If the capacity is at maximum, it cannot be incremented.
+     */
+    public void incrementSupportingCount() {
+        if (supporting < capacity) {
+            supporting++;
+        }
+    }
+
     @Override
     public String toString() {
         String ownerString;
@@ -49,7 +69,9 @@ public class NutrientCell implements IOwnedCell {
 
         return ownerString + "\n" +
                 "Cell Name: " + getECellType().getCellName() + "\n" +
-                "Cell Description: " + getECellType().getCellDescription();
+                "Cell Description: " + getECellType().getCellDescription() + "\n" +
+                "Life support capacity: " + getCapacity() + "\n" +
+                "Currently supporting: " + getSupportingCount() + " cells";
     }
 
     @Override
