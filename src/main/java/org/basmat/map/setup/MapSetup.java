@@ -12,6 +12,7 @@ import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.sql.SQLData;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -178,9 +179,9 @@ public class MapSetup {
                 tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
 
                 //1 unit of radius is 1 cell
-                for (int r = 0; r <= 180; r += 5) {
-                    int circumferenceX = (int) (radius * Math.cos(r * 3.141519 / 180));
-                    int circumferenceY = (int) (radius * Math.sin(r * 3.141519 / 180));
+                for (int c = 0; c <= 180; c += 5) {
+                    int circumferenceX = (int) (radius * Math.cos(c * 3.141519 / 180));
+                    int circumferenceY = (int) (radius * Math.sin(c * 3.141519 / 180));
                     try{
                         //Get the coordinate of the circumference of the circle and the diametric coordinate of the circle, and fills in the cells between the two calculated coordinates
                         //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
@@ -222,15 +223,24 @@ public class MapSetup {
 
     private void setupLifeCells() {
         for (int id : globalSocietyCellList) {
-            for (int i = 0; i < Math.random() * (6) + 1; i++) {
+            // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
+            for (int i = 0; i < Math.random() * (((SocietyCell) bindingAgent.get(id).model()).getCapacity() * 0.50) + 2; i++) {
                 MVBinder<?> binder = bindingAgent.get(id);
-                int x = ((int) binder.point().getX()) + (int) (Math.random() * (((SocietyCell) binder.model()).getRadius()) - 1) + 1;
-                int y = ((int) binder.point().getY()) + (int) (Math.random() * (((SocietyCell) binder.model()).getRadius()) - 1) + 1;
+
+                //Calculates a random point within a circle, in this case the area of effect of a societycell
+                double random = Math.random();
+                int r = (int) (((SocietyCell) bindingAgent.get(id).model()).getRadius() * Math.sqrt(random));
+                int x = (int) (bindingAgent.get(id).point().getX() + (r * Math.cos(random * 2 * 3.1415)));
+                int y = (int) (bindingAgent.get(id).point().getY() + (r * Math.sin(random * 2 * 3.1415)));
+
+
                 int lifeid = (int) (Math.random() * (100000000 - 1 + 1) + 1);
-                MVBinder<?> remove = bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId());
-                if (remove.model().getECellType().isHabitable() && x <= 145 && y <= 145 && x >= 0 && y >= 0 ) {
-                    bindingAgent.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(x, y)), remove));
-                    ((SocietyCell) binder.model()).addLifeCells((LifeCell) bindingAgent.get(lifeid).model());
+                if (x <= 145 && y <= 145 && x >= 0 && y >= 0) {
+                    MVBinder<?> remove = bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId());
+                    if (remove.model().getECellType().isHabitable()) {
+                        bindingAgent.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(x, y)), remove));
+                        ((SocietyCell) binder.model()).addLifeCells((LifeCell) bindingAgent.get(lifeid).model());
+                    }
                 }
             }
         }

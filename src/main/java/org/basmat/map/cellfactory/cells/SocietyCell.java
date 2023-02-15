@@ -58,17 +58,22 @@ public class SocietyCell implements IMapCell {
 
     @Override
     public String toString() {
-        int capacity = 0;
-        for (NutrientCell e : nutrientCells) {
-            capacity = capacity + e.getCapacity();
-        }
         return "Society Name: " + societyName + "\n" +
                 "Cell Name: " + getECellType().getCellName() + "\n" +
                 "Cell Description: " + getECellType().getCellDescription() + "\n" +
                 "Owned nutrient cells: " + nutrientCells.size() + "\n" +
-                "Capacity of nutrient cells: " + capacity + "\n" +
+                "Capacity of nutrient cells: " + getCapacity() + "\n" +
                 "Population: " + lifeCells.size();
 
+    }
+
+    public int getCapacity() {
+        int capacity = 0;
+        for (NutrientCell e : nutrientCells) {
+            //TODO: Cache result to prevent constant O(n) calls
+            capacity = capacity + e.getCapacity();
+        }
+        return capacity;
     }
 
     @Override
