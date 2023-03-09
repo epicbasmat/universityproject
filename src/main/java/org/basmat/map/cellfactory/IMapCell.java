@@ -5,7 +5,7 @@ import org.basmat.map.util.ECellType;
 import java.awt.*;
 
 /**
- * This interface provides a construct for all map cells to implement
+ * This interface provides a construct for all cells that exist within a map to implement
  */
 public interface IMapCell {
     @Override String toString();

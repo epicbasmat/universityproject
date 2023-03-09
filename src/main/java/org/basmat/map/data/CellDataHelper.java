@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
+/**
+ * CellDataHelper provides assistance methods in generating a record that holds the cell, it's id and the point at which it exists, as well as methods for setting and overwriting cells in a matrix
+ */
 public class CellDataHelper {
     private final CellMatrixPanel cellMatrixPanel;
     private final HashMap<ECellType, BufferedImage> imageCache;

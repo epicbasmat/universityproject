@@ -1,12 +1,12 @@
 package org.basmat.map.util.path;
 
+import org.basmat.map.cellfactory.cells.WorldCell;
 import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.controller.MVBinder;
 import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Pathfind {
 
@@ -21,13 +21,14 @@ public class Pathfind {
     private PriorityQueue<Node> openList;
 
     private CellMatrixPanel cellMatrixPanel;
+    private HashMap<Integer, MVBinder<?>> mapIdToMvBinder;
     private CellMatrixController cellMatrixController;
     private Point origin;
     private Point destination;
 
-    public Pathfind(CellMatrixPanel cellMatrixPanel, CellMatrixController cellMatrixController, Point origin, Point destination) {
+    public Pathfind(CellMatrixPanel cellMatrixPanel, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
         this.cellMatrixPanel = cellMatrixPanel;
-        this.cellMatrixController = cellMatrixController;
+        this.mapIdToMvBinder = mapIdToMvBinder;
         this.origin = origin;
         this.destination = destination;
         closedList = new LinkedList<>(); //Nodes that contain places that have been examined
@@ -46,7 +47,7 @@ public class Pathfind {
         return 1 * (dx + dy);
     }
 
-    /*public LinkedList<Point> aStarPathFind() {
+    public LinkedList<Point> aStarPathFind() {
         int x = 0;
         while (x < 10000) {
             //Get the current object to check
@@ -67,9 +68,9 @@ public class Pathfind {
                     && e[1] < 150
                     && e[0] > 0
                     && e[1] > 0
-                    && (cellMatrixController.getMapViewToModel().get(cellMatrixPanel.getPanel(e[0], e[1])) instanceof WorldCell worldCell
-                    && worldCell.getCellType().isHabitable()))
-                .forEach(e -> neighbours.add(new Point(e[0], e[1])));
+                    && mapIdToMvBinder.get(cellMatrixPanel.getPanel(e[0], e[1]).getId()).model() instanceof WorldCell worldCell
+                    && worldCell.getECellType().isHabitable())
+                .forEach(f -> neighbours.add(new Point(f[0], f[1])));
 
             //Generate a heuristic for each neighbour and see if that's any good
             for(Point neighbour : neighbours) {
@@ -81,11 +82,16 @@ public class Pathfind {
                 }
             }x++;
         } return this.closedList;
-    }*/
+    }
+
 }
  class HeuristicComparator implements Comparator<Node> {
      @Override
      public int compare(Node o1, Node o2) {
-         return o2.getF() - o1.getF();
+         if (o2.getF() > o1.getF()) {
+             return o2.getF() - o1.getF();
+         } else {
+             return o1.getF() - o2.getF();
+         }
      }
  }

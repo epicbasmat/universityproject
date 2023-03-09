@@ -6,46 +6,52 @@ import org.basmat.map.cellfactory.cells.SocietyCell;
 import org.basmat.map.cellfactory.cells.WorldCell;
 import org.basmat.map.controller.MVBinder;
 import org.basmat.map.data.CellDataHelper;
+import org.basmat.map.util.CircleBounds;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.sql.SQLData;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
+/**
+ * MapSetup provides methods for setting up the initial map of the simulation.
+ */
 public class MapSetup {
 
     private BufferedImage noiseGraph;
     private final HashMap<ECellType, BufferedImage> imageCache;
     private LinkedList<Integer> globalSocietyCellList;
     private LinkedList<Integer> globalNutrientCellList;
+    private LinkedList<Integer> globalLifeCellList;
     private CellDataHelper cellDataHelper;
     private HashMap<Integer, MVBinder<?>> bindingAgent;
     private CellMatrixPanel cellMatrixPanel;
 
+
     /**
      *
-     * @param cellDataHelper The cellDataHelper that enables cell generation
-     * @param bindingAgent The HashMap for binding id's to new MVBinders
-     * @param cellMatrixPanel The cellMatrixPanel for rendering new cells.
+     * @param imageCache The cache of textures for rendering
+     * @param cellDataHelper The helper to assist in generating classes and setting them to the matrix
+     * @param mapIdToMvBinder A hashmap that contains a map that relates the ID of the cell to the MVBinder
+     * @param cellMatrixPanel The parent frame to hold all generated cells
+     * @param globalSocietyCellList The list of which all society cells have a reference within
+     * @param globalNutrientCellList The list of which all nutrient cells have a reference within
+     * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public MapSetup(HashMap<ECellType, BufferedImage> imageCache, CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> bindingAgent, CellMatrixPanel cellMatrixPanel, LinkedList<Integer> globalSocietyCellList, LinkedList<Integer> globalNutrientCellList) {
-        this.bindingAgent = bindingAgent;
+    public MapSetup(HashMap<ECellType, BufferedImage> imageCache, CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, CellMatrixPanel cellMatrixPanel, LinkedList<Integer> globalSocietyCellList, LinkedList<Integer> globalNutrientCellList, LinkedList<Integer> globalLifeCellList) {
+        this.bindingAgent = mapIdToMvBinder;
         this.cellMatrixPanel = cellMatrixPanel;
         this.imageCache = imageCache;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalNutrientCellList = globalNutrientCellList;
+        this.globalLifeCellList = globalLifeCellList;
         noiseGraph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         this.cellDataHelper = cellDataHelper;
     }
-
-    /**
-     * Provides the setup to cache cell textures, must be called for the main class to function.
-     */
 
     public HashMap<ECellType, BufferedImage> getImageCache() {
         return imageCache;
@@ -226,19 +232,14 @@ public class MapSetup {
             // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
             for (int i = 0; i < Math.random() * (((SocietyCell) bindingAgent.get(id).model()).getCapacity() * 0.50) + 2; i++) {
                 MVBinder<?> binder = bindingAgent.get(id);
-
-                //Calculates a random point within a circle, in this case the area of effect of a societycell
-                double random = Math.random();
-                int r = (int) (((SocietyCell) bindingAgent.get(id).model()).getRadius() * Math.sqrt(random));
-                int x = (int) (bindingAgent.get(id).point().getX() + (r * Math.cos(random * 2 * 3.1415)));
-                int y = (int) (bindingAgent.get(id).point().getY() + (r * Math.sin(random * 2 * 3.1415)));
-
-
+                //Make sure the coordinates generated are within the aoe bounds
+                int[] coords = CircleBounds.calculateAndReturnRandomCoords(bindingAgent, id);
                 int lifeid = (int) (Math.random() * (100000000 - 1 + 1) + 1);
-                if (x <= 145 && y <= 145 && x >= 0 && y >= 0) {
-                    MVBinder<?> remove = bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId());
+                if (coords[0] <= 145 && coords[1] <= 145 && coords[0] >= 0 && coords[1] >= 0) {
+                    MVBinder<?> remove = bindingAgent.get(cellMatrixPanel.getPanel(coords[0],coords[1]).getId());
+                    //Check to make sure that the cell we're replacing is the one that can sustain habitation for life cells.
                     if (remove.model().getECellType().isHabitable()) {
-                        bindingAgent.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(x, y)), remove));
+                        bindingAgent.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(coords[0], coords[1])), remove));
                         ((SocietyCell) binder.model()).addLifeCells((LifeCell) bindingAgent.get(lifeid).model());
                     }
                 }

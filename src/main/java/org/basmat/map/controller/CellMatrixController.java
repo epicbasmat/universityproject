@@ -20,20 +20,21 @@ public class CellMatrixController {
     private final HashMap<ECellType, BufferedImage> imageCache;
     private final CellMatrixPanel cellMatrixPanel;
     //Binds a unique id to an instance of MVBinder
-    private HashMap<Integer, MVBinder<?>> bindingAgent;
+    private HashMap<Integer, MVBinder<?>> mapIdToMvBinder;
     private LinkedList<Integer> globalSocietyCellList;
     private LinkedList<Integer> globalNutrientCellList;
+    private LinkedList<Integer> globalLifeCellList;
 
 
     public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
-        bindingAgent = new HashMap<>();
+        mapIdToMvBinder = new HashMap<>();
         globalSocietyCellList = new LinkedList<>();
         globalNutrientCellList = new LinkedList<>();
         imageCache = TextureRefGen.cacheCellTextures(new HashMap<>());
         cellMatrixPanel = new CellMatrixPanel(150, 150, this);
         CellDataHelper cellDataHelper = new CellDataHelper(cellMatrixPanel, imageCache);
-        bindingAgent = new HashMap<>();
-        MapSetup setup = new MapSetup(imageCache, cellDataHelper, bindingAgent, cellMatrixPanel, globalNutrientCellList, globalSocietyCellList);
+        mapIdToMvBinder = new HashMap<>();
+        MapSetup setup = new MapSetup(imageCache, cellDataHelper, mapIdToMvBinder, cellMatrixPanel, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
         PanelContainer panelContainer = new PanelContainer(cellMatrixPanel);
         SwingUtilities.invokeLater(() -> {
             try {
@@ -55,6 +56,6 @@ public class CellMatrixController {
         int y = (int) e.getPoint().getY() / 5 - 29;
         System.out.println("==");
         System.out.println(x + ", " + y);
-        System.out.println(bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId()).model().toString());
+        System.out.println(mapIdToMvBinder.get(cellMatrixPanel.getPanel(x, y).getId()).model().toString());
     }
 }

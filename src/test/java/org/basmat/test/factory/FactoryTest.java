@@ -52,7 +52,7 @@ public class FactoryTest {
 
     @Test
     public void SocietyHasName_SocietyName_True() {
-        assertEquals("test", cellFactory.createSocietyCell("test", 0).getName());
+        assertEquals("test", cellFactory.createSocietyCell("test", 0, 12).getName());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class FactoryTest {
 
     @Test
     public void ToStringReturnsExpectedNutrientCellHasOwner_WorldCellToString_True() {
-        SocietyCell owner = cellFactory.createSocietyCell("test2", 0);
+        SocietyCell owner = cellFactory.createSocietyCell("test2", 0, 12);
         assertEquals("Owner: " + owner.getName() + "\n" + "Cell Name: " + ECellType.NUTRIENTS.getCellName() + "\n" +
                 "Cell Description: " + ECellType.NUTRIENTS.getCellDescription(), cellFactory.createNutrientCell(owner, 0).toString());
     }
