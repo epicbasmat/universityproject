@@ -9,6 +9,8 @@ import org.basmat.map.data.CellDataHelper;
 import org.basmat.map.util.CircleBounds;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
+import org.basmat.map.util.path.Node;
+import org.basmat.map.util.path.Pathfind;
 import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
@@ -28,7 +30,7 @@ public class MapSetup {
     private LinkedList<Integer> globalNutrientCellList;
     private LinkedList<Integer> globalLifeCellList;
     private CellDataHelper cellDataHelper;
-    private HashMap<Integer, MVBinder<?>> bindingAgent;
+    private HashMap<Integer, MVBinder<?>> mapIdToMvBinder;
     private CellMatrixPanel cellMatrixPanel;
 
 
@@ -43,7 +45,7 @@ public class MapSetup {
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
     public MapSetup(HashMap<ECellType, BufferedImage> imageCache, CellDataHelper cellDataHelper, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, CellMatrixPanel cellMatrixPanel, LinkedList<Integer> globalSocietyCellList, LinkedList<Integer> globalNutrientCellList, LinkedList<Integer> globalLifeCellList) {
-        this.bindingAgent = mapIdToMvBinder;
+        this.mapIdToMvBinder = mapIdToMvBinder;
         this.cellMatrixPanel = cellMatrixPanel;
         this.imageCache = imageCache;
         this.globalSocietyCellList = globalSocietyCellList;
@@ -73,6 +75,11 @@ public class MapSetup {
         setupNutrientCells();
         System.out.println("Appyling life cells to society cells");
         setupLifeCells();
+        System.out.println("Complete");
+        for (Node node : new Pathfind(cellMatrixPanel, mapIdToMvBinder, globalNutrientCellList, new Point(10, 10), new Point(80, 80)).aStar()) {
+            Point point = node.getPoint();
+            mapIdToMvBinder.put(0, cellDataHelper.overwriteCellData(cellDataHelper.generateWorldBinder(ECellType.MISSING_TEXTURE, 0, point), mapIdToMvBinder.get(cellMatrixPanel.getPanel( (int)point.getX(), (int) point.getY()).getId())));
+        }
     }
 
     /**
@@ -133,25 +140,25 @@ public class MapSetup {
                 Color averagedColour = new Color(average / (cellSize * cellSize));
                 int id = (int) (Math.random() * (100000000 - 1) + 1);
                 if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //DEEP_WATER
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.DEEP_WATER, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.DEEP_WATER, id, new Point(x, y))));
                 } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //WATER
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.WATER, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.WATER, id, new Point(x, y))));
                 } else if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {// LIGHT WATER
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.LIGHT_WATER, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.LIGHT_WATER, id, new Point(x, y))));
                 } else if (averagedColour.getRed() > 0) { //SAND
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.SAND, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.SAND, id, new Point(x, y))));
                 } else if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) { //GRASS
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.GRASS, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.GRASS, id, new Point(x, y))));
                 } else if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) { //MOUNTAIN BASE
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MOUNTAIN_BASE, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MOUNTAIN_BASE, id, new Point(x, y))));
                 } else if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) { //MOUNTAIN BODY
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MOUNTAIN_BODY, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MOUNTAIN_BODY, id, new Point(x, y))));
                 } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) { //MOUNTAIN PEAK
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MOUNTAIN_PEAK, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MOUNTAIN_PEAK, id, new Point(x, y))));
                 } else {
                     System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
                     System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
-                    bindingAgent.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MISSING_TEXTURE, id, new Point(x, y))));
+                    mapIdToMvBinder.put(id, cellDataHelper.setCellData(cellDataHelper.generateWorldBinder(ECellType.MISSING_TEXTURE, id, new Point(x, y))));
                 }
             }
         }
@@ -169,11 +176,11 @@ public class MapSetup {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             //check if the coordinate that was gotten was an instance of worldcell, has no owner and is of type grass
-            if (bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell newSocietyCell && newSocietyCell.getOwner() == null && newSocietyCell.getECellType() == ECellType.GRASS) {
+            if (mapIdToMvBinder.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell newSocietyCell && newSocietyCell.getOwner() == null && newSocietyCell.getECellType() == ECellType.GRASS) {
                 int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
                 counter++;
                 //Create a new cell that overwrites the cell that currently inhabits the coordinates
-                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, 12, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j,k).getId())));
+                mapIdToMvBinder.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, 12, new Point(j, k)), mapIdToMvBinder.get(cellMatrixPanel.getPanel(j,k).getId())));
                 globalSocietyCellList.add(id);
                 //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
                 //bindingAgent.get(cellMatrixPanel.getPanel(j, k))
@@ -194,11 +201,11 @@ public class MapSetup {
                         for (int x = -circumferenceX + j; x < circumferenceX + j; x++) {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
                                 //Checks to make sure the x and y are not out of bounds, the currently selected cell is of type worldcell, it has no owner and that it is habitable
-                                if (x <= 145 && y <= 145 && x >= 0 && y >= 0 && bindingAgent.get(cellMatrixPanel.getPanel(x, y).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType().isHabitable() && worldCell.getOwner() == null) {
+                                if (x <= 145 && y <= 145 && x >= 0 && y >= 0 && mapIdToMvBinder.get(cellMatrixPanel.getPanel(x, y).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType().isHabitable() && worldCell.getOwner() == null) {
                                     //Set the owner of the cell, provided the cell has no owner and is habitable
                                     cellMatrixPanel.getPanel(x, y).setTint(tint);
                                     //Get the value of the id associated with the society cell from the earlier generation
-                                    worldCell.setOwner((SocietyCell) bindingAgent.get(id).model());
+                                    worldCell.setOwner((SocietyCell) mapIdToMvBinder.get(id).model());
                                 }
                             }
                         }
@@ -216,12 +223,12 @@ public class MapSetup {
             int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
-            if (bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType() == ECellType.GRASS) {
+            if (mapIdToMvBinder.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType() == ECellType.GRASS) {
                 //Necessary administration handling, adding to the global pool, removing the current cell and setting the new cell
-                bindingAgent.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateNutrientBinder(worldCell.getOwner(), id, new Point(j, k)), bindingAgent.get(cellMatrixPanel.getPanel(j, k).getId())));
+                mapIdToMvBinder.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateNutrientBinder(worldCell.getOwner(), id, new Point(j, k)), mapIdToMvBinder.get(cellMatrixPanel.getPanel(j, k).getId())));
                 globalNutrientCellList.add(id);
                 if (worldCell.getOwner() != null) {
-                    worldCell.getOwner().addNutrientCells((NutrientCell) bindingAgent.get(id).model());
+                    worldCell.getOwner().addNutrientCells((NutrientCell) mapIdToMvBinder.get(id).model());
                 }
             }
         }
@@ -230,17 +237,17 @@ public class MapSetup {
     private void setupLifeCells() {
         for (int id : globalSocietyCellList) {
             // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
-            for (int i = 0; i < Math.random() * (((SocietyCell) bindingAgent.get(id).model()).getCapacity() * 0.50) + 2; i++) {
-                MVBinder<?> binder = bindingAgent.get(id);
+            for (int i = 0; i < Math.random() * (((SocietyCell) mapIdToMvBinder.get(id).model()).getCapacity() * 0.50) + 2; i++) {
+                MVBinder<?> binder = mapIdToMvBinder.get(id);
                 //Make sure the coordinates generated are within the aoe bounds
-                int[] coords = CircleBounds.calculateAndReturnRandomCoords(bindingAgent, id);
+                int[] coords = CircleBounds.calculateAndReturnRandomCoords(mapIdToMvBinder, id);
                 int lifeid = (int) (Math.random() * (100000000 - 1 + 1) + 1);
                 if (coords[0] <= 145 && coords[1] <= 145 && coords[0] >= 0 && coords[1] >= 0) {
-                    MVBinder<?> remove = bindingAgent.get(cellMatrixPanel.getPanel(coords[0],coords[1]).getId());
+                    MVBinder<?> remove = mapIdToMvBinder.get(cellMatrixPanel.getPanel(coords[0],coords[1]).getId());
                     //Check to make sure that the cell we're replacing is the one that can sustain habitation for life cells.
                     if (remove.model().getECellType().isHabitable()) {
-                        bindingAgent.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(coords[0], coords[1])), remove));
-                        ((SocietyCell) binder.model()).addLifeCells((LifeCell) bindingAgent.get(lifeid).model());
+                        mapIdToMvBinder.put(lifeid, cellDataHelper.overwriteCellData(cellDataHelper.generateLifeBinder((SocietyCell) binder.model(), lifeid, new Point(coords[0], coords[1])), remove));
+                        ((SocietyCell) binder.model()).addLifeCells((LifeCell) mapIdToMvBinder.get(lifeid).model());
                     }
                 }
             }
