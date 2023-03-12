@@ -35,8 +35,8 @@ public class CellDataHelper {
         return new MVBinder<>(cellFactory.createNutrientCell(owner, id), new CellPanel(imageCache.get(ECellType.NUTRIENTS), id), point);
     }
 
-    public MVBinder<?> generateSocietyBinder(String name, int id, int radius, Point point) {
-        return new MVBinder<>(cellFactory.createSocietyCell(name, id, radius), new CellPanel(imageCache.get(ECellType.SOCIETY_CELL), id), point);
+    public MVBinder<?> generateSocietyBinder(String name, int id, int radius, Point point, int tint) {
+        return new MVBinder<>(cellFactory.createSocietyCell(name, id, radius, tint), new CellPanel(imageCache.get(ECellType.SOCIETY_CELL), id), point);
     }
 
     public MVBinder<?> generateLifeBinder(SocietyCell societyCell, int id, Point point) {

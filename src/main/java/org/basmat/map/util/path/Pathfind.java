@@ -1,9 +1,6 @@
 package org.basmat.map.util.path;
 
-import org.basmat.map.cellfactory.cells.WorldCell;
-import org.basmat.map.controller.CellMatrixController;
 import org.basmat.map.controller.MVBinder;
-import org.basmat.map.util.ECellType;
 import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
@@ -12,33 +9,13 @@ import java.util.List;
 
 public class Pathfind {
 
-    private LinkedList<Point> closedList;
-    private PriorityQueue<Node> openList;
-
-    private CellMatrixPanel cellMatrixPanel;
-    private HashMap<Integer, MVBinder<?>> mapIdToMvBinder;
-    private CellMatrixController cellMatrixController;
-    private LinkedList<Integer> globalNutrientCellList;
-    private Point origin;
-    private Point destination;
-
-    public Pathfind(CellMatrixPanel cellMatrixPanel, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
-        this.cellMatrixPanel = cellMatrixPanel;
-        this.mapIdToMvBinder = mapIdToMvBinder;
-        this.origin = origin;
-        this.destination = destination;
-        closedList = new LinkedList<>(); //Nodes that contain places that have been examined
-        System.out.println(this.origin.toString() + " to " + this.destination.toString());
-    }
-
     /**
      * Returns the amount of expected units until destination using taxicab geometry.
      * @return The heuristic of the node
      */
-    public int h(Point point) {
+    private static int h(Point point, Point destination) {
         int x = (int) Math.abs(destination.getX() - point.getX());
         int y = (int) Math.abs(destination.getY() - point.getY());
-        //return x + y;
         return (int) (Math.pow(x, 2) + Math.pow(y, 2));
     }
 
@@ -49,14 +26,14 @@ public class Pathfind {
     h(n) is the heuristic function from n to goal
     */
 
-    public LinkedList<Node> aStar(int allowedIterations) {
+    public static LinkedList<Node> aStar(int allowedIterations, CellMatrixPanel cellMatrixPanel, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
         //Cost of moving through
         int sand = 200;
         int water = 700;
         int grass = 100;
         PriorityQueue<Node> openList = new PriorityQueue<>(new HeuristicComparator());   //Candidates to examine
         LinkedList<Node> closedList = new LinkedList<>(); //Good candidates, passed exam
-        openList.add(new Node(this.origin, h(origin)));
+        openList.add(new Node(origin, h(origin, destination)));
         int currentIterations = 0;
         while (!openList.isEmpty() && allowedIterations > currentIterations) {
             currentIterations++;
@@ -75,10 +52,10 @@ public class Pathfind {
                     && e[0] > 0
                     && e[1] > 0).map(coordinate -> { Point p = new Point(coordinate[0], coordinate[1]);
                                                       Node n = switch (mapIdToMvBinder.get(cellMatrixPanel.getPanel(coordinate[0], coordinate[1]).getId()).model().getECellType()) {
-                                                          case LIGHT_WATER -> new Node(p, h(p) + water);
-                                                          case SAND -> new Node(p, h(p) + sand);
-                                                          case GRASS -> new Node(p, h(p) + grass);
-                                                          default -> new Node(p, h(p) + 500);
+                                                          case LIGHT_WATER -> new Node(p, h(p, destination) + water);
+                                                          case SAND -> new Node(p, h(p, destination) + sand);
+                                                          case GRASS -> new Node(p, h(p, destination) + grass);
+                                                          default -> new Node(p, h(p, destination) + 500);
                                                       };
                                                       if (p.equals(destination)) {return new Node(destination, 0);} else { return n ;}
                                                     }).toList();

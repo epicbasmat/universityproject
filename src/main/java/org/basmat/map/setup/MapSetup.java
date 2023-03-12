@@ -22,6 +22,10 @@ import java.util.UUID;
 /**
  * MapSetup provides methods for setting up the initial map of the simulation.
  */
+
+/*
+ If you followed the umbilical of history in search of some ultimate atavistic embryo that became them, then your journey would end here, in this garden.
+ */
 public class MapSetup {
 
     private BufferedImage noiseGraph;
@@ -76,10 +80,6 @@ public class MapSetup {
         System.out.println("Appyling life cells to society cells");
         setupLifeCells();
         System.out.println("Complete");
-        for (Node node : new Pathfind(cellMatrixPanel, mapIdToMvBinder, globalNutrientCellList, new Point(10, 10), new Point(80, 80)).aStar()) {
-            Point point = node.getPoint();
-            mapIdToMvBinder.put(0, cellDataHelper.overwriteCellData(cellDataHelper.generateWorldBinder(ECellType.MISSING_TEXTURE, 0, point), mapIdToMvBinder.get(cellMatrixPanel.getPanel( (int)point.getX(), (int) point.getY()).getId())));
-        }
     }
 
     /**
@@ -177,19 +177,18 @@ public class MapSetup {
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             //check if the coordinate that was gotten was an instance of worldcell, has no owner and is of type grass
             if (mapIdToMvBinder.get(cellMatrixPanel.getPanel(j, k).getId()).model() instanceof WorldCell newSocietyCell && newSocietyCell.getOwner() == null && newSocietyCell.getECellType() == ECellType.GRASS) {
-                int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
-                counter++;
-                //Create a new cell that overwrites the cell that currently inhabits the coordinates
-                mapIdToMvBinder.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, 12, new Point(j, k)), mapIdToMvBinder.get(cellMatrixPanel.getPanel(j,k).getId())));
-                globalSocietyCellList.add(id);
-                //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
-                //bindingAgent.get(cellMatrixPanel.getPanel(j, k))
-                //cellSubscriber.addToGlobalSocietyCells(societyCell);
-
                 //Sets a tint in the style that is in standard with Java's ColorModel.
                 int tint = 0x00009000;
                 tint = tint | (int) (Math.random() * 255 - 150) + 150 << 16; //Set red and bit shift 16 places to align it with the red bytes
                 tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
+                int id = (int) (Math.random() * (100000000 - 1 + 1) + 1);
+                counter++;
+                //Create a new cell that overwrites the cell that currently inhabits the coordinates
+                mapIdToMvBinder.put(id, cellDataHelper.overwriteCellData(cellDataHelper.generateSocietyBinder(UUID.randomUUID().toString(), id, 12, new Point(j, k), tint), mapIdToMvBinder.get(cellMatrixPanel.getPanel(j,k).getId())));
+                globalSocietyCellList.add(id);
+                //Then get the reference of the society cell just instantiated because i cannot think of a better way to do it right now
+                //bindingAgent.get(cellMatrixPanel.getPanel(j, k))
+                globalSocietyCellList.add(id);
 
                 //1 unit of radius is 1 cell
                 for (int c = 0; c <= 180; c += 5) {
@@ -202,7 +201,7 @@ public class MapSetup {
                             for (int y = -circumferenceY + k; y < circumferenceY + k; y++) {
                                 //Checks to make sure the x and y are not out of bounds, the currently selected cell is of type worldcell, it has no owner and that it is habitable
                                 if (x <= 145 && y <= 145 && x >= 0 && y >= 0 && mapIdToMvBinder.get(cellMatrixPanel.getPanel(x, y).getId()).model() instanceof WorldCell worldCell && worldCell.getECellType().isHabitable() && worldCell.getOwner() == null) {
-                                    //Set the owner of the cell, provided the cell has no owner and is habitable
+                                    //set the tint associated with the society cell
                                     cellMatrixPanel.getPanel(x, y).setTint(tint);
                                     //Get the value of the id associated with the society cell from the earlier generation
                                     worldCell.setOwner((SocietyCell) mapIdToMvBinder.get(id).model());
@@ -237,12 +236,13 @@ public class MapSetup {
     private void setupLifeCells() {
         for (int id : globalSocietyCellList) {
             // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
-            for (int i = 0; i < Math.random() * (((SocietyCell) mapIdToMvBinder.get(id).model()).getCapacity() * 0.50) + 2; i++) {
+            for (int i = 0; i < Math.random() * (((SocietyCell) mapIdToMvBinder.get(id).model()).getNutrientCapacity() * 0.40) + 2; i++) {
                 MVBinder<?> binder = mapIdToMvBinder.get(id);
                 //Make sure the coordinates generated are within the aoe bounds
                 int[] coords = CircleBounds.calculateAndReturnRandomCoords(mapIdToMvBinder, id);
                 int lifeid = (int) (Math.random() * (100000000 - 1 + 1) + 1);
                 if (coords[0] <= 145 && coords[1] <= 145 && coords[0] >= 0 && coords[1] >= 0) {
+                    //grab the cell to replace with their x and y axis
                     MVBinder<?> remove = mapIdToMvBinder.get(cellMatrixPanel.getPanel(coords[0],coords[1]).getId());
                     //Check to make sure that the cell we're replacing is the one that can sustain habitation for life cells.
                     if (remove.model().getECellType().isHabitable()) {

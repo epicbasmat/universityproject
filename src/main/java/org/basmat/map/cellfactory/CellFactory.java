@@ -18,8 +18,8 @@ public class CellFactory extends AbstractCellFactory {
     }
 
     @Override
-    public SocietyCell createSocietyCell(String name, int id, int radius) {
-        return new SocietyCell(name, id, radius);
+    public SocietyCell createSocietyCell(String name, int id, int radius, int tint) {
+        return new SocietyCell(name, id, radius, tint);
     }
 
     @Override

@@ -7,6 +7,14 @@ import org.basmat.map.cellfactory.cells.SocietyCell;
 import java.util.LinkedList;
 import java.util.TimerTask;
 
+/**
+ * RuleApplier applies the gardeners and the winnowers ruleset using a Java Timer, recurring at a set time inverval.
+ */
+
+/*
+They existed, because they had to exist. They had no antecedent and no constituents, and there is no instrument of causality by which they could be portioned into components and assigned a schematic of their origin.
+In the day between the morning and the evening, the gardener and the winnower played a game of possibilities.
+ */
 public class RuleApplier {
     private LinkedList<NutrientCell> globalNutrientCellList;
     private LinkedList<SocietyCell> globalSocietyCellList;
@@ -21,7 +29,7 @@ public class RuleApplier {
             public void run() {
                 applyRulesToCells();
             }
-        }, 0, 1000);
+        }, 0, 4000);
     }
 
     private void applyRulesToCells() {

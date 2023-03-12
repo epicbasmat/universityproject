@@ -43,4 +43,11 @@ public class LifeCell implements IMapCell {
         return "Life cell lives at: " + this.societyCell.getName() + "\n" +
                 "Attrition level: " + this.attrition;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof LifeCell lifeCell) {
+            return lifeCell.getId() == lifeCell.getId();
+        } else return false;
+    }
 }

@@ -8,7 +8,7 @@ import org.basmat.map.util.ECellType;
  */
 abstract class AbstractCellFactory {
     public abstract IOwnedCell createNutrientCell(SocietyCell owner, int id);
-    public abstract IMapCell createSocietyCell(String name, int id, int radius);
+    public abstract IMapCell createSocietyCell(String name, int id, int radius, int tint);
     public abstract IOwnedCell createWorldCell(ECellType cellType, SocietyCell owner, int id);
     public abstract IMapCell createLifeCell(SocietyCell societyCell, int id);
 }
