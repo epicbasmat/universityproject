@@ -8,6 +8,7 @@ import org.basmat.map.view.CellMatrixPanel;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Pathfind {
 
@@ -21,13 +22,13 @@ public class Pathfind {
     private Point origin;
     private Point destination;
 
-    public Pathfind(CellMatrixPanel cellMatrixPanel, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, LinkedList<Integer> globalNutrientCellList, Point origin, Point destination) {
+    public Pathfind(CellMatrixPanel cellMatrixPanel, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
         this.cellMatrixPanel = cellMatrixPanel;
         this.mapIdToMvBinder = mapIdToMvBinder;
-        this.globalNutrientCellList = globalNutrientCellList;
-        this.origin = mapIdToMvBinder.get(globalNutrientCellList.get((int) (Math.random() * 20))).point();
-        this.destination = mapIdToMvBinder.get(globalNutrientCellList.get((int) (Math.random() * 20))).point();
+        this.origin = origin;
+        this.destination = destination;
         closedList = new LinkedList<>(); //Nodes that contain places that have been examined
+        System.out.println(this.origin.toString() + " to " + this.destination.toString());
     }
 
     /**
@@ -37,44 +38,55 @@ public class Pathfind {
     public int h(Point point) {
         int x = (int) Math.abs(destination.getX() - point.getX());
         int y = (int) Math.abs(destination.getY() - point.getY());
-        return x + y;
+        //return x + y;
+        return (int) (Math.pow(x, 2) + Math.pow(y, 2));
     }
 
     /*
     Heuristic - f(n) = g(n) + h(n)
     n is the current selected node
-    g(n) is the cost of the path from the start node to n
+    g(n) is the cost of the path from the current node to child node n
     h(n) is the heuristic function from n to goal
     */
 
-    public LinkedList<Node> aStar() {
-        PriorityQueue<Node> openList = new PriorityQueue<>(new HeuristicComparator());   //Candidates
-        LinkedList<Node> closedList = new LinkedList<>(); //Path
+    public LinkedList<Node> aStar(int allowedIterations) {
+        //Cost of moving through
+        int sand = 200;
+        int water = 700;
+        int grass = 100;
+        PriorityQueue<Node> openList = new PriorityQueue<>(new HeuristicComparator());   //Candidates to examine
+        LinkedList<Node> closedList = new LinkedList<>(); //Good candidates, passed exam
         openList.add(new Node(this.origin, h(origin)));
-        while (!openList.isEmpty()) {
+        int currentIterations = 0;
+        while (!openList.isEmpty() && allowedIterations > currentIterations) {
+            currentIterations++;
+
             Node current = openList.remove();
             closedList.add(current);
+
             if (current.getPoint().equals(destination)) {
                 return closedList;
             }
 
-            int[][] coordinateRef = {{(int) current.getPoint().getX(), (int) (current.getPoint().getY() - 1)}, {(int) current.getPoint().getX(), (int) (current.getPoint().getY() + 1)}, {(int) (current.getPoint().getX() - 1), (int) current.getPoint().getY()}, {(int) (current.getPoint().getX() + 1), (int) current.getPoint().getY()},
-                    {(int) (current.getPoint().getX() + 1), (int) (current.getPoint().getY() + 1)}, {(int) (current.getPoint().getX() + 1), (int) (current.getPoint().getY() - 1)}, {(int) (current.getPoint().getX() - 1), (int) (current.getPoint().getY() + 1)}, {(int) (current.getPoint().getX() - 1), (int) (current.getPoint().getY() - 1)}};
+            int[][] coordinateRef = {{(int) current.getPoint().getX(), (int) (current.getPoint().getY() - 1)}, {(int) current.getPoint().getX(), (int) (current.getPoint().getY() + 1)}, {(int) (current.getPoint().getX() - 1), (int) current.getPoint().getY()}, {(int) (current.getPoint().getX() + 1), (int) current.getPoint().getY()}};
 
-            LinkedList<Point> neighbours = new LinkedList<>();
+            List<Node> neighbours = Arrays.stream(coordinateRef).filter(e -> e[0] < 150
+                    && e[1] < 150
+                    && e[0] > 0
+                    && e[1] > 0).map(coordinate -> { Point p = new Point(coordinate[0], coordinate[1]);
+                                                      Node n = switch (mapIdToMvBinder.get(cellMatrixPanel.getPanel(coordinate[0], coordinate[1]).getId()).model().getECellType()) {
+                                                          case LIGHT_WATER -> new Node(p, h(p) + water);
+                                                          case SAND -> new Node(p, h(p) + sand);
+                                                          case GRASS -> new Node(p, h(p) + grass);
+                                                          default -> new Node(p, h(p) + 500);
+                                                      };
+                                                      if (p.equals(destination)) {return new Node(destination, 0);} else { return n ;}
+                                                    }).toList();
 
-            Arrays.stream(coordinateRef).filter(e -> e[0] < 150
-                            && e[1] < 150
-                            && e[0] > 0
-                            && e[1] > 0
-                            && mapIdToMvBinder.get(cellMatrixPanel.getPanel(e[0], e[1]).getId()).model().getECellType().isHabitable() || mapIdToMvBinder.get(cellMatrixPanel.getPanel(e[0], e[1]).getId()).model().getECellType() == ECellType.NUTRIENTS)
-                    .forEach(f -> neighbours.add(new Point(f[0], f[1])));
-
-            for (Point point : neighbours) {
-                if (h(point) < current.getF()) {
-                    Node betterNode = new Node(point, h(point));
-                    if (!closedList.contains(betterNode)) {
-                        openList.add(betterNode);
+            for (Node n : neighbours) {
+                if (!closedList.contains(n) && !(openList.contains(n))) {
+                    if (n.getF() < current.getF()) {
+                        openList.add(n);
                     }
                 }
             }
