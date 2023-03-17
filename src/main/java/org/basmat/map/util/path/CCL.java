@@ -1,11 +1,12 @@
 package org.basmat.map.util.path;
 
 import org.basmat.map.controller.CellMatrixController;
-import org.basmat.map.view.CellMatrixPanel;
+import org.basmat.map.view.ViewStructure;
 import org.basmat.map.view.CellPanel;
 
 import java.awt.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class CCL {
     private int[][] components;
@@ -14,12 +15,12 @@ public class CCL {
 
     private int height;
     private int length;
-    private CellMatrixPanel cellMatrixPanel;
+    private ViewStructure viewStructure;
     private CellMatrixController cellMatrixController;
 
-    public CCL(int height, int length, CellMatrixPanel cellMatrixPanel, CellMatrixController cellMatrixController) {
+    public CCL(int height, int length, ViewStructure viewStructure, CellMatrixController cellMatrixController) {
         this.components = new int[height][length];
-        this.cellMatrixPanel = cellMatrixPanel;
+        this.viewStructure = viewStructure;
         this.cellMatrixController = cellMatrixController;
         Point start = new Point(0, 0);
         queuedCoordinates = new LinkedList<>();

@@ -1,8 +1,9 @@
-package org.basmat.map.cellfactory.cells;
+package org.basmat.map.model.cells;
 
-import org.basmat.map.cellfactory.IMapCell;
+import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.util.ECellType;
 
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 /**
@@ -13,9 +14,9 @@ import java.util.LinkedList;
 public class SocietyCell implements IMapCell {
 
     private String societyName;
-    private int id;
     private int radius;
     private int tint;
+    private BufferedImage texture;
     private LinkedList<NutrientCell> nutrientCells;
 
 
@@ -23,14 +24,17 @@ public class SocietyCell implements IMapCell {
 
 
     /**
-     * Constructs a society class with the name and the determined celltype, usually ECellType.SOCIETYCELL.
-     * @param name The name of the society.
+     *
+     * @param name The name of the society cell, used to distinguish other society cells
+     * @param radius The radius, or area of effect, that the society cell has.
+     * @param tint The tint that tints the area of effect for visual clarity.
+     * @param texture The referential texture of the society cell
      */
-    public SocietyCell(String name, int id, int radius, int tint) {
+    public SocietyCell(String name, int radius, int tint, BufferedImage texture) {
         this.societyName = name;
-        this.id = id;
         this.radius = radius;
         this.tint = tint;
+        this.texture = texture;
         nutrientCells = new LinkedList<>();
         lifeCells = new LinkedList<>();
     }
@@ -67,6 +71,11 @@ public class SocietyCell implements IMapCell {
     }
 
     @Override
+    public BufferedImage getTexture() {
+        return texture;
+    }
+
+    @Override
     public String toString() {
         return "Society Name: " + societyName + "\n" +
                 "Cell Name: " + getECellType().getCellName() + "\n" +
@@ -93,10 +102,5 @@ public class SocietyCell implements IMapCell {
     @Override
     public ECellType getECellType() {
         return ECellType.SOCIETY_CELL;
-    }
-
-    @Override
-    public int getId() {
-        return id;
     }
 }

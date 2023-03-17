@@ -1,39 +1,36 @@
-package org.basmat.map.cellfactory.cells.rules;
+package org.basmat.map.model.cells.rules;
 
-import org.basmat.map.cellfactory.cells.LifeCell;
-import org.basmat.map.cellfactory.cells.NutrientCell;
-import org.basmat.map.cellfactory.cells.SocietyCell;
-import org.basmat.map.controller.MVBinder;
+import org.basmat.map.model.cells.LifeCell;
+import org.basmat.map.model.cells.NutrientCell;
+import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
-import org.basmat.map.view.CellMatrixPanel;
+import org.basmat.map.view.ViewStructure;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * The gardener rule set provides methods into life. The rules govern how the life cells will recreate, as well as attempts to survive, such as scavenge if food resources are low.
  */
 /*
- In the morning, the gardened pushed the seeds down into the wet loam of the garden to see what they would become
+ In the morning, the gardener pushed the seeds down into the wet loam of the garden to see what they would become
  */
 public class Gardener {
 
-    private CellMatrixPanel cellMatrixPanel;
+    private ViewStructure viewStructure;
     private LinkedList<NutrientCell> globalNutrientCellList;
     private LinkedList<SocietyCell> globalSocietyCellList;
     private LinkedList<LifeCell> globalLifeCellList;
-    private HashMap<Integer, MVBinder<?>> mapIdToMvBinder;
+    //private HashMap<Integer, MVBinder<?>> mapIdToMvBinder;
     HashMap<SocietyCell, LinkedList<Node>> activeSocietyCells;
 
-    public Gardener(CellMatrixPanel cellMatrixPanel, LinkedList<NutrientCell> globalNutrientCellList, LinkedList<SocietyCell> globalSocietyCellList, LinkedList<LifeCell> globalLifeCellList, HashMap<Integer, MVBinder<?>> mapIdToMvBinder) {
-        this.cellMatrixPanel = cellMatrixPanel;
+    public Gardener(ViewStructure viewStructure, LinkedList<NutrientCell> globalNutrientCellList, LinkedList<SocietyCell> globalSocietyCellList, LinkedList<LifeCell> globalLifeCellList) {
+        this.viewStructure = viewStructure;
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
-        this.mapIdToMvBinder = mapIdToMvBinder;
+        //this.mapIdToMvBinder = mapIdToMvBinder;
         activeSocietyCells = new HashMap<>();
 
     }
@@ -44,10 +41,9 @@ public class Gardener {
      * @param percentageCapacity The population / nutrient capacity * 100
      */
     public void scavenge(SocietyCell societyCell, double percentageCapacity) {
-            //If the nutrient capacity of the society exceeds 85%, then tell someone to scavenge
-            if (percentageCapacity > 85) {
-                //Look for food, or risk dying
-            }
+        //If the nutrient capacity of the society exceeds 85%, then tell someone to scavenge
+        if (percentageCapacity > 85) {
+            //Look for food, or risk dying
         }
     }
 
@@ -94,7 +90,8 @@ public class Gardener {
 
     private LinkedList<Node> getPathBetweenCouple(SocietyCell societyCell) {
         LifeCell[] couple = selectCoupleLifeCell(societyCell);
-        return Pathfind.aStar(250, cellMatrixPanel, mapIdToMvBinder, mapIdToMvBinder.get(couple[0].getId()).point(), mapIdToMvBinder.get(couple[1].getId()).point());
+        //return Pathfind.aStar(250, viewStructure, mapIdToMvBinder, mapIdToMvBinder.get(couple[0].getId()).point(), mapIdToMvBinder.get(couple[1].getId()).point());
+        return null;
     }
 
     private LifeCell selectRandomLifeCell(SocietyCell societyCell) {

@@ -1,11 +1,11 @@
 package org.basmat.map.util.path;
 
-import org.basmat.map.controller.MVBinder;
-import org.basmat.map.view.CellMatrixPanel;
+import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
+
 
 public class Pathfind {
 
@@ -26,7 +26,7 @@ public class Pathfind {
     h(n) is the heuristic function from n to goal
     */
 
-    public static LinkedList<Node> aStar(int allowedIterations, CellMatrixPanel cellMatrixPanel, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
+    /*public static LinkedList<Node> aStar(int allowedIterations, ViewStructure viewStructure, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
         //Cost of moving through
         int sand = 200;
         int water = 700;
@@ -51,7 +51,7 @@ public class Pathfind {
                     && e[1] < 150
                     && e[0] > 0
                     && e[1] > 0).map(coordinate -> { Point p = new Point(coordinate[0], coordinate[1]);
-                                                      Node n = switch (mapIdToMvBinder.get(cellMatrixPanel.getPanel(coordinate[0], coordinate[1]).getId()).model().getECellType()) {
+                                                      Node n = switch (mapIdToMvBinder.get(viewStructure.getPanel(coordinate[0], coordinate[1]).getId()).model().getECellType()) {
                                                           case LIGHT_WATER -> new Node(p, h(p, destination) + water);
                                                           case SAND -> new Node(p, h(p, destination) + sand);
                                                           case GRASS -> new Node(p, h(p, destination) + grass);
@@ -69,7 +69,7 @@ public class Pathfind {
             }
         }
         return null;
-    }
+    }*/
 }
  class HeuristicComparator implements Comparator<Node> {
      @Override

@@ -1,9 +1,10 @@
-package org.basmat.map.cellfactory.cells;
+package org.basmat.map.model.cells;
 
-import org.basmat.map.cellfactory.IOwnedCell;
+import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.basmat.map.util.ECellType;
 
 import javax.annotation.Nullable;
+import java.awt.image.BufferedImage;
 
 /**
  * This class provides a construct to represent the ECellType "Nutrient Cell" and contains methods to deal with consuming nutrients within the nutrient cell.
@@ -15,14 +16,16 @@ public class NutrientCell implements IOwnedCell {
     private int capacity;
     private int supporting;
     private SocietyCell owner;
-    private int id;
+    private BufferedImage texture;
 
     /**
-     * @param owner The owner of the nutrient cell, can be null
+     *
+     * @param owner The owner of the nutrient cell
+     * @param texture The reference texture of the nutrient cell.
      */
-    public NutrientCell(@Nullable SocietyCell owner, int id) {
+    public NutrientCell(@Nullable SocietyCell owner, BufferedImage texture) {
         this.owner = owner;
-        this.id = id;
+        this.texture = texture;
         this.capacity = (int) (Math.random() * 7 - 1) + 1;
         this.supporting = 0;
     }
@@ -62,6 +65,11 @@ public class NutrientCell implements IOwnedCell {
     }
 
     @Override
+    public BufferedImage getTexture() {
+        return texture;
+    }
+
+    @Override
     public String toString() {
         String ownerString;
 
@@ -77,10 +85,5 @@ public class NutrientCell implements IOwnedCell {
     @Override
     public ECellType getECellType() {
         return ECellType.NUTRIENTS;
-    }
-
-    @Override
-    public int getId() {
-        return id;
     }
 }

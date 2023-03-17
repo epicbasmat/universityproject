@@ -1,8 +1,8 @@
-package org.basmat.map.cellfactory.cells.rules;
+package org.basmat.map.model.cells.rules;
 
-import org.basmat.map.cellfactory.cells.LifeCell;
-import org.basmat.map.cellfactory.cells.NutrientCell;
-import org.basmat.map.cellfactory.cells.SocietyCell;
+import org.basmat.map.model.cells.LifeCell;
+import org.basmat.map.model.cells.NutrientCell;
+import org.basmat.map.model.cells.SocietyCell;
 
 import java.util.LinkedList;
 import java.util.TimerTask;
