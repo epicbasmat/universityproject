@@ -14,10 +14,11 @@ import java.util.HashMap;
  * where any objects in that matrix get priority rendering.
  */
 public class ModelStructure {
+    //TODO: When bucketing is fixed, convert 2d array of WorldCell[][] to HashMap<Point, WorldCell>
     private final WorldCell[][] backLayer;
     private final HashMap<Coords, ? super IMapCell> frontLayer;
 
-    public ModelStructure(int backLayerWidth, int backLayerHeight, int frontLayerWidth, int frontLayerHeight) {
+    public ModelStructure(int backLayerWidth, int backLayerHeight) {
         this.backLayer = new WorldCell[backLayerWidth][backLayerHeight];
         this.frontLayer = new HashMap<>();
     }
@@ -63,6 +64,7 @@ class Coords{
 
     @Override
     public int hashCode() {
+        //TODO: Make it so that coordinates are unique as (5, 2) (2,5) would be put under the same bucket. Look at Elliptic Curve Point Compression.
         return x ^ y;
     }
 }

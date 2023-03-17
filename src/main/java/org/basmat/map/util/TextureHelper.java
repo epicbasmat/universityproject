@@ -6,7 +6,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
 
+/**
+ * TextureHelper provides methods to assist in texture generation and manipulation.
+ */
 public class TextureHelper {
+    /**
+     * This method will load in all textures within the designated path and map the CellType to the loaded BufferedImage
+     * @param imageCache The image cache to load into
+     * @return The fully mapped imageCache
+     */
     public static HashMap<ECellType, BufferedImage> cacheCellTextures(HashMap<ECellType, BufferedImage> imageCache) {
         System.out.println("Grabbing textures");
         for (ECellType cellType : ECellType.values()) {
@@ -25,6 +33,11 @@ public class TextureHelper {
         return imageCache;
     }
 
+    /**
+     * This method will copy any texture and return it with the colorSpace of TYPE_INT_ARGB, this is done to enable alpha transparency as default-loaded images do not have that enabled.
+     * @param reference The reference image to copy
+     * @return The same image, but with TYPE_INT_ARGB
+     */
     public static BufferedImage copyTexture(BufferedImage reference) {
         //A new texture has to be loaded from the original Image.IO read to determine the imagetype to enable alpha transparency.
         BufferedImage texture = new BufferedImage(reference.getWidth(), reference.getHeight(), BufferedImage.TYPE_INT_ARGB);
