@@ -14,25 +14,24 @@ import java.util.HashMap;
  * where any objects in that matrix get priority rendering.
  */
 public class ModelStructure {
-    //TODO: When bucketing is fixed, convert 2d array of WorldCell[][] to HashMap<Point, WorldCell>
-    private final WorldCell[][] backLayer;
+    private final HashMap<Coords, WorldCell> backLayer;
     private final HashMap<Coords, ? super IMapCell> frontLayer;
 
     public ModelStructure(int backLayerWidth, int backLayerHeight) {
-        this.backLayer = new WorldCell[backLayerWidth][backLayerHeight];
+        this.backLayer = new HashMap<>();
         this.frontLayer = new HashMap<>();
     }
 
-    public WorldCell getBackLayer(int x, int y) {
-        return backLayer[x][y];
+    public WorldCell getBackLayer(Point point) {
+        return backLayer.get(new Coords(point));
     }
 
-    public void setBackLayer(int x, int y, WorldCell toSet) {
-        backLayer[x][y] = toSet;
+    public void setBackLayer(Point point, WorldCell toSet) {
+        backLayer.put(new Coords(point), toSet);
     }
 
     public <T extends IMapCell> T getFrontLayer(Point point) {
-        return (T) frontLayer.get(new Coords(point.x, point.y));
+        return (T) frontLayer.get(new Coords(point));
     }
 
     public <T extends IMapCell> void setFrontLayer(Point point, T toSet) {
@@ -44,7 +43,7 @@ public class ModelStructure {
      * @return The object that is in the coordinates, with the front layer taking priority
      */
     public <T extends IMapCell> T getCoordinate(Point point) {
-        return getFrontLayer(point) == null ? (T) getBackLayer(point.x, point.y) : getFrontLayer(point);
+        return getFrontLayer(point) == null ? (T) getBackLayer(point) : getFrontLayer(point);
     }
 }
 
@@ -57,6 +56,10 @@ class Coords{
         this.y = y;
     }
 
+    public Coords(Point point){
+        this.x = point.x;
+        this.y = point.y;
+    }
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Coords coords && this.x == coords.x && this.y == coords.y;
@@ -64,7 +67,6 @@ class Coords{
 
     @Override
     public int hashCode() {
-        //TODO: Make it so that coordinates are unique as (5, 2) (2,5) would be put under the same bucket. Look at Elliptic Curve Point Compression.
-        return x ^ y;
+        return (y * 145) + x;
     }
 }

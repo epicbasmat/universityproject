@@ -29,7 +29,6 @@ public class ModelSetup {
     private final LinkedList<Point> globalSocietyCellList;
     private final LinkedList<Point> globalNutrientCellList;
     private final LinkedList<Point> globalLifeCellList;
-    private final ViewStructure viewStructure;
     private final ModelStructure modelStructure;
     private final CellFactory cellFactory;
 
@@ -37,15 +36,13 @@ public class ModelSetup {
     /**
      * @param imageCache The cache of textures for rendering
      * @param modelStructure The ModelStructure containing all the model data within 2 matrices.
-     * @param viewStructure The parent frame to hold all generated cells
      * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalNutrientCellList The list of which all nutrient cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure, ViewStructure viewStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalLifeCellList) {
+    public ModelSetup(HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure,  LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalLifeCellList) {
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;
-        this.viewStructure = viewStructure;
         this.imageCache = imageCache;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalNutrientCellList = globalNutrientCellList;
@@ -126,29 +123,29 @@ public class ModelSetup {
                         average += noiseGraph.getRGB(i, j);
                     }
                 }
+                Point point = new Point(x, y);
                 //Sets the texture according to the averaged colour's RGB bands
                 Color averagedColour = new Color(average / (cellSize * cellSize));
-                int id = (int) (Math.random() * (100000000 - 1) + 1);
                 if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //DEEP_WATER
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.DEEP_WATER, imageCache.get(ECellType.DEEP_WATER)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.DEEP_WATER, imageCache.get(ECellType.DEEP_WATER)));
                 } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //WATER
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.WATER, imageCache.get(ECellType.WATER)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.WATER, imageCache.get(ECellType.WATER)));
                 } else if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {// LIGHT WATER
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.LIGHT_WATER, imageCache.get(ECellType.LIGHT_WATER)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.LIGHT_WATER, imageCache.get(ECellType.LIGHT_WATER)));
                 } else if (averagedColour.getRed() > 0) { //SAND
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.SAND, imageCache.get(ECellType.SAND)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.SAND, imageCache.get(ECellType.SAND)));
                 } else if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) { //GRASS
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.GRASS, imageCache.get(ECellType.GRASS)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.GRASS, imageCache.get(ECellType.GRASS)));
                 } else if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) { //MOUNTAIN BASE
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.MOUNTAIN_BASE, imageCache.get(ECellType.MOUNTAIN_BASE)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_BASE, imageCache.get(ECellType.MOUNTAIN_BASE)));
                 } else if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) { //MOUNTAIN BODY
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.MOUNTAIN_BODY, imageCache.get(ECellType.MOUNTAIN_BODY)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_BODY, imageCache.get(ECellType.MOUNTAIN_BODY)));
                 } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) { //MOUNTAIN PEAK
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.MOUNTAIN_PEAK, imageCache.get(ECellType.MOUNTAIN_PEAK)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_PEAK, imageCache.get(ECellType.MOUNTAIN_PEAK)));
                 } else {
                     System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
                     System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
-                    modelStructure.setBackLayer(x, y, cellFactory.createWorldCell(ECellType.MISSING_TEXTURE, imageCache.get(ECellType.MISSING_TEXTURE)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MISSING_TEXTURE, imageCache.get(ECellType.MISSING_TEXTURE)));
                 }
             }
         }
@@ -165,15 +162,15 @@ public class ModelSetup {
         while (counter < target) {
             int randCoordinateX = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             int randCoordinateY = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            Point point = new Point(randCoordinateX, randCoordinateY);
             //check if the coordinate that was gotten was an instance of worldcell, has no owner and is of type grass
-            if (modelStructure.getBackLayer(randCoordinateX, randCoordinateY).getOwner() == null && modelStructure.getBackLayer(randCoordinateX, randCoordinateY).getECellType() == ECellType.GRASS) {
+            if (modelStructure.getBackLayer(point).getOwner() == null && modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
                 //Sets a tint in the style that is in standard with Java's ColorModel.
                 int tint = 0x00009000;
                 tint = tint | (int) (Math.random() * 255 - 150) + 150 << 16; //Set red and bit shift 16 places to align it with the red bytes
                 tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
                 counter++;
                 //Create a new cell that is on top of the cell that currently inhabits the coordinates
-                Point point = new Point(randCoordinateX, randCoordinateY);
                 modelStructure.setFrontLayer(point, cellFactory.createSocietyCell(UUID.randomUUID().toString(), 12, tint, imageCache.get(ECellType.SOCIETY_CELL)));
                 globalSocietyCellList.add(point);
 
@@ -186,12 +183,13 @@ public class ModelSetup {
                         //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
                         for (int circleX = -circumferenceX + randCoordinateX; circleX < circumferenceX + randCoordinateX; circleX++) {
                             for (int circleY = -circumferenceY + randCoordinateY; circleY < circumferenceY + randCoordinateY; circleY++) {
+                                Point circlePoint = new Point(circleX, circleY);
                                 //Checks to make sure the x and y are not out of bounds, the currently selected cell is of type worldcell, it has no owner and that it is habitable
-                                if (circleX <= 145 && circleY <= 145 && circleX >= 0 && circleY >= 0 && modelStructure.getBackLayer(circleX, circleY).getECellType().isHabitable() && modelStructure.getBackLayer(circleX, circleY).getOwner() == null) {
+                                if (circleX <= 145 && circleY <= 145 && circleX >= 0 && circleY >= 0 && modelStructure.getBackLayer(circlePoint).getECellType().isHabitable() && modelStructure.getBackLayer(circlePoint).getOwner() == null) {
                                     //set the tint associated with the society cell
-                                    TextureHelper.setTint(modelStructure.getBackLayer(circleX, circleY).getTexture(), tint);
+                                    TextureHelper.setTint(modelStructure.getBackLayer(circlePoint).getTexture(), tint);
                                     //Set the owner from the back layer
-                                    modelStructure.getBackLayer(circleX, circleY).setOwner(modelStructure.getFrontLayer(point));
+                                    modelStructure.getBackLayer(circlePoint).setOwner(modelStructure.getFrontLayer(point));
                                 }
                             }
                         }
@@ -211,8 +209,8 @@ public class ModelSetup {
             int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
             Point point = new Point(j, k);
             //Make sure that the nutrient cell generates on grass, and set its owner
-            if (modelStructure.getBackLayer(j, k).getECellType() == ECellType.GRASS) {
-                SocietyCell owner = modelStructure.getBackLayer(j, k).getOwner();
+            if (modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
+                SocietyCell owner = modelStructure.getBackLayer(point).getOwner();
                 modelStructure.setFrontLayer(point, cellFactory.createNutrientCell(owner, imageCache.get(ECellType.NUTRIENTS)));
                 globalNutrientCellList.add(point);
                 if (owner != null) {
@@ -232,7 +230,7 @@ public class ModelSetup {
                 Point coords = CircleBounds.calculateAndReturnRandomCoords(point, frontLayer);
                 if (coords.x <= 145 && coords.y <= 145 && coords.x >= 0 && coords.y >= 0) {
                     //Enforce that whatever we're replacing is not being occupied currently
-                    if (modelStructure.getBackLayer(coords.x, coords.y).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
+                    if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
                         modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(frontLayer, imageCache.get(ECellType.LIFE_CELL)));
                         ((SocietyCell) modelStructure.getFrontLayer(point)).addLifeCells(modelStructure.getFrontLayer(coords));
                     }

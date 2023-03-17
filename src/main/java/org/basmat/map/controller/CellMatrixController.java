@@ -34,7 +34,7 @@ public class CellMatrixController {
         modelStructure = new ModelStructure(150, 150);
         imageCache = TextureHelper.cacheCellTextures(new HashMap<>());
         viewStructure = new ViewStructure(150, 150, this);
-        ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, viewStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
+        ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
         PanelContainer panelContainer = new PanelContainer(viewStructure);
         SwingUtilities.invokeLater(() -> {
             try {
