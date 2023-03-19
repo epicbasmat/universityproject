@@ -5,7 +5,6 @@ import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.model.cells.factory.IOwnedCell;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -17,7 +16,7 @@ public class ModelStructure {
     private final HashMap<Coords, WorldCell> backLayer;
     private final HashMap<Coords, ? super IMapCell> frontLayer;
 
-    public ModelStructure(int backLayerWidth, int backLayerHeight) {
+    public ModelStructure() {
         this.backLayer = new HashMap<>();
         this.frontLayer = new HashMap<>();
     }
@@ -39,12 +38,22 @@ public class ModelStructure {
     }
 
     /**
-     * This method returns the object that is current on either matrix's coordinate. If the top layer contains an object, then that overrides returning the bottom object. i.e
+     * This method returns the object that is current on either matrix's coordinate. If the top layer contains an object, then that overrides returning the bottom object.
      * @return The object that is in the coordinates, with the front layer taking priority
      */
     public <T extends IMapCell> T getCoordinate(Point point) {
         return getFrontLayer(point) == null ? (T) getBackLayer(point) : getFrontLayer(point);
     }
+
+    /**
+     * Be careful
+     * @param point The coordinate to delete, uses getCoordinate() to get the priority object
+     */
+    public <T extends IMapCell> void deleteCoordinate(Point point) {
+        T t = getCoordinate(point);
+        t = null;
+    }
+
 }
 
 class Coords{
@@ -65,6 +74,7 @@ class Coords{
         return obj instanceof Coords coords && this.x == coords.x && this.y == coords.y;
     }
 
+    //hashCode is overridden to ensure that even though an object could be different, if the coordinates match then the bucket will be the same.
     @Override
     public int hashCode() {
         return (y * 145) + x;

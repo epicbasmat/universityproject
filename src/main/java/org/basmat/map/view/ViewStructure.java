@@ -67,6 +67,29 @@ public class ViewStructure extends JPanel implements MouseListener{
         this.repaint();
     }
 
+    public CellPanel getPanel(Point point) {
+        return cellPanelMatrix[point.x][point.y];
+    }
+
+    //TODO: ideally, deprecate this and regenerate the view array from the model each time step, but do it efficiently for gods sake
+
+    /**
+     *
+     * @param toRemove The point that needs to be removed
+     * @param toReplaceRemoved The CellPanel that replaces the coordinate at replaceAt
+     * @param replaceAt The point to replace with the new CellPanel
+     */
+    public void getAndReplace(Point toRemove, CellPanel toReplaceRemoved, Point replaceAt){
+        CellPanel cellPanel = getPanel(toRemove);
+        removeCell(toRemove);
+        removeCell(replaceAt);
+        addCellPanel(toReplaceRemoved, toRemove);
+        addCellPanel(cellPanel, replaceAt);
+
+    }
+
+
+
     @Override
     public void mouseClicked(MouseEvent e) {
         cellMatrixController.displayData(e);

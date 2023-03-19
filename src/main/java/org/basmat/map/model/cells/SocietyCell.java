@@ -3,6 +3,7 @@ package org.basmat.map.model.cells;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.util.ECellType;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
@@ -18,9 +19,7 @@ public class SocietyCell implements IMapCell {
     private int tint;
     private BufferedImage texture;
     private LinkedList<NutrientCell> nutrientCells;
-
-
-    private LinkedList<LifeCell> lifeCells;
+    private LinkedList<Point> lifeCells;
 
 
     /**
@@ -42,12 +41,12 @@ public class SocietyCell implements IMapCell {
     public void addNutrientCells(NutrientCell nutrientCell) {
         nutrientCells.add(nutrientCell);
     }
-    public LinkedList<LifeCell> getLifeCells() {
+    public LinkedList<Point> getLifeCells() {
         return lifeCells;
     }
 
-    public void addLifeCells(LifeCell lifeCell) {
-        lifeCells.add(lifeCell);
+    public void addLifeCells(Point lifeCellCoordinates) {
+        lifeCells.add(lifeCellCoordinates);
         incrementSupportedCount();
     }
 

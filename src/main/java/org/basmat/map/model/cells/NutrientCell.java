@@ -26,7 +26,7 @@ public class NutrientCell implements IOwnedCell {
     public NutrientCell(@Nullable SocietyCell owner, BufferedImage texture) {
         this.owner = owner;
         this.texture = texture;
-        this.capacity = (int) (Math.random() * 7 - 1) + 1;
+        this.capacity = (int) (Math.random() * 7 - 1) + 2;
         this.supporting = 0;
     }
 

@@ -1,4 +1,4 @@
-package org.basmat.map.model.cells.rules;
+package org.basmat.map.controller.rules;
 
 
 /**

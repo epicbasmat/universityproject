@@ -1,5 +1,6 @@
 package org.basmat.map.util.path;
 
+import org.basmat.map.model.ModelStructure;
 import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
@@ -22,18 +23,26 @@ public class Pathfind {
     /*
     Heuristic - f(n) = g(n) + h(n)
     n is the current selected node
-    g(n) is the cost of the path from the current node to child node n
+    g(n) is the cost of the path from the current node to child node n. Certain cells have higher g(n) requirements than other cells.
     h(n) is the heuristic function from n to goal
     */
 
-    /*public static LinkedList<Node> aStar(int allowedIterations, ViewStructure viewStructure, HashMap<Integer, MVBinder<?>> mapIdToMvBinder, Point origin, Point destination) {
+    /**
+     * A basic implementation of the A Star pathfinding algorithm, which returns a LinkedList from Point Origin to Point Destination if the pathfinding algorithm can find an appropriate path within the maximum allowed iterations.
+     * @param allowedIterations The maximum allowed amount of iterations before the pathfinding algorithm is overriden and fails
+     * @param modelStructure The ModelStructure that contains all the model data of the system
+     * @param origin The origin of the pathfinding algorithm
+     * @param destination The destination of the pathfinding algorithm
+     * @return A LinkedList containing the path to the destination if there is a valid one, else an empty LinkedList if it failed to get a path within the maximum allowed iterations or the OpenList was exhausted
+     */
+    public static LinkedList<Node> aStar(int allowedIterations, ModelStructure modelStructure, Point origin, Point destination) {
         //Cost of moving through
         int sand = 200;
         int water = 700;
         int grass = 100;
         PriorityQueue<Node> openList = new PriorityQueue<>(new HeuristicComparator());   //Candidates to examine
         LinkedList<Node> closedList = new LinkedList<>(); //Good candidates, passed exam
-        openList.add(new Node(origin, h(origin, destination)));
+        openList.add(new Node(origin, h(origin, destination) + 100000));
         int currentIterations = 0;
         while (!openList.isEmpty() && allowedIterations > currentIterations) {
             currentIterations++;
@@ -41,20 +50,25 @@ public class Pathfind {
             Node current = openList.remove();
             closedList.add(current);
 
-            if (current.getPoint().equals(destination)) {
+            if (current.point().equals(destination)) {
                 return closedList;
             }
 
-            int[][] coordinateRef = {{(int) current.getPoint().getX(), (int) (current.getPoint().getY() - 1)}, {(int) current.getPoint().getX(), (int) (current.getPoint().getY() + 1)}, {(int) (current.getPoint().getX() - 1), (int) current.getPoint().getY()}, {(int) (current.getPoint().getX() + 1), (int) current.getPoint().getY()}};
+            int[][] coordinateRef = {{(int) current.point().getX(), (int) (current.point().getY() - 1)}, {(int) current.point().getX(), (int) (current.point().getY() + 1)}, {(int) (current.point().getX() - 1), (int) current.point().getY()}, {(int) (current.point().getX() + 1), (int) current.point().getY()}};
 
+            //Neighbours need to be filtered if they are to be examined, such as ensuring they are in range of the overall matrix
+            //TODO: Release 150 from its hardcoded hell
             List<Node> neighbours = Arrays.stream(coordinateRef).filter(e -> e[0] < 150
                     && e[1] < 150
                     && e[0] > 0
                     && e[1] > 0).map(coordinate -> { Point p = new Point(coordinate[0], coordinate[1]);
-                                                      Node n = switch (mapIdToMvBinder.get(viewStructure.getPanel(coordinate[0], coordinate[1]).getId()).model().getECellType()) {
+                                                      Node n = switch (modelStructure.getCoordinate(p).getECellType()) {
                                                           case LIGHT_WATER -> new Node(p, h(p, destination) + water);
                                                           case SAND -> new Node(p, h(p, destination) + sand);
                                                           case GRASS -> new Node(p, h(p, destination) + grass);
+                                                          //TODO: create case where it cannot go through these cells
+                                                          case LIFE_CELL -> new Node(p, h(p, destination) + 150000);
+                                                          case SOCIETY_CELL -> new Node(p, h(p, destination) + 150000);
                                                           default -> new Node(p, h(p, destination) + 500);
                                                       };
                                                       if (p.equals(destination)) {return new Node(destination, 0);} else { return n ;}
@@ -62,18 +76,18 @@ public class Pathfind {
 
             for (Node n : neighbours) {
                 if (!closedList.contains(n) && !(openList.contains(n))) {
-                    if (n.getF() < current.getF()) {
+                    if (n.heuristic() < current.heuristic()) {
                         openList.add(n);
                     }
                 }
             }
         }
-        return null;
-    }*/
+        return new LinkedList<>();
+    }
 }
  class HeuristicComparator implements Comparator<Node> {
      @Override
      public int compare(Node toBeCompared, Node alreadyIn) {
-         return Integer.compare(toBeCompared.getF(), alreadyIn.getF());
+         return Integer.compare(toBeCompared.heuristic(), alreadyIn.heuristic());
      }
  }

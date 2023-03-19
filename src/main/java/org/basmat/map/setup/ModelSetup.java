@@ -36,11 +36,11 @@ public class ModelSetup {
     /**
      * @param imageCache The cache of textures for rendering
      * @param modelStructure The ModelStructure containing all the model data within 2 matrices.
-     * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalNutrientCellList The list of which all nutrient cells have a reference within
+     * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure,  LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalLifeCellList) {
+    public ModelSetup(HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;
         this.imageCache = imageCache;
@@ -174,6 +174,12 @@ public class ModelSetup {
                 modelStructure.setFrontLayer(point, cellFactory.createSocietyCell(UUID.randomUUID().toString(), 12, tint, imageCache.get(ECellType.SOCIETY_CELL)));
                 globalSocietyCellList.add(point);
 
+                //Give the society cell a minimum of 1 nutrient cell
+                Point randomNutrient = CircleBounds.calculateAndReturnRandomCoords(point, radius);
+                modelStructure.setFrontLayer(randomNutrient, cellFactory.createNutrientCell(modelStructure.getFrontLayer(point), imageCache.get(ECellType.NUTRIENTS)));
+                ((SocietyCell) modelStructure.getFrontLayer(point)).addNutrientCells(modelStructure.getFrontLayer(randomNutrient));
+
+
                 //1 unit of radius is 1 cell
                 for (int c = 0; c <= 180; c += 5) {
                     int circumferenceX = (int) (radius * Math.cos(c * 3.141519 / 180));
@@ -222,17 +228,21 @@ public class ModelSetup {
     }
 
     private void setupLifeCells() {
-        for (Point point: globalSocietyCellList) {
+        for (Point societyCellPoint: globalSocietyCellList) {
             // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
-            SocietyCell frontLayer = modelStructure.getFrontLayer(point);
-            for (int i = 0; i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2; i++) {
+            SocietyCell frontLayer = modelStructure.getFrontLayer(societyCellPoint);
+            //for (int i = 0; i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2; i++) {
+            int i = 0;
+            while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds
-                Point coords = CircleBounds.calculateAndReturnRandomCoords(point, frontLayer);
+                Point coords = CircleBounds.calculateAndReturnRandomCoords(societyCellPoint, frontLayer.getRadius());
                 if (coords.x <= 145 && coords.y <= 145 && coords.x >= 0 && coords.y >= 0) {
                     //Enforce that whatever we're replacing is not being occupied currently
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
+                        i++;
                         modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(frontLayer, imageCache.get(ECellType.LIFE_CELL)));
-                        ((SocietyCell) modelStructure.getFrontLayer(point)).addLifeCells(modelStructure.getFrontLayer(coords));
+                        ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells(coords);
+                        globalLifeCellList.add(coords);
                     }
                 }
             }
