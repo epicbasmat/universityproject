@@ -13,7 +13,9 @@ import org.basmat.map.view.ViewStructure;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * The gardener rule set provides methods into life. The rules govern how the life cells will recreate, as well as attempts to survive, such as scavenge if food resources are low.
@@ -65,20 +67,24 @@ public class Gardener {
      * This method manages the cells if they are trying to join each other.
      */
     public <T extends IMapCell> void unison() {
-        for (SocietyCell societyCell: activeSocietyCells.keySet()) {
-            LinkedList<Node> list = activeSocietyCells.get(societyCell);
-            if (list.isEmpty()) {
-                activeSocietyCells.remove(societyCell);
+        Iterator<SocietyCell> societyCellIterator = activeSocietyCells.keySet().iterator();
+        for (Map.Entry<SocietyCell, LinkedList<Node>> entry : activeSocietyCells.entrySet()){
+            LinkedList<Node> value = entry.getValue();
+            if (value.peek() == null) {
+                activeSocietyCells.remove(entry);
                 continue;
             }
-            Node current = list.remove();
-            Node toMoveTo = list.peek();
+            Node current = value.remove();
+            Node toMoveTo = value.peek();
             Point cPoint = current.point();
             T model = modelStructure.getCoordinate(cPoint);
             modelStructure.deleteCoordinate(cPoint);
             modelStructure.setFrontLayer(toMoveTo.point(), model);
             viewStructure.getAndReplace(cPoint, new CellPanel(modelStructure.getBackLayer(cPoint).getTexture()), toMoveTo.point());
+
         }
+
+        System.out.println("Finished processing");
     }
 
     /**
