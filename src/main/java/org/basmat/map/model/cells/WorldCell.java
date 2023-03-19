@@ -1,9 +1,9 @@
-package org.basmat.map.cellfactory.cells;
+package org.basmat.map.model.cells;
 
-import org.basmat.map.cellfactory.IOwnedCell;
+import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.basmat.map.util.ECellType;
 
-import javax.annotation.Nullable;
+import java.awt.image.BufferedImage;
 
 /**
  * WorldCell provides the foundation for terrain-type ECellTypes. Extends CellData
@@ -11,24 +11,19 @@ import javax.annotation.Nullable;
  */
 public class WorldCell implements IOwnedCell {
     private SocietyCell owner;
-    private int id;
+    private BufferedImage texture;
     private ECellType cellType;
 
-    /**
-     * @param cellType The ECellType of the WorldCell
-     * @param owner The owner of the WorldCell
-     */
-    public WorldCell(ECellType cellType, @Nullable SocietyCell owner, int id) {
-        this.cellType = cellType;
-        this.owner = owner;
-        this.id = id;
-    }
 
     /**
-     * @param cellType The ECellType of the WorldCell
+     *
+     * @param cellType The cell type that the WorldCell can be
+     * @param texture The referential texture of a WorldCell, ideally matching the passed cellType
      */
-    public WorldCell(ECellType cellType, int id) {
-        this(cellType, null, id);
+    public WorldCell(ECellType cellType, BufferedImage texture) {
+        this.cellType = cellType;
+        this.owner = null;
+        this.texture = texture;
     }
 
     @Override
@@ -38,6 +33,11 @@ public class WorldCell implements IOwnedCell {
 
     @Override
     public SocietyCell getOwner() {return this.owner;}
+
+    @Override
+    public BufferedImage getTexture() {
+        return texture;
+    }
 
     @Override
     public String toString() {
@@ -56,8 +56,4 @@ public class WorldCell implements IOwnedCell {
         return cellType;
     }
 
-    @Override
-    public int getId() {
-        return id;
-    }
 }

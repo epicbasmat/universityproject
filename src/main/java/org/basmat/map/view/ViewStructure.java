@@ -11,11 +11,10 @@ import java.awt.event.MouseListener;
  * CellMatrixPanel provides a container to child all individual CellPanels, extending a JFrame.
  * @see CellPanel
  */
-public class CellMatrixPanel extends JPanel implements MouseListener{
+public class ViewStructure extends JPanel implements MouseListener{
+    private final CellMatrixController cellMatrixController;
     private GridBagConstraints c;
-    private CellMatrixController cellMatrixController;
     private CellPanel[][] cellPanelMatrix;
-
 
     /**
      * Instantiate the object with current parameters
@@ -23,7 +22,7 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
      * @param matrixHeight the height of the matrix
      * @param cellMatrixController the cell controller matrix that instantiated this object
      */
-    public CellMatrixPanel(int matrixWidth, int matrixHeight, CellMatrixController cellMatrixController) {
+    public ViewStructure(int matrixWidth, int matrixHeight, CellMatrixController cellMatrixController) {
         cellPanelMatrix = new CellPanel[matrixWidth][matrixHeight];
         setSize(matrixWidth * 5, matrixHeight * 5);
         this.cellMatrixController = cellMatrixController;
@@ -34,33 +33,62 @@ public class CellMatrixPanel extends JPanel implements MouseListener{
 
     /**
      * Removes the selected CellPanel from the matrix, de-rendering it from this object's JFrame
-     * @param cellPanel the CellPanel to remove
+     * @param point the point to remove
      */
-    public void removeCell(CellPanel cellPanel) {
-        remove(cellPanel);
+    public void removeCell(Point point) {
+        remove(cellPanelMatrix[point.x][point.y]);
         repaint();
     }
 
     /**
-     *
-     * @param cellPanel The cellPanel to add to this jframe
-     * @param point The point to which the cell panel will apply to
+     * Overwrites the cellpanel from a given point, and replaces it
+     * @param point The point to replace
+     * @param replacement The CellPanel to replace it with
+     */
+    public void overwriteCell(Point point, CellPanel replacement) {
+        removeCell(point);
+        addCellPanel(replacement, point);
+    }
+
+    /**
+     * Adds the CellPanel to the point
+     * @param cellPanel The CellPanel to set
+     * @param point The point to set it at
      */
     public void addCellPanel(CellPanel cellPanel, Point point) {
-        c.gridx = (int) point.getX();
-        c.gridy = (int) point.getY();
+        c.gridx = point.x;
+        c.gridy = point.y;
+        this.cellPanelMatrix[point.x][point.y] = cellPanel;
         //Make the spacing between elements 0 (default is 5px?)
         c.ipadx = -5;
         c.ipady = -5;
-        this.cellPanelMatrix[(int) point.getX()][(int) point.getY()] = cellPanel;
         this.add(cellPanel, c);
         this.revalidate();
         this.repaint();
     }
 
-    public CellPanel getPanel(int x, int y) {
-        return this.cellPanelMatrix[x][y];
+    public CellPanel getPanel(Point point) {
+        return cellPanelMatrix[point.x][point.y];
     }
+
+    //TODO: ideally, deprecate this and regenerate the view array from the model each time step, but do it efficiently for gods sake
+
+    /**
+     *
+     * @param toRemove The point that needs to be removed
+     * @param toReplaceRemoved The CellPanel that replaces the coordinate at replaceAt
+     * @param replaceAt The point to replace with the new CellPanel
+     */
+    public void getAndReplace(Point toRemove, CellPanel toReplaceRemoved, Point replaceAt){
+        CellPanel cellPanel = getPanel(toRemove);
+        removeCell(toRemove);
+        removeCell(replaceAt);
+        addCellPanel(toReplaceRemoved, toRemove);
+        addCellPanel(cellPanel, replaceAt);
+
+    }
+
+
 
     @Override
     public void mouseClicked(MouseEvent e) {

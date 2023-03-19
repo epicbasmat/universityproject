@@ -1,6 +1,6 @@
-package org.basmat.map.cellfactory;
+package org.basmat.map.model.cells.factory;
 
-import org.basmat.map.cellfactory.cells.SocietyCell;
+import org.basmat.map.model.cells.SocietyCell;
 
 /**
  * This interface extends IMapCell and provides methods to describe the owner of the cell that implements this interface
