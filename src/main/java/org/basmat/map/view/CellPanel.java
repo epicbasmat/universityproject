@@ -23,7 +23,17 @@ public class CellPanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-        g2d = (Graphics2D) g;
-        if (g2d.drawImage(texture, 0, 0, null)) { }
+        super.paintComponent(g);
+        if (texture != null) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            int x = (getWidth() - texture.getWidth(this)) / 2;
+            int y = (getHeight() - texture.getHeight(this)) / 2;
+            g2d.drawImage(texture, x, y, this);
+            g2d.dispose();
+        }
+    }
+
+    public boolean isEqualTexture(BufferedImage texture) {
+        return texture == this.texture;
     }
 }

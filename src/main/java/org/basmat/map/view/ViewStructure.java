@@ -37,7 +37,7 @@ public class ViewStructure extends JPanel implements MouseListener{
      */
     public void removeCell(Point point) {
         remove(cellPanelMatrix[point.x][point.y]);
-        repaint();
+        revalidate();
     }
 
     /**
@@ -64,14 +64,11 @@ public class ViewStructure extends JPanel implements MouseListener{
         c.ipady = -5;
         this.add(cellPanel, c);
         this.revalidate();
-        this.repaint();
     }
 
     public CellPanel getPanel(Point point) {
         return cellPanelMatrix[point.x][point.y];
     }
-
-    //TODO: ideally, deprecate this and regenerate the view array from the model each time step, but do it efficiently for gods sake
 
     /**
      *
@@ -85,7 +82,7 @@ public class ViewStructure extends JPanel implements MouseListener{
         removeCell(replaceAt);
         addCellPanel(toReplaceRemoved, toRemove);
         addCellPanel(cellPanel, replaceAt);
-
+        revalidate();
     }
 
 

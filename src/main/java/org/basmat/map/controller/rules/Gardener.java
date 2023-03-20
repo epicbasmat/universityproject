@@ -5,6 +5,7 @@ import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.factory.IMapCell;
+import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
 import org.basmat.map.view.CellPanel;
@@ -67,7 +68,6 @@ public class Gardener {
      * This method manages the cells if they are trying to join each other.
      */
     public <T extends IMapCell> void unison() {
-        Iterator<SocietyCell> societyCellIterator = activeSocietyCells.keySet().iterator();
         for (Map.Entry<SocietyCell, LinkedList<Node>> entry : activeSocietyCells.entrySet()){
             LinkedList<Node> value = entry.getValue();
             if (value.peek() == null) {
@@ -81,9 +81,8 @@ public class Gardener {
             modelStructure.deleteCoordinate(cPoint);
             modelStructure.setFrontLayer(toMoveTo.point(), model);
             viewStructure.getAndReplace(cPoint, new CellPanel(modelStructure.getBackLayer(cPoint).getTexture()), toMoveTo.point());
-
         }
-
+        ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
         System.out.println("Finished processing");
     }
 

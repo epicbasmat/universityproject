@@ -45,13 +45,12 @@ public class RuleApplier {
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
         activeSocietyCells = new HashMap<>();
-        //gardener.reproduce(activeSocietyCells);
-       /* new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
+        new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                applyRulesToCells();
+                //applyRulesToCells();
             }
-        }, 0, 4000);*/
+        }, 0, 4000);
     }
 
     public void invokeGardener(){
@@ -63,5 +62,6 @@ public class RuleApplier {
     }
 
     private void applyRulesToCells() {
+        gardener.unison();
     }
 }

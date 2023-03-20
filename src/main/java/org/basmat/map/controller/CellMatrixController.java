@@ -40,15 +40,9 @@ public class CellMatrixController {
         ruleApplier = new RuleApplier(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
         ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
         PanelContainer panelContainer = new PanelContainer(viewStructure, new UI(this));
-        SwingUtilities.invokeLater(() -> {
-            try {
-                modelSetup.setupMap();
-                ViewSetup.setupView(viewStructure, modelStructure);
-                ruleApplier.gen();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        modelSetup.setupMap();
+        ViewSetup.setupView(viewStructure, modelStructure);
+        ruleApplier.gen();
     }
 
     public void doThing(){
@@ -74,7 +68,7 @@ public class CellMatrixController {
      */
     public void displayData(MouseEvent e) {
         //Weird subtractions are necessary to align click co-ordinate with cell matrix co-ordinate
-        int x = (int) e.getPoint().getX() / 5 - 16;
+        int x = (int) e.getPoint().getX() / 5 - 17;
         int y = (int) e.getPoint().getY() / 5 - 7;
         System.out.println("==");
         System.out.println(x + ", " + y);
