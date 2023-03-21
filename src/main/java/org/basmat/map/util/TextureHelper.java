@@ -52,7 +52,7 @@ public class TextureHelper {
 
     /**
      * Tints the loaded bufferedimage from the view.
-     * @param tint The RGB value to mask the image with using an OR operator. \n 0xAARRGGBB - AA = Alpha, RR = Red, GG = Green, BB = Blue
+     * @param tint The RGB value to mask the image, using an OR operator. \n 0xAARRGGBB - AA = Alpha, RR = Red, GG = Green, BB = Blue
      */
     public static void setTint(BufferedImage texture, int tint) {
         for (int x = 0; x < texture.getWidth(); x++) {

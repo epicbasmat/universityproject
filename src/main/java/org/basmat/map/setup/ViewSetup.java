@@ -24,7 +24,7 @@ public class ViewSetup {
                 for (int y = 0; y < 145; y++) {
                     if (isLazy == IS_LAZY) {
                         if (!(viewStructure.getPanel(new Point(x, y)).isEqualTexture(modelStructure.getCoordinate(new Point(x, y)).getTexture()))) {
-                            setPanel(viewStructure, modelStructure, x, y);
+                            viewStructure.overwriteCell(new Point(x, y), new CellPanel(modelStructure.getCoordinate(new Point(x, y)).getTexture()));
                         }
                     } else {
                         setPanel(viewStructure, modelStructure, x, y);

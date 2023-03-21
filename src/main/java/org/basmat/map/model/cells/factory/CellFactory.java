@@ -7,6 +7,7 @@ import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 
@@ -31,7 +32,7 @@ public class CellFactory extends AbstractCellFactory {
     }
 
     @Override
-    public IMapCell createLifeCell(SocietyCell societyCell, BufferedImage texture) {
+    public IMapCell createLifeCell(Point societyCell, BufferedImage texture) {
         return new LifeCell(societyCell, TextureHelper.copyTexture(texture));
     }
 }

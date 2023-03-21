@@ -50,6 +50,11 @@ public class SocietyCell implements IMapCell {
         incrementSupportedCount();
     }
 
+    public void changeLifeCellLoc(Point before, Point after) {
+        lifeCells.remove(before);
+        lifeCells.add(after);
+    }
+
     private void incrementSupportedCount() {
         for (NutrientCell e : nutrientCells) {
             if (e.getSupportingCount() < e.getCapacity()) {

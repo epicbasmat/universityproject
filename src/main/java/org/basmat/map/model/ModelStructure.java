@@ -1,8 +1,10 @@
 package org.basmat.map.model;
 
+import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.model.cells.factory.IOwnedCell;
+import org.basmat.map.util.ECellType;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -50,8 +52,11 @@ public class ModelStructure {
      * @param point The coordinate to delete, uses getCoordinate() to get the priority object
      */
     public <T extends IMapCell> void deleteCoordinate(Point point) {
-        T t = getCoordinate(point);
-        t = null;
+        if (getCoordinate(point) instanceof WorldCell) {
+            backLayer.remove(new Coords(point));
+        } else {
+            frontLayer.remove(new Coords(point));
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
+import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.view.ViewStructure;
 
@@ -55,6 +56,8 @@ public class RuleApplier {
 
     public void invokeGardener(){
         gardener.unison();
+        gardener.checkForReproductionRules();
+        ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
     }
 
     public void gen() {

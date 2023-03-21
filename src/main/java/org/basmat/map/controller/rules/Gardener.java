@@ -4,8 +4,12 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
+import org.basmat.map.model.cells.WorldCell;
+import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.setup.ViewSetup;
+import org.basmat.map.util.ECellType;
+import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
 import org.basmat.map.view.CellPanel;
@@ -13,10 +17,8 @@ import org.basmat.map.view.ViewStructure;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * The gardener rule set provides methods into life. The rules govern how the life cells will recreate, as well as attempts to survive, such as scavenge if food resources are low.
@@ -64,25 +66,65 @@ public class Gardener {
         }
     }
 
+    public void checkForReproductionRules() {
+        System.out.println("Checking reproduction rules");
+        List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
+        for (Point lifeCellPoint : copyOfList) {
+            int[][] coordinateRef = {{(int) lifeCellPoint.getX(), (int) (lifeCellPoint.getY() - 1)}, {(int) lifeCellPoint.getX(), (int) (lifeCellPoint.getY() + 1)}, {(int) (lifeCellPoint.getX() - 1), (int) lifeCellPoint.getY()}, {(int) (lifeCellPoint.getX() + 1), (int) lifeCellPoint.getY()}};
+            List<int[]> ints = Arrays.stream(coordinateRef).filter(e -> e[0] < 150
+                    && e[1] < 150
+                    && e[0] > 0
+                    && e[1] > 0).toList();
+            for (int[] point : ints) {
+                if (modelStructure.getCoordinate(new Point(point[0], point[1])) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && ((LifeCell) modelStructure.getCoordinate(lifeCellPoint)).getReproductionCooldown() == 0) {
+                    Point newLifeCell;
+                    int[] ints1;
+                    do {
+                        ints1 = coordinateRef[((int) (Math.random() * coordinateRef.length))];
+                        newLifeCell = new Point(ints1[0], ints1[1]);
+                    } while (!(modelStructure.getCoordinate(newLifeCell) instanceof WorldCell worldCell/* && !(worldCell.getECellType().isHabitable())*/));
+                    modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures(new HashMap<>()).get(ECellType.LIFE_CELL)));
+                    globalLifeCellList.remove(lifeCellPoint);
+                    globalLifeCellList.add(newLifeCell);
+                    globalLifeCellList.add(new Point(point[0], point[1]));
+                    ((LifeCell) modelStructure.getCoordinate(lifeCellPoint)).setReproductionCooldown();
+                    ((LifeCell) modelStructure.getCoordinate(new Point(point[0], point[1]))).setReproductionCooldown();
+                    ((LifeCell) modelStructure.getCoordinate(newLifeCell)).setReproductionCooldown();
+                    System.out.println("A new life cell has been created!");
+                    break;
+                }
+            }
+
+        }
+    }
+
     /**
      * This method manages the cells if they are trying to join each other.
      */
     public <T extends IMapCell> void unison() {
+        //For each society cell that has an active path
         for (Map.Entry<SocietyCell, LinkedList<Node>> entry : activeSocietyCells.entrySet()){
+            //Get the LinkedList containing all nodes from point A to point B
             LinkedList<Node> value = entry.getValue();
-            if (value.peek() == null) {
+            //Stop them before they merge into one cell. Also stop if the value becomes null, but value.size() should prevent that
+            if (value.peek() == null || value.size() == 2) {
                 activeSocietyCells.remove(entry);
                 continue;
             }
+            //Get the current node which should be the node the cell is on, and then the cell to move to.
             Node current = value.remove();
             Node toMoveTo = value.peek();
             Point cPoint = current.point();
             T model = modelStructure.getCoordinate(cPoint);
             modelStructure.deleteCoordinate(cPoint);
             modelStructure.setFrontLayer(toMoveTo.point(), model);
-            viewStructure.getAndReplace(cPoint, new CellPanel(modelStructure.getBackLayer(cPoint).getTexture()), toMoveTo.point());
+            globalLifeCellList.remove(cPoint);
+            globalLifeCellList.add(toMoveTo.point());
+            entry.getKey().changeLifeCellLoc(current.point(), toMoveTo.point());
+            //viewStructure.getAndReplace(cPoint, new CellPanel(modelStructure.getBackLayer(cPoint).getTexture()), toMoveTo.point());
+            //Get the worldcell beneath the life cell, as when the life cell moves it needs to be replaced
+
         }
-        ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
         System.out.println("Finished processing");
     }
 
@@ -120,9 +162,7 @@ public class Gardener {
 
     private LinkedList<Node> getPathBetweenCouple(SocietyCell societyCell) {
         Point[] couple = selectCoupleLifeCell(societyCell);
-        LinkedList<Node> nodes = Pathfind.aStar(250, modelStructure, couple[0], couple[1]);
-        nodes.addFirst(new Node(couple[0], 0));
-        return nodes;
+        return Pathfind.aStar(250, modelStructure, couple[0], couple[1]);
     }
 
     private Point selectRandomLifeCell(SocietyCell societyCell) {

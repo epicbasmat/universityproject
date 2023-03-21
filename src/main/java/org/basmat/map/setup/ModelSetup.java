@@ -240,7 +240,7 @@ public class ModelSetup {
                     //Enforce that whatever we're replacing is not being occupied currently
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
                         i++;
-                        modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(frontLayer, imageCache.get(ECellType.LIFE_CELL)));
+                        modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(societyCellPoint, imageCache.get(ECellType.LIFE_CELL)));
                         ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells(coords);
                         globalLifeCellList.add(coords);
                     }
