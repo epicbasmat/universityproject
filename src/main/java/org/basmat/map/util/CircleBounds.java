@@ -9,7 +9,7 @@ public class CircleBounds {
      * Returns a random coordinate with a circle's area
      * @param point The centre point of a circle
      * @param radius The radius of the circle
-     * @return
+     * @return A random coordinate within a designated point and radius
      */
     public static Point calculateAndReturnRandomCoords(Point point, int radius) {
         //Calculates a random point within a circle, in this case the area of effect of a societycell

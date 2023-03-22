@@ -8,6 +8,7 @@ import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.setup.ViewSetup;
+import org.basmat.map.util.CircleBounds;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
@@ -66,35 +67,60 @@ public class Gardener {
         }
     }
 
+    public void expand() {
+        for (Point societyCellPoint : globalSocietyCellList) {
+            SocietyCell societyCell = modelStructure.getCoordinate(societyCellPoint);
+            int additionalArea = societyCell.getSize() / 6;
+
+
+        }
+    }
+
+    public void scatter() {
+        for (Point lifeCellPoint : globalLifeCellList) {
+            LifeCell lifeCell = modelStructure.getCoordinate(lifeCellPoint);
+            SocietyCell societyCell = modelStructure.getCoordinate(lifeCell.getSocietyCell());
+            if (lifeCell.getReproductionCooldown() == 9) {
+                System.out.println("Abandoning future");
+                LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, CircleBounds.calculateAndReturnRandomCoords(lifeCell.getSocietyCell(), societyCell.getRadius()));
+                activeSocietyCells.put(societyCell, value);
+            }
+        }
+    }
+
     public void checkForReproductionRules() {
         System.out.println("Checking reproduction rules");
+        //Copy list to prevent concurrency exceptions
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCellPoint : copyOfList) {
+            LifeCell parent1 = modelStructure.getCoordinate(lifeCellPoint);
             int[][] coordinateRef = {{(int) lifeCellPoint.getX(), (int) (lifeCellPoint.getY() - 1)}, {(int) lifeCellPoint.getX(), (int) (lifeCellPoint.getY() + 1)}, {(int) (lifeCellPoint.getX() - 1), (int) lifeCellPoint.getY()}, {(int) (lifeCellPoint.getX() + 1), (int) lifeCellPoint.getY()}};
             List<int[]> ints = Arrays.stream(coordinateRef).filter(e -> e[0] < 150
                     && e[1] < 150
                     && e[0] > 0
                     && e[1] > 0).toList();
+
+            //Get a 3x3 area from the origin of the cell and see if there are any life cell to reproduce with
             for (int[] point : ints) {
-                if (modelStructure.getCoordinate(new Point(point[0], point[1])) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && ((LifeCell) modelStructure.getCoordinate(lifeCellPoint)).getReproductionCooldown() == 0) {
+                if (modelStructure.getCoordinate(new Point(point[0], point[1])) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && parent1.getReproductionCooldown() == 0) {
                     Point newLifeCell;
                     int[] ints1;
                     do {
                         ints1 = coordinateRef[((int) (Math.random() * coordinateRef.length))];
                         newLifeCell = new Point(ints1[0], ints1[1]);
                     } while (!(modelStructure.getCoordinate(newLifeCell) instanceof WorldCell worldCell/* && !(worldCell.getECellType().isHabitable())*/));
+                    //Create a new life cell and add it to the global array, and add it to the model
                     modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures(new HashMap<>()).get(ECellType.LIFE_CELL)));
-                    globalLifeCellList.remove(lifeCellPoint);
                     globalLifeCellList.add(newLifeCell);
-                    globalLifeCellList.add(new Point(point[0], point[1]));
-                    ((LifeCell) modelStructure.getCoordinate(lifeCellPoint)).setReproductionCooldown();
+                    parent1.setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(new Point(point[0], point[1]))).setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(newLifeCell)).setReproductionCooldown();
                     System.out.println("A new life cell has been created!");
+                    ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells(newLifeCell);
                     break;
                 }
             }
-
+            parent1.decrementReproductionCooldown();
         }
     }
 
@@ -107,7 +133,21 @@ public class Gardener {
             //Get the LinkedList containing all nodes from point A to point B
             LinkedList<Node> value = entry.getValue();
             //Stop them before they merge into one cell. Also stop if the value becomes null, but value.size() should prevent that
-            if (value.peek() == null || value.size() == 2) {
+            //Also, prevent the lifecell from trying to find a mate if the mate or itself has a reproduction cooldown greater than 3
+            if (value.peek() == null
+                    ||
+                            value.size() == 2
+                    ||
+                    (
+                            modelStructure.getCoordinate(value.peek().point()) instanceof LifeCell lifeCell
+                                    && lifeCell.getReproductionCooldown() > 3
+                    )
+                    ||
+                    (
+                            modelStructure.getCoordinate(value.getLast().point()) instanceof LifeCell lifeCell2
+                                    && lifeCell2.getReproductionCooldown() > 3
+                    )
+            ) {
                 activeSocietyCells.remove(entry);
                 continue;
             }
@@ -121,9 +161,6 @@ public class Gardener {
             globalLifeCellList.remove(cPoint);
             globalLifeCellList.add(toMoveTo.point());
             entry.getKey().changeLifeCellLoc(current.point(), toMoveTo.point());
-            //viewStructure.getAndReplace(cPoint, new CellPanel(modelStructure.getBackLayer(cPoint).getTexture()), toMoveTo.point());
-            //Get the worldcell beneath the life cell, as when the life cell moves it needs to be replaced
-
         }
         System.out.println("Finished processing");
     }

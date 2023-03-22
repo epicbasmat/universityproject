@@ -56,6 +56,7 @@ public class RuleApplier {
 
     public void invokeGardener(){
         gardener.unison();
+        gardener.scatter();
         gardener.checkForReproductionRules();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
     }

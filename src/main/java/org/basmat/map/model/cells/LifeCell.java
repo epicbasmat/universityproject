@@ -67,6 +67,6 @@ public class LifeCell implements IMapCell {
     }
 
     public void setReproductionCooldown() {
-        reproductionCooldown = 10;
+        reproductionCooldown = 11;
     }
 }
