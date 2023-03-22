@@ -101,10 +101,16 @@ public class Gardener {
                 if (modelStructure.getCoordinate(new Point(point[0], point[1])) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && parent1.getReproductionCooldown() == 0) {
                     Point newLifeCell;
                     int[] ints1;
+                    int breakcnd = 0;
                     do {
                         ints1 = coordinateRef.get(((int) (Math.random() * coordinateRef.size())));
                         newLifeCell = new Point(ints1[0], ints1[1]);
-                    } while (!(modelStructure.getCoordinate(newLifeCell) instanceof WorldCell worldCell/* && !(worldCell.getECellType().isHabitable())*/));
+                        breakcnd++;
+                    } while (!(modelStructure.getCoordinate(newLifeCell) instanceof WorldCell) && breakcnd != 4);/* && !(worldCell.getECellType().isHabitable())*/;
+                    if (breakcnd == 4) {
+                        System.out.println("A life cell cannot be created!");
+                        continue;
+                    }
                     //Create a new life cell and add it to the global array, and add it to the model
                     modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures(new HashMap<>()).get(ECellType.LIFE_CELL)));
                     globalLifeCellList.add(newLifeCell);
@@ -185,32 +191,28 @@ public class Gardener {
     public void reproduce() {
         System.out.println("Reproduce time");
         for (Point point : globalSocietyCellList) {
-            //Cannot have more than 1 instance of a society cell trying to procreate, though this may change later.
-            //if (!activeSocietyCells.containsKey()) {
-                SocietyCell societyCell = modelStructure.getCoordinate(point);
-                int percentageCapacity = societyCell.getSize() / societyCell.getNutrientCapacity() * 100;
-                //The population and it's resources determine the probability of a societycell determining if it needs to reproduce. A high population and not a lot of food left means there is a lower chance of reproduction. Vice versa.
-                int reproduceProbability;
-                if (percentageCapacity < 20) {
-                    reproduceProbability = 100;
-                } else if (percentageCapacity < 50) {
-                    reproduceProbability =  50;
-                } else if (percentageCapacity < 80) {
-                    reproduceProbability =  20;
-                } else {
-                    reproduceProbability =  10;
-                }
+            SocietyCell societyCell = modelStructure.getCoordinate(point);
+            int percentageCapacity = societyCell.getSize() / societyCell.getNutrientCapacity() * 100;
+            //The population and it's resources determine the probability of a societycell determining if it needs to reproduce.
+            // A high population and not a lot of food left means there is a lower chance of reproduction. Vice versa.
+            int reproduceProbability;
+            if (percentageCapacity < 20) {
+                reproduceProbability = 100;
+            } else if (percentageCapacity < 50) {
+                reproduceProbability =  50;
+            } else if (percentageCapacity < 80) {
+                reproduceProbability =  20;
+            } else {
+                reproduceProbability =  10;
+            }
 
-                if (reproduceProbability > Math.random() * 100) {
-                    LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
-                    if (activeSocietyCells.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek()))){
-                        activeSocietyCells.add(pathBetweenCouple);
-                    }
+            if (reproduceProbability > Math.random() * 100) {
+                LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
+                if (activeSocietyCells.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek()))){
+                    activeSocietyCells.add(pathBetweenCouple);
                 }
-            //}
+            }
         }
-        //For any society cells deciding to populate, we must make the life cells go together. Though there is a chance of reproduction each time tick, we want to guarantee that the life cells try to go together each time tick.
-        //unison();
     }
 
     private LinkedList<Node> getPathBetweenCouple(SocietyCell societyCell) {
