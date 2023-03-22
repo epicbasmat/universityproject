@@ -59,6 +59,17 @@ public class ModelStructure {
         }
     }
 
+    /**
+     *
+     * @param toDelete The coordinate to delete
+     * @param toReplaceAt The coordinate to replace at
+     */
+    public <T extends IMapCell> void replaceFrontLayerAt(Point toDelete, Point toReplaceAt) {
+        T model = getFrontLayer(toDelete);
+        deleteCoordinate(toDelete);
+        setFrontLayer(toReplaceAt, model);
+    }
+
 }
 
 class Coords{

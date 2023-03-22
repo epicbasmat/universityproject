@@ -2,21 +2,17 @@ package org.basmat.map.controller.rules;
 
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
-import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.model.cells.factory.IMapCell;
-import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.CircleBounds;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
-import org.basmat.map.view.CellPanel;
 import org.basmat.map.view.ViewStructure;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -34,7 +30,7 @@ public class Gardener {
     private LinkedList<Point> globalLifeCellList;
 
     //Update
-    private HashMap<SocietyCell, LinkedList<Node>> activeSocietyCells;
+    private LinkedList<LinkedList<Node>> activeSocietyCells;
     private ViewStructure viewStructure;
     private final ModelStructure modelStructure;
 
@@ -52,7 +48,7 @@ public class Gardener {
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
-        activeSocietyCells = new HashMap<>();
+        activeSocietyCells = new LinkedList<>();
     }
 
     /**
@@ -83,7 +79,7 @@ public class Gardener {
             if (lifeCell.getReproductionCooldown() == 9) {
                 System.out.println("Abandoning future");
                 LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, CircleBounds.calculateAndReturnRandomCoords(lifeCell.getSocietyCell(), societyCell.getRadius()));
-                activeSocietyCells.put(societyCell, value);
+                activeSocietyCells.add(value);
             }
         }
     }
@@ -94,8 +90,8 @@ public class Gardener {
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCellPoint : copyOfList) {
             LifeCell parent1 = modelStructure.getCoordinate(lifeCellPoint);
-            int[][] coordinateRef = {{(int) lifeCellPoint.getX(), (int) (lifeCellPoint.getY() - 1)}, {(int) lifeCellPoint.getX(), (int) (lifeCellPoint.getY() + 1)}, {(int) (lifeCellPoint.getX() - 1), (int) lifeCellPoint.getY()}, {(int) (lifeCellPoint.getX() + 1), (int) lifeCellPoint.getY()}};
-            List<int[]> ints = Arrays.stream(coordinateRef).filter(e -> e[0] < 150
+            List<int[]> coordinateRef = getLocalPoints(lifeCellPoint);
+            List<int[]> ints = coordinateRef.stream().filter(e -> e[0] < 150
                     && e[1] < 150
                     && e[0] > 0
                     && e[1] > 0).toList();
@@ -106,7 +102,7 @@ public class Gardener {
                     Point newLifeCell;
                     int[] ints1;
                     do {
-                        ints1 = coordinateRef[((int) (Math.random() * coordinateRef.length))];
+                        ints1 = coordinateRef.get(((int) (Math.random() * coordinateRef.size())));
                         newLifeCell = new Point(ints1[0], ints1[1]);
                     } while (!(modelStructure.getCoordinate(newLifeCell) instanceof WorldCell worldCell/* && !(worldCell.getECellType().isHabitable())*/));
                     //Create a new life cell and add it to the global array, and add it to the model
@@ -124,19 +120,28 @@ public class Gardener {
         }
     }
 
+    public static List<int[]> getLocalPoints(Point point) {
+        int[][] ints = {{(int) point.getX(), (int) (point.getY() - 1)}, {(int) point.getX(), (int) (point.getY() + 1)}, {(int) (point.getX() - 1), (int) point.getY()}, {(int) (point.getX() + 1), (int) point.getY()}};
+        return Arrays.stream(ints).filter(e -> e[0] < 145
+                && e[1] < 145
+                && e[0] > 0
+                && e[1] > 0).toList();
+    }
+
     /**
      * This method manages the cells if they are trying to join each other.
      */
     public <T extends IMapCell> void unison() {
+        //Concurrency exception dodging
+        LinkedList<LinkedList<Node>> copyOfList = new LinkedList<>(activeSocietyCells);
         //For each society cell that has an active path
-        for (Map.Entry<SocietyCell, LinkedList<Node>> entry : activeSocietyCells.entrySet()){
+        for (LinkedList<Node> value : copyOfList){
             //Get the LinkedList containing all nodes from point A to point B
-            LinkedList<Node> value = entry.getValue();
             //Stop them before they merge into one cell. Also stop if the value becomes null, but value.size() should prevent that
             //Also, prevent the lifecell from trying to find a mate if the mate or itself has a reproduction cooldown greater than 3
             if (value.peek() == null
                     ||
-                            value.size() == 2
+                            value.size() <= 2
                     ||
                     (
                             modelStructure.getCoordinate(value.peek().point()) instanceof LifeCell lifeCell
@@ -148,19 +153,28 @@ public class Gardener {
                                     && lifeCell2.getReproductionCooldown() > 3
                     )
             ) {
-                activeSocietyCells.remove(entry);
+                activeSocietyCells.remove(value);
                 continue;
             }
-            //Get the current node which should be the node the cell is on, and then the cell to move to.
+
             Node current = value.remove();
             Node toMoveTo = value.peek();
+
+
+            //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
+            if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
+                System.out.println("Regenerating path");
+                activeSocietyCells.remove(value);
+                activeSocietyCells.add(Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point()));
+                continue;
+            }
+
+            //Get the current node which should be the node the cell is on, and then the cell to move to.
             Point cPoint = current.point();
-            T model = modelStructure.getCoordinate(cPoint);
-            modelStructure.deleteCoordinate(cPoint);
-            modelStructure.setFrontLayer(toMoveTo.point(), model);
+            modelStructure.replaceFrontLayerAt(cPoint, toMoveTo.point());
             globalLifeCellList.remove(cPoint);
             globalLifeCellList.add(toMoveTo.point());
-            entry.getKey().changeLifeCellLoc(current.point(), toMoveTo.point());
+            ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(toMoveTo.point())).getSocietyCell())).changeLifeCellLoc(current.point(), toMoveTo.point());
         }
         System.out.println("Finished processing");
     }
@@ -169,6 +183,7 @@ public class Gardener {
      * Logic provider for reproduction. Determines if a society cell will cause reproduction in it's owned life cells.
      */
     public void reproduce() {
+        System.out.println("Reproduce time");
         for (Point point : globalSocietyCellList) {
             //Cannot have more than 1 instance of a society cell trying to procreate, though this may change later.
             //if (!activeSocietyCells.containsKey()) {
@@ -176,20 +191,21 @@ public class Gardener {
                 int percentageCapacity = societyCell.getSize() / societyCell.getNutrientCapacity() * 100;
                 //The population and it's resources determine the probability of a societycell determining if it needs to reproduce. A high population and not a lot of food left means there is a lower chance of reproduction. Vice versa.
                 int reproduceProbability;
-                /*if (percentageCapacity < 20) {
+                if (percentageCapacity < 20) {
                     reproduceProbability = 100;
                 } else if (percentageCapacity < 50) {
                     reproduceProbability =  50;
                 } else if (percentageCapacity < 80) {
                     reproduceProbability =  20;
                 } else {
-                    reproduceProbability =  0;
+                    reproduceProbability =  10;
                 }
-                 */
-                System.out.println(societyCell.getName());
-                reproduceProbability = 100;
+
                 if (reproduceProbability > Math.random() * 100) {
-                    activeSocietyCells.put(modelStructure.getCoordinate(point), getPathBetweenCouple(societyCell));
+                    LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
+                    if (activeSocietyCells.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek()))){
+                        activeSocietyCells.add(pathBetweenCouple);
+                    }
                 }
             //}
         }

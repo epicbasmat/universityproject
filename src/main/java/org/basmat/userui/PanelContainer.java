@@ -15,7 +15,7 @@ public class PanelContainer extends JFrame {
         add(viewStructure);
         add(ui);
         addMouseListener(viewStructure);
-
+        setTitle("SIMULATION");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1000, 1000));
         pack();

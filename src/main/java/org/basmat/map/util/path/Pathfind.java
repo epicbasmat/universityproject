@@ -1,6 +1,7 @@
 package org.basmat.map.util.path;
 
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.util.ECellType;
 import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
@@ -42,7 +43,7 @@ public class Pathfind {
         int grass = 100;
         PriorityQueue<Node> openList = new PriorityQueue<>(new HeuristicComparator());   //Candidates to examine
         LinkedList<Node> closedList = new LinkedList<>(); //Good candidates, passed exam
-        openList.add(new Node(origin, h(origin, destination) + 100000));
+        openList.add(new Node(origin, h(origin, destination) + 100000, modelStructure.getCoordinate(origin).getECellType()));
         int currentIterations = 0;
         while (!openList.isEmpty() && allowedIterations > currentIterations) {
             currentIterations++;
@@ -58,20 +59,20 @@ public class Pathfind {
 
             //Neighbours need to be filtered if they are to be examined, such as ensuring they are in range of the overall matrix
             //TODO: Release 150 from its hardcoded hell
-            List<Node> neighbours = Arrays.stream(coordinateRef).filter(e -> e[0] < 150
-                    && e[1] < 150
+            List<Node> neighbours = Arrays.stream(coordinateRef).filter(e -> e[0] < 145
+                    && e[1] < 145
                     && e[0] > 0
                     && e[1] > 0).map(coordinate -> { Point p = new Point(coordinate[0], coordinate[1]);
                                                       Node n = switch (modelStructure.getCoordinate(p).getECellType()) {
-                                                          case LIGHT_WATER -> new Node(p, h(p, destination) + water);
-                                                          case SAND -> new Node(p, h(p, destination) + sand);
-                                                          case GRASS -> new Node(p, h(p, destination) + grass);
+                                                          case LIGHT_WATER -> new Node(p, h(p, destination) + water, ECellType.LIGHT_WATER);
+                                                          case SAND -> new Node(p, h(p, destination) + sand, ECellType.SAND);
+                                                          case GRASS -> new Node(p, h(p, destination) + grass, ECellType.GRASS);
                                                           //TODO: create case where it cannot go through these cells
-                                                          case LIFE_CELL -> new Node(p, h(p, destination) + 150000);
-                                                          case SOCIETY_CELL -> new Node(p, h(p, destination) + 150000);
-                                                          default -> new Node(p, h(p, destination) + 500);
+                                                          case LIFE_CELL -> new Node(p, h(p, destination) + 150000, ECellType.LIFE_CELL);
+                                                          case SOCIETY_CELL -> new Node(p, h(p, destination) + 150000, ECellType.SOCIETY_CELL);
+                                                          default -> new Node(p, h(p, destination) + 500, modelStructure.getCoordinate(p).getECellType());
                                                       };
-                                                      if (p.equals(destination)) {return new Node(destination, 0);} else { return n ;}
+                                                      if (p.equals(destination)) {return new Node(destination, 0, modelStructure.getCoordinate(destination).getECellType());} else { return n ;}
                                                     }).toList();
 
             for (Node n : neighbours) {
