@@ -154,27 +154,14 @@ public class Gardener {
         //For each society cell that has an active path
         for (LinkedList<Node> value : copyOfList){
             //Get the LinkedList containing all nodes from point A to point B
-            //Stop them before they merge into one cell. Also stop if the value becomes null, but value.size() should prevent that
-            //Also, prevent the lifecell from trying to find a mate if the mate or itself has a reproduction cooldown greater than 3
-            if (value.peek() == null
-                    ||
-                            value.size() <= 2
-                    ||
-                    (
-                            modelStructure.getCoordinate(value.peek().point()) instanceof LifeCell lifeCell
-                                    && lifeCell.getReproductionCooldown() > 3
-                    )
-                    ||
-                    (
-                            modelStructure.getCoordinate(value.getLast().point()) instanceof LifeCell lifeCell2
-                                    && lifeCell2.getReproductionCooldown() > 3
-                    )
-            ) {
+
+            Node current = value.remove();
+
+            if (value.peek() == null) {
                 activeSocietyCells.remove(value);
                 continue;
             }
 
-            Node current = value.remove();
             Node toMoveTo = value.peek();
 
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
