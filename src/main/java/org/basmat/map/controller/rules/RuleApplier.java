@@ -58,8 +58,8 @@ public class RuleApplier {
     public void invokeGardener(){
         gardener.reproduce();
         gardener.unison();
-        //gardener.scatter();
-        //gardener.checkForReproductionRules();
+        gardener.scatter();
+        gardener.checkForReproductionRules();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
     }
 

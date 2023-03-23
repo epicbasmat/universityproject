@@ -3,11 +3,10 @@ package org.basmat.map.setup;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.util.CircleBounds;
+import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
-import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -175,7 +174,7 @@ public class ModelSetup {
                 globalSocietyCellList.add(point);
 
                 //Give the society cell a minimum of 1 nutrient cell
-                Point randomNutrient = CircleBounds.calculateAndReturnRandomCoords(point, radius);
+                Point randomNutrient = PointUtilities.calculateRandomCoords(point, radius);
                 modelStructure.setFrontLayer(randomNutrient, cellFactory.createNutrientCell(modelStructure.getFrontLayer(point), imageCache.get(ECellType.NUTRIENTS)));
                 ((SocietyCell) modelStructure.getFrontLayer(point)).addNutrientCells(modelStructure.getFrontLayer(randomNutrient));
 
@@ -235,7 +234,7 @@ public class ModelSetup {
             int i = 0;
             while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds
-                Point coords = CircleBounds.calculateAndReturnRandomCoords(societyCellPoint, frontLayer.getRadius());
+                Point coords = PointUtilities.calculateRandomCoords(societyCellPoint, frontLayer.getRadius());
                 if (coords.x <= 145 && coords.y <= 145 && coords.x >= 0 && coords.y >= 0) {
                     //Enforce that whatever we're replacing is not being occupied currently
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {

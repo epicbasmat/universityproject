@@ -2,93 +2,111 @@ package org.basmat.map.util.path;
 
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.util.ECellType;
+import org.basmat.map.util.PointUtilities;
 import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Pathfind {
 
     /**
-     * Returns the amount of expected units until destination using taxicab geometry.
+     * Returns the heuristic between a point given and a point destination using manhattan distance.
      * @return The heuristic of the node
      */
     private static int h(Point point, Point destination) {
-        int x = (int) Math.abs(destination.getX() - point.getX());
-        int y = (int) Math.abs(destination.getY() - point.getY());
-        return (int) (Math.pow(x, 2) + Math.pow(y, 2));
+        int x = (int) Math.abs(point.getX() - destination.getX());
+        int y = (int) Math.abs(point.getY() - destination.getY());
+        return x + y;
     }
 
-    /*
-    Heuristic - f(n) = g(n) + h(n)
-    n is the current selected node
-    g(n) is the cost of the path from the current node to child node n. Certain cells have higher g(n) requirements than other cells.
-    h(n) is the heuristic function from n to goal
-    */
+    private static int f(int g, int h) {
+        return g + h;
+    }
+
+    private static int weight(ECellType cellType) {
+        switch (cellType) {
+            case GRASS:
+                return 1;
+            case LIGHT_WATER, MOUNTAIN_BASE:
+                return 7;
+            case SAND:
+                return 2;
+            default:
+                return 15000;
+        }
+    }
 
     /**
      * A basic implementation of the A Star pathfinding algorithm, which returns a LinkedList from Point Origin to Point Destination if the pathfinding algorithm can find an appropriate path within the maximum allowed iterations.
-     * @param allowedIterations The maximum allowed amount of iterations before the pathfinding algorithm is overriden and fails
+     * @param allowedIterations The maximum allowed amount of iterations before the pathfinding algorithm is overridden and fails
      * @param modelStructure The ModelStructure that contains all the model data of the system
      * @param origin The origin of the pathfinding algorithm
      * @param destination The destination of the pathfinding algorithm
      * @return A LinkedList containing the path to the destination if there is a valid one, else an empty LinkedList if it failed to get a path within the maximum allowed iterations or the OpenList was exhausted
      */
     public static LinkedList<Node> aStar(int allowedIterations, ModelStructure modelStructure, Point origin, Point destination) {
-        //Cost of moving through
-        int sand = 200;
-        int water = 700;
-        int grass = 100;
-        PriorityQueue<Node> openList = new PriorityQueue<>(new HeuristicComparator());   //Candidates to examine
+
+        PriorityQueue<Node> openList = new PriorityQueue<>();   //Candidates to examine
         LinkedList<Node> closedList = new LinkedList<>(); //Good candidates, passed exam
-        openList.add(new Node(origin, h(origin, destination) + 100000, modelStructure.getCoordinate(origin).getECellType()));
+        openList.add(new Node(origin, h(origin, destination), 0, modelStructure.getCoordinate(origin).getECellType(), null));
         int currentIterations = 0;
         while (!openList.isEmpty() && allowedIterations > currentIterations) {
+
             currentIterations++;
 
-            Node current = openList.remove();
-            closedList.add(current);
+            Node current = openList.peek();
 
             if (current.point().equals(destination)) {
-                return closedList;
+                LinkedList<Node> path = new LinkedList<>();
+                Node temp = closedList.getLast();
+                while (temp.parent() != null) {
+                    path.add(temp);
+                    temp = temp.parent();
+                }
+                path.add(temp);
+                Collections.reverse(path);
+                return path;
             }
 
             int[][] coordinateRef = {{(int) current.point().getX(), (int) (current.point().getY() - 1)}, {(int) current.point().getX(), (int) (current.point().getY() + 1)}, {(int) (current.point().getX() - 1), (int) current.point().getY()}, {(int) (current.point().getX() + 1), (int) current.point().getY()}};
 
             //Neighbours need to be filtered if they are to be examined, such as ensuring they are in range of the overall matrix
             //TODO: Release 150 from its hardcoded hell
-            List<Node> neighbours = Arrays.stream(coordinateRef).filter(e -> e[0] < 145
-                    && e[1] < 145
-                    && e[0] > 0
-                    && e[1] > 0).map(coordinate -> { Point p = new Point(coordinate[0], coordinate[1]);
-                                                      Node n = switch (modelStructure.getCoordinate(p).getECellType()) {
-                                                          case LIGHT_WATER -> new Node(p, h(p, destination) + water, ECellType.LIGHT_WATER);
-                                                          case SAND -> new Node(p, h(p, destination) + sand, ECellType.SAND);
-                                                          case GRASS -> new Node(p, h(p, destination) + grass, ECellType.GRASS);
-                                                          //TODO: create case where it cannot go through these cells
-                                                          case LIFE_CELL -> new Node(p, h(p, destination) + 150000, ECellType.LIFE_CELL);
-                                                          case SOCIETY_CELL -> new Node(p, h(p, destination) + 150000, ECellType.SOCIETY_CELL);
-                                                          default -> new Node(p, h(p, destination) + 500, modelStructure.getCoordinate(p).getECellType());
-                                                      };
-                                                      if (p.equals(destination)) {return new Node(destination, 0, modelStructure.getCoordinate(destination).getECellType());} else { return n ;}
-                                                    }).toList();
+            List<Point> neighbours = Arrays.stream(coordinateRef).filter(coords -> PointUtilities.noOOBRandomCoords(new Point(coords[0], coords[1]))).map(f -> new Point(f[0], f[1])).toList();
 
-            for (Node n : neighbours) {
-                if (!closedList.contains(n) && !(openList.contains(n))) {
-                    if (n.heuristic() < current.heuristic()) {
-                        openList.add(n);
+            for (Point point : neighbours) {
+                /*
+                f(n) = g(n) + h(n)
+                n is the current selected node
+                g(n) The cost from the start node to n
+                h(n) Estimation of the cost from n to goal. this is the heuristic
+                */
+
+                if (point.equals(destination)) {
+                    openList.add(new Node(destination, 0, 0, modelStructure.getCoordinate(destination).getECellType(), current));
+                    break;
+                }
+                ECellType candidate  = modelStructure.getCoordinate(point).getECellType();
+                int nextCost = current.g() + weight(candidate);
+                Node neighbour = new Node(point, nextCost + h(point, destination), nextCost, candidate, current);
+                if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {
+                    openList.add(neighbour);
+                } else {
+                    if (nextCost < current.g()) {
+                        if (closedList.contains(neighbour)) {
+                            closedList.remove(neighbour);
+                            openList.add(neighbour);
+                        }
                     }
                 }
             }
+            closedList.add(current);
+            openList.remove(current);
         }
         return new LinkedList<>();
     }
 }
- class HeuristicComparator implements Comparator<Node> {
-     @Override
-     public int compare(Node toBeCompared, Node alreadyIn) {
-         return Integer.compare(toBeCompared.heuristic(), alreadyIn.heuristic());
-     }
- }

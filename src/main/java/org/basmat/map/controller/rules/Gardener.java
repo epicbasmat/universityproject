@@ -6,7 +6,7 @@ import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.model.cells.factory.IMapCell;
-import org.basmat.map.util.CircleBounds;
+import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
@@ -73,12 +73,20 @@ public class Gardener {
     }
 
     public void scatter() {
+        System.out.println("Scattering");
         for (Point lifeCellPoint : globalLifeCellList) {
             LifeCell lifeCell = modelStructure.getCoordinate(lifeCellPoint);
             SocietyCell societyCell = modelStructure.getCoordinate(lifeCell.getSocietyCell());
             if (lifeCell.getReproductionCooldown() == 9) {
-                System.out.println("Abandoning future");
-                LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, CircleBounds.calculateAndReturnRandomCoords(lifeCell.getSocietyCell(), societyCell.getRadius()));
+                //If the lifecell has recently reproduced, we want it to scatter to avoid overcrowding. To assert this, we want to check if it currently has any paths to follow, if so remove it and replace it with the scatter function
+                Point destination = PointUtilities.calculateValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure);
+                LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, destination);
+                LinkedList<LinkedList<Node>> copyOfList = new LinkedList<>(activeSocietyCells);
+                if (value.peek() == null) {
+                    continue;
+                }
+                List<LinkedList<Node>> elementsToRemove = copyOfList.parallelStream().filter(Objects::nonNull).filter(e -> e.peek().equals(value.peek())).toList();
+                activeSocietyCells.removeAll(elementsToRemove);
                 activeSocietyCells.add(value);
             }
         }
@@ -101,6 +109,7 @@ public class Gardener {
                 if (modelStructure.getCoordinate(new Point(point[0], point[1])) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && parent1.getReproductionCooldown() == 0) {
                     Point newLifeCell;
                     int[] ints1;
+                    //for the little list surrounding the cell, try to generate a new life cell, however if the break condition is reached (to prevent hard lock) then we cannot create one
                     int breakcnd = 0;
                     do {
                         ints1 = coordinateRef.get(((int) (Math.random() * coordinateRef.size())));
@@ -111,6 +120,8 @@ public class Gardener {
                         System.out.println("A life cell cannot be created!");
                         continue;
                     }
+
+                    //If horrible things havent happened:
                     //Create a new life cell and add it to the global array, and add it to the model
                     modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures(new HashMap<>()).get(ECellType.LIFE_CELL)));
                     globalLifeCellList.add(newLifeCell);
@@ -165,7 +176,6 @@ public class Gardener {
 
             Node current = value.remove();
             Node toMoveTo = value.peek();
-
 
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
             if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
