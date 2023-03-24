@@ -146,9 +146,10 @@ public class Gardener {
     }
 
     /**
-     * This method manages the cells if they are trying to join each other.
+     * This method manages any active life cells currently moving around. For each life cell path in the List containing all current paths, the head is removed from the path and the model and view structures are updated to reflect the LifeCell's
+     * current position.
      */
-    public <T extends IMapCell> void unison() {
+    public void unison() {
         //Concurrency exception dodging
         LinkedList<LinkedList<Node>> copyOfList = new LinkedList<>(activeSocietyCells);
         //For each society cell that has an active path
