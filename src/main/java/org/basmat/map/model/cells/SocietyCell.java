@@ -20,6 +20,7 @@ public class SocietyCell implements IMapCell {
     private BufferedImage texture;
     private LinkedList<NutrientCell> nutrientCells;
     private LinkedList<Point> lifeCells;
+    private int quotient;
 
 
     /**
@@ -36,6 +37,7 @@ public class SocietyCell implements IMapCell {
         this.texture = texture;
         nutrientCells = new LinkedList<>();
         lifeCells = new LinkedList<>();
+        quotient = 0;
     }
 
     public void addNutrientCells(NutrientCell nutrientCell) {
@@ -74,6 +76,8 @@ public class SocietyCell implements IMapCell {
         return radius;
     }
 
+    public void setRadius(int radius) { this.radius = radius;};
+
     @Override
     public BufferedImage getTexture() {
         return texture;
@@ -106,5 +110,17 @@ public class SocietyCell implements IMapCell {
     @Override
     public ECellType getECellType() {
         return ECellType.SOCIETY_CELL;
+    }
+
+    /**
+     * This method is used to determine the amount of life cells that have previously been alive before the expansion, divided by the deemed capacity.
+     * @return The quotient of the last division
+     */
+    public int getPreviousExpansionQuotient() {
+        return this.quotient;
+    }
+
+    public void setPreviousExpansionQuotient(int quotient) {
+        this.quotient = quotient;
     }
 }

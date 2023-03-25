@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -157,11 +158,11 @@ public class ModelSetup {
     private void setupSocietyCells(int target) {
         //The counter provides an incrementing integer for each time a successful society creation occurs
         int counter = 0;
-        int radius = 12;
+        int radius = 7;
         while (counter < target) {
-            int randCoordinateX = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
-            int randCoordinateY = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
-            Point point = new Point(randCoordinateX, randCoordinateY);
+            int newSocietyCoordinateX = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            int newSocietyCoordinateY = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            Point point = new Point(newSocietyCoordinateX, newSocietyCoordinateY);
             //check if the coordinate that was gotten was an instance of worldcell, has no owner and is of type grass
             if (modelStructure.getBackLayer(point).getOwner() == null && modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
                 //Sets a tint in the style that is in standard with Java's ColorModel.
@@ -170,36 +171,16 @@ public class ModelSetup {
                 tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
                 counter++;
                 //Create a new cell that is on top of the cell that currently inhabits the coordinates
-                modelStructure.setFrontLayer(point, cellFactory.createSocietyCell(UUID.randomUUID().toString(), 12, tint, imageCache.get(ECellType.SOCIETY_CELL)));
+                modelStructure.setFrontLayer(point, cellFactory.createSocietyCell(UUID.randomUUID().toString(), radius, tint, imageCache.get(ECellType.SOCIETY_CELL)));
                 globalSocietyCellList.add(point);
 
                 //Give the society cell a minimum of 1 nutrient cell
-                Point randomNutrient = PointUtilities.calculateRandomCoords(point, radius);
+                Point randomNutrient = PointUtilities.calculateValidCoordinates(point, radius, modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
                 modelStructure.setFrontLayer(randomNutrient, cellFactory.createNutrientCell(modelStructure.getFrontLayer(point), imageCache.get(ECellType.NUTRIENTS)));
                 ((SocietyCell) modelStructure.getFrontLayer(point)).addNutrientCells(modelStructure.getFrontLayer(randomNutrient));
 
-
                 //1 unit of radius is 1 cell
-                for (int c = 0; c <= 180; c += 5) {
-                    int circumferenceX = (int) (radius * Math.cos(c * 3.141519 / 180));
-                    int circumferenceY = (int) (radius * Math.sin(c * 3.141519 / 180));
-                    try{
-                        //Get the coordinate of the circumference of the circle and the diametric coordinate of the circle, and fills in the cells between the two calculated coordinates
-                        //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
-                        for (int circleX = -circumferenceX + randCoordinateX; circleX < circumferenceX + randCoordinateX; circleX++) {
-                            for (int circleY = -circumferenceY + randCoordinateY; circleY < circumferenceY + randCoordinateY; circleY++) {
-                                Point circlePoint = new Point(circleX, circleY);
-                                //Checks to make sure the x and y are not out of bounds, the currently selected cell is of type worldcell, it has no owner and that it is habitable
-                                if (circleX <= 145 && circleY <= 145 && circleX >= 0 && circleY >= 0 && modelStructure.getBackLayer(circlePoint).getECellType().isHabitable() && modelStructure.getBackLayer(circlePoint).getOwner() == null) {
-                                    //set the tint associated with the society cell
-                                    TextureHelper.setTint(modelStructure.getBackLayer(circlePoint).getTexture(), tint);
-                                    //Set the owner from the back layer
-                                    modelStructure.getBackLayer(circlePoint).setOwner(modelStructure.getFrontLayer(point));
-                                }
-                            }
-                        }
-                    } catch (Exception e) { System.out.println(e.getMessage());}
-                }
+                PointUtilities.tintArea(radius, point, tint, modelStructure);
             }
         }
     }
@@ -234,7 +215,7 @@ public class ModelSetup {
             int i = 0;
             while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds
-                Point coords = PointUtilities.calculateRandomCoords(societyCellPoint, frontLayer.getRadius());
+                Point coords = PointUtilities.calculateRandomCoordinates(societyCellPoint, frontLayer.getRadius());
                 if (coords.x <= 145 && coords.y <= 145 && coords.x >= 0 && coords.y >= 0) {
                     //Enforce that whatever we're replacing is not being occupied currently
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {

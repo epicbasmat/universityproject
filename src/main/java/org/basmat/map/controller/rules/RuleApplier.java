@@ -60,6 +60,7 @@ public class RuleApplier {
         gardener.unison();
         gardener.scatter();
         gardener.checkForReproductionRules();
+        gardener.expand();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
     }
 

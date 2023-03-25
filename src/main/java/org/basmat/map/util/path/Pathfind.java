@@ -3,12 +3,10 @@ package org.basmat.map.util.path;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
-import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class Pathfind {
@@ -36,7 +34,7 @@ public class Pathfind {
         };
     }
 
-    private static boolean isInvalid(ECellType cellType) {
+    public static boolean isInvalid(ECellType cellType) {
         return switch (cellType) {
             case NUTRIENTS, SOCIETY_CELL, LIFE_CELL, MOUNTAIN_PEAK, DEEP_WATER -> true;
             default -> false;
@@ -81,7 +79,7 @@ public class Pathfind {
             //List<Point> neighbours = Arrays.stream(coordinateRef).filter(coords -> PointUtilities.noOOBRandomCoords(new Point(coords[0], coords[1]))).map(f -> new Point(f[0], f[1])).toList();
             List<Point> neighbours = Arrays.stream(coordinateRef)
                     .map(coordinates -> new Point(coordinates[0], coordinates[1]))
-                    .filter(PointUtilities::noOOBRandomCoords).toList();
+                    .filter(PointUtilities::validateBounds).toList();
             for (Point point : neighbours) {
                 /*
                 f(n) = g(n) + h(n)

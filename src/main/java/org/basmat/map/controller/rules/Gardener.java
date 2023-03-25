@@ -66,12 +66,19 @@ public class Gardener {
     public void expand() {
         for (Point societyCellPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyCellPoint);
-            int additionalArea = societyCell.getSize() / 6;
-
-
+            //If the life cell count is divisable by six and the previous capacity is not the same as the current capacity, expand the borders
+            if ((societyCell.getSize() % 6) == 0 && societyCell.getPreviousExpansionQuotient() != societyCell.getSize()/6) {
+                societyCell.setRadius(societyCell.getRadius() + 2);
+                societyCell.setPreviousExpansionQuotient(societyCell.getSize() / 6);
+                PointUtilities.tintArea(societyCell.getRadius(), societyCellPoint, societyCell.getTint(), modelStructure);
+                System.out.println(societyCell.getName() + " just expanded!");
+            }
         }
     }
 
+    /**
+     * Tells any cells with a certain reproduction cool down to go to a randomized coordinate with it's SocietyCell to prevent overcrowding.
+     */
     public void scatter() {
         System.out.println("Scattering");
         for (Point lifeCellPoint : globalLifeCellList) {
@@ -79,7 +86,7 @@ public class Gardener {
             SocietyCell societyCell = modelStructure.getCoordinate(lifeCell.getSocietyCell());
             if (lifeCell.getReproductionCooldown() == 9) {
                 //If the lifecell has recently reproduced, we want it to scatter to avoid overcrowding. To assert this, we want to check if it currently has any paths to follow, if so remove it and replace it with the scatter function
-                Point destination = PointUtilities.calculateValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure);
+                Point destination = PointUtilities.calculateValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
                 LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, destination);
                 if (value.isEmpty()) {
                     continue;
@@ -171,7 +178,8 @@ public class Gardener {
             Node toMoveTo = value.peek();
 
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
-            if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
+            ECellType tocheck = modelStructure.getCoordinate(toMoveTo.point()).getECellType();
+            if (tocheck != toMoveTo.cellType() || Pathfind.isInvalid(tocheck) ) {
                 System.out.println("Regenerating path");
                 listOfPaths.remove(value);
                 LinkedList<Node> newPath = Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point());
