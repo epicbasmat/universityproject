@@ -5,7 +5,6 @@ import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
@@ -30,11 +29,12 @@ public class Gardener {
     private LinkedList<Point> globalLifeCellList;
 
     //Update
-    private LinkedList<LinkedList<Node>> activeSocietyCells;
+    private LinkedList<LinkedList<Node>> listOfPaths;
     private ViewStructure viewStructure;
     private final ModelStructure modelStructure;
 
     /**
+     *
      *
      * @param viewStructure
      * @param modelStructure
@@ -48,7 +48,7 @@ public class Gardener {
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
-        activeSocietyCells = new LinkedList<>();
+        listOfPaths = new LinkedList<>();
     }
 
     /**
@@ -81,13 +81,12 @@ public class Gardener {
                 //If the lifecell has recently reproduced, we want it to scatter to avoid overcrowding. To assert this, we want to check if it currently has any paths to follow, if so remove it and replace it with the scatter function
                 Point destination = PointUtilities.calculateValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure);
                 LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, destination);
-                LinkedList<LinkedList<Node>> copyOfList = new LinkedList<>(activeSocietyCells);
-                if (value.peek() == null) {
+                if (value.isEmpty()) {
                     continue;
                 }
-                List<LinkedList<Node>> elementsToRemove = copyOfList.parallelStream().filter(Objects::nonNull).filter(e -> e.peek().equals(value.peek())).toList();
-                activeSocietyCells.removeAll(elementsToRemove);
-                activeSocietyCells.add(value);
+                List<LinkedList<Node>> elementsToRemove = listOfPaths.parallelStream().filter(Objects::nonNull).filter(e -> e.peek().equals(value.peek())).toList();
+                listOfPaths.removeAll(elementsToRemove);
+                listOfPaths.add(value);
             }
         }
     }
@@ -151,15 +150,21 @@ public class Gardener {
      */
     public void unison() {
         //Concurrency exception dodging
-        LinkedList<LinkedList<Node>> copyOfList = new LinkedList<>(activeSocietyCells);
+        LinkedList<LinkedList<Node>> copyOfList = new LinkedList<>(listOfPaths);
         //For each society cell that has an active path
         for (LinkedList<Node> value : copyOfList){
             //Get the LinkedList containing all nodes from point A to point B
 
+            //TODO: Make this not terrible, though its a fix for now
+            if (value.isEmpty()) {
+                listOfPaths.remove(value);
+                continue;
+            }
+
             Node current = value.remove();
 
-            if (value.peek() == null) {
-                activeSocietyCells.remove(value);
+            if (value.isEmpty()) {
+                listOfPaths.remove(value);
                 continue;
             }
 
@@ -168,8 +173,13 @@ public class Gardener {
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
             if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
                 System.out.println("Regenerating path");
-                activeSocietyCells.remove(value);
-                activeSocietyCells.add(Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point()));
+                listOfPaths.remove(value);
+                LinkedList<Node> newPath = Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point());
+                if (!(newPath.isEmpty())) {
+                    listOfPaths.add(newPath);
+                } else {
+                    System.out.println("Failure to regenerate path. ");
+                }
                 continue;
             }
 
@@ -206,8 +216,8 @@ public class Gardener {
 
             if (reproduceProbability > Math.random() * 100) {
                 LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
-                if (activeSocietyCells.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek()))){
-                    activeSocietyCells.add(pathBetweenCouple);
+                if (listOfPaths.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek()))){
+                    listOfPaths.add(pathBetweenCouple);
                 }
             }
         }

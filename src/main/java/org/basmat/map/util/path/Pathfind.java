@@ -28,16 +28,19 @@ public class Pathfind {
     }
 
     private static int weight(ECellType cellType) {
-        switch (cellType) {
-            case GRASS:
-                return 1;
-            case LIGHT_WATER, MOUNTAIN_BASE:
-                return 7;
-            case SAND:
-                return 2;
-            default:
-                return 15000;
-        }
+        return switch (cellType) {
+            case GRASS -> 1;
+            case LIGHT_WATER, MOUNTAIN_BASE -> 7;
+            case SAND -> 2;
+            default -> 15;
+        };
+    }
+
+    private static boolean isInvalid(ECellType cellType) {
+        return switch (cellType) {
+            case NUTRIENTS, SOCIETY_CELL, LIFE_CELL, MOUNTAIN_PEAK, DEEP_WATER -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -75,9 +78,10 @@ public class Pathfind {
             int[][] coordinateRef = {{(int) current.point().getX(), (int) (current.point().getY() - 1)}, {(int) current.point().getX(), (int) (current.point().getY() + 1)}, {(int) (current.point().getX() - 1), (int) current.point().getY()}, {(int) (current.point().getX() + 1), (int) current.point().getY()}};
 
             //Neighbours need to be filtered if they are to be examined, such as ensuring they are in range of the overall matrix
-            //TODO: Release 150 from its hardcoded hell
-            List<Point> neighbours = Arrays.stream(coordinateRef).filter(coords -> PointUtilities.noOOBRandomCoords(new Point(coords[0], coords[1]))).map(f -> new Point(f[0], f[1])).toList();
-
+            //List<Point> neighbours = Arrays.stream(coordinateRef).filter(coords -> PointUtilities.noOOBRandomCoords(new Point(coords[0], coords[1]))).map(f -> new Point(f[0], f[1])).toList();
+            List<Point> neighbours = Arrays.stream(coordinateRef)
+                    .map(coordinates -> new Point(coordinates[0], coordinates[1]))
+                    .filter(PointUtilities::noOOBRandomCoords).toList();
             for (Point point : neighbours) {
                 /*
                 f(n) = g(n) + h(n)
@@ -90,16 +94,19 @@ public class Pathfind {
                     openList.add(new Node(destination, 0, 0, modelStructure.getCoordinate(destination).getECellType(), current));
                     break;
                 }
-                ECellType candidate  = modelStructure.getCoordinate(point).getECellType();
-                int nextCost = current.g() + weight(candidate);
-                Node neighbour = new Node(point, nextCost + h(point, destination), nextCost, candidate, current);
-                if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {
-                    openList.add(neighbour);
-                } else {
-                    if (nextCost < current.g()) {
-                        if (closedList.contains(neighbour)) {
-                            closedList.remove(neighbour);
-                            openList.add(neighbour);
+
+                if (!isInvalid(modelStructure.getCoordinate(point).getECellType())) {
+                    ECellType candidate  = modelStructure.getCoordinate(point).getECellType();
+                    int nextCost = current.g() + weight(candidate);
+                    Node neighbour = new Node(point, nextCost + h(point, destination), nextCost, candidate, current);
+                    if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {
+                        openList.add(neighbour);
+                    } else {
+                        if (nextCost < current.g()) {
+                            if (closedList.contains(neighbour)) {
+                                closedList.remove(neighbour);
+                                openList.add(neighbour);
+                            }
                         }
                     }
                 }

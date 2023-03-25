@@ -1,10 +1,7 @@
 package org.basmat.map.model;
 
-import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.IMapCell;
-import org.basmat.map.model.cells.factory.IOwnedCell;
-import org.basmat.map.util.ECellType;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -15,8 +12,8 @@ import java.util.HashMap;
  * where any objects in that matrix get priority rendering.
  */
 public class ModelStructure {
-    private final HashMap<Coords, WorldCell> backLayer;
-    private final HashMap<Coords, ? super IMapCell> frontLayer;
+    private final HashMap<Coordinates, WorldCell> backLayer;
+    private final HashMap<Coordinates, ? super IMapCell> frontLayer;
 
     public ModelStructure() {
         this.backLayer = new HashMap<>();
@@ -24,19 +21,19 @@ public class ModelStructure {
     }
 
     public WorldCell getBackLayer(Point point) {
-        return backLayer.get(new Coords(point));
+        return backLayer.get(new Coordinates(point));
     }
 
     public void setBackLayer(Point point, WorldCell toSet) {
-        backLayer.put(new Coords(point), toSet);
+        backLayer.put(new Coordinates(point), toSet);
     }
 
     public <T extends IMapCell> T getFrontLayer(Point point) {
-        return (T) frontLayer.get(new Coords(point));
+        return (T) frontLayer.get(new Coordinates(point));
     }
 
     public <T extends IMapCell> void setFrontLayer(Point point, T toSet) {
-        frontLayer.put(new Coords(point.x, point.y), toSet);
+        frontLayer.put(new Coordinates(point.x, point.y), toSet);
     }
 
     /**
@@ -53,9 +50,9 @@ public class ModelStructure {
      */
     public <T extends IMapCell> void deleteCoordinate(Point point) {
         if (getCoordinate(point) instanceof WorldCell) {
-            backLayer.remove(new Coords(point));
+            backLayer.remove(new Coordinates(point));
         } else {
-            frontLayer.remove(new Coords(point));
+            frontLayer.remove(new Coordinates(point));
         }
     }
 
@@ -69,25 +66,24 @@ public class ModelStructure {
         deleteCoordinate(toDelete);
         setFrontLayer(toReplaceAt, model);
     }
-
 }
 
-class Coords{
+class Coordinates {
     public int x;
     public int y;
 
-    public Coords(int x, int y){
+    public Coordinates(int x, int y){
         this.x = x;
         this.y = y;
     }
 
-    public Coords(Point point){
+    public Coordinates(Point point){
         this.x = point.x;
         this.y = point.y;
     }
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Coords coords && this.x == coords.x && this.y == coords.y;
+        return obj instanceof Coordinates coords && this.x == coords.x && this.y == coords.y;
     }
 
     //hashCode is overridden to ensure that even though an object could be different, if the coordinates match then the bucket will be the same.
