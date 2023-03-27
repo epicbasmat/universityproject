@@ -23,12 +23,15 @@ In the day between the morning and the evening, the gardener and the winnower pl
  */
 public class RuleApplier {
     private final HashMap<Point, LinkedList<Node>> activeSocietyCells;
+    //private final Winnower winnower;
     private Gardener gardener;
     private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalSocietyCellList;
     private LinkedList<Point> globalLifeCellList;
     private ViewStructure viewStructure;
     private ModelStructure modelStructure;
+
+    private LinkedList<LinkedList<Node>> listOfPaths;
 
     /**
      *
@@ -41,27 +44,30 @@ public class RuleApplier {
     public RuleApplier(ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
         this.viewStructure = viewStructure;
         this.modelStructure = modelStructure;
-        this.gardener = new Gardener(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
+        this.listOfPaths = new LinkedList<>();
+        this.gardener = new Gardener(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        //this.winnower = new Winnower(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
         activeSocietyCells = new HashMap<>();
-        //gardener.reproduce();
-        new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                //applyRulesToCells();
-            }
-        }, 0, 4000);
     }
 
     public void invokeGardener(){
+        //new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
+        //    @Override
+        //    public void run() {
         gardener.reproduce();
         gardener.unison();
         gardener.scatter();
         gardener.checkForReproductionRules();
         gardener.expand();
+       // winnower.overcrowded();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
+        System.out.println("Finished processing");
+        //    }
+        //}, 0, 750);
+
     }
 
     public void gen() {

@@ -1,5 +1,6 @@
 package org.basmat.map.util;
 
+import com.google.common.collect.ObjectArrays;
 import org.basmat.map.model.ModelStructure;
 
 import java.awt.*;
@@ -22,12 +23,12 @@ public class PointUtilities {
     }
 
     /**
-     * Returns `true` if the provided point does not exceed the simulations bounds, else `false`.
+     * Returns true if the provided point does not exceed the simulations bounds, else false.
      * @param point The point to check against the bounds
      * @return A boolean describing if the point is out of bounds
      */
     public static boolean validateBounds(Point point) {
-        return point.x >= 0 && point.x <= 145 && point.y >= 0 && point.y <= 145;
+        return point.x >= 0 && point.x < 145 && point.y >= 0 && point.y < 145;
     }
 
 
@@ -76,5 +77,18 @@ public class PointUtilities {
                 }
             }
         }
+    }
+
+    public static Point[] getImmediateNeighbours(Point point) {
+        return new Point[]{new Point(point.x,point.y - 1), new Point(point.x,point.y + 1), new Point(point.x - 1, point.y), new Point(point.x + 1, point.y)};
+    }
+
+    public static Point[] getAllNeighbours(Point point) {
+        return ObjectArrays.concat(new Point[]{new Point(point.x-1,point.y - 1),
+                                                new Point(point.x + 1,point.y - 1),
+                                                new Point(point.x -1 ,point.y + 1),
+                                                new Point(point.x + 1,point.y + 1)},
+                                   getImmediateNeighbours(point),
+                                   Point.class);
     }
 }

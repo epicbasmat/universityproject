@@ -16,7 +16,7 @@ public class TextureHelper {
      * @return The fully mapped imageCache
      */
     public static HashMap<ECellType, BufferedImage> cacheCellTextures(HashMap<ECellType, BufferedImage> imageCache) {
-        System.out.println("Grabbing textures");
+        //System.out.println("Grabbing textures");
         for (ECellType cellType : ECellType.values()) {
             try {
                 if (cellType.getCellDescription() != null) {
@@ -29,7 +29,7 @@ public class TextureHelper {
                 System.out.println("Accessing file path: " + cellType.getPath());
             }
         }
-        System.out.println("Finished");
+        //System.out.println("Finished");
         return imageCache;
     }
 

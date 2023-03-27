@@ -42,13 +42,13 @@ public class Gardener {
      * @param globalSocietyCellList
      * @param globalLifeCellList
      */
-    public Gardener(ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public Gardener(ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
         this.viewStructure = viewStructure;
         this.modelStructure = modelStructure;
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
-        listOfPaths = new LinkedList<>();
+        this.listOfPaths = listOfPaths;
     }
 
     /**
@@ -80,7 +80,7 @@ public class Gardener {
      * Tells any cells with a certain reproduction cool down to go to a randomized coordinate with it's SocietyCell to prevent overcrowding.
      */
     public void scatter() {
-        System.out.println("Scattering");
+        //System.out.println("Scattering");
         for (Point lifeCellPoint : globalLifeCellList) {
             LifeCell lifeCell = modelStructure.getCoordinate(lifeCellPoint);
             SocietyCell societyCell = modelStructure.getCoordinate(lifeCell.getSocietyCell());
@@ -91,6 +91,7 @@ public class Gardener {
                 if (value.isEmpty()) {
                     continue;
                 }
+                //Remove any current paths if the life cell has one as to avoid conflicts.
                 List<LinkedList<Node>> elementsToRemove = listOfPaths.parallelStream().filter(Objects::nonNull).filter(e -> e.peek().equals(value.peek())).toList();
                 listOfPaths.removeAll(elementsToRemove);
                 listOfPaths.add(value);
@@ -99,7 +100,7 @@ public class Gardener {
     }
 
     public void checkForReproductionRules() {
-        System.out.println("Checking reproduction rules");
+        //System.out.println("Checking reproduction rules");
         //Copy list to prevent concurrency exceptions
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCellPoint : copyOfList) {
@@ -180,13 +181,13 @@ public class Gardener {
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
             ECellType tocheck = modelStructure.getCoordinate(toMoveTo.point()).getECellType();
             if (tocheck != toMoveTo.cellType() || Pathfind.isInvalid(tocheck) ) {
-                System.out.println("Regenerating path");
+                //System.out.println("Regenerating path");
                 listOfPaths.remove(value);
                 LinkedList<Node> newPath = Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point());
                 if (!(newPath.isEmpty())) {
                     listOfPaths.add(newPath);
                 } else {
-                    System.out.println("Failure to regenerate path. ");
+                    //System.out.println("Failure to regenerate path. ");
                 }
                 continue;
             }
@@ -198,14 +199,14 @@ public class Gardener {
             globalLifeCellList.add(toMoveTo.point());
             ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(toMoveTo.point())).getSocietyCell())).changeLifeCellLoc(current.point(), toMoveTo.point());
         }
-        System.out.println("Finished processing");
+        //System.out.println("Finished processing");
     }
 
     /**
      * Logic provider for reproduction. Determines if a society cell will cause reproduction in it's owned life cells.
      */
     public void reproduce() {
-        System.out.println("Reproduce time");
+        //System.out.println("Reproduce time");
         for (Point point : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(point);
             int percentageCapacity = societyCell.getSize() / societyCell.getNutrientCapacity() * 100;
