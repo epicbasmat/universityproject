@@ -220,7 +220,7 @@ public class ModelSetup {
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
                         i++;
                         modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(societyCellPoint, imageCache.get(ECellType.LIFE_CELL)));
-                        ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells(coords);
+                        ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells();
                         globalLifeCellList.add(coords);
                     }
                 }

@@ -51,7 +51,7 @@ public class LifeCell implements IMapCell {
     public String toString() {
         String isOnCooldown = getReproductionCooldown() > 0 ? "Is currently on cooldown: " + getReproductionCooldown() : "Is not on reproduction cooldown";
         //TODO: broken return string
-        return "Life cell lives at: "  + "\n" +
+        return "Life cell lives at: " + societyCell + "\n" +
                 "Attrition level: " + this.attrition + "\n" +
                 isOnCooldown;
     }

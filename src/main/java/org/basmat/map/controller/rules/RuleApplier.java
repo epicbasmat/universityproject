@@ -62,7 +62,6 @@ public class RuleApplier {
         winnower.collapse();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
         //ViewSetup.revalidate(viewStructure);
-        System.out.println("Finished processing");
         //    }
         //}, 0, 750);
 

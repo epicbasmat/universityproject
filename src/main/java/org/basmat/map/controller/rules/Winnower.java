@@ -8,10 +8,8 @@ import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.view.ViewStructure;
-import org.checkerframework.checker.units.qual.C;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -56,15 +54,15 @@ public class Winnower {
     }
 
     public void collapse() {
-        for (Iterator<Point> iterator = globalSocietyCellList.iterator(); iterator.hasNext();) {
-            Point next = iterator.next();
-            SocietyCell coordinate = modelStructure.getCoordinate(next);
+        List<Point> copyOfList = new LinkedList<>(globalSocietyCellList);
+        for (Point point : copyOfList) {
+            SocietyCell coordinate = modelStructure.getCoordinate(point);
             if (coordinate.getLandPerLifeCell() > 75) {
-                System.out.println("Society collapsed, too much land for people!");
-                PointUtilities.untintArea(coordinate.getRadius(), next, modelStructure);
-                coordinate.getLifeCells().stream().toList().forEach(this::kill);
-                modelStructure.deleteCoordinate(next);
-                globalSocietyCellList.remove(next);
+                System.out.println("Society collapsed, too much land for people at " + point);
+                globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
+                PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);
+                modelStructure.deleteCoordinate(point);
+                globalSocietyCellList.remove(point);
             }
         }
     }
@@ -75,10 +73,10 @@ public class Winnower {
      * @param lifeCell
      */
     public void kill(Point lifeCell) {
-        //To remove every instance that the LifeCell has, you need to remove the coordinate references from
+        //To remove every instance that the LifeCell has, we need to remove the coordinate references from
         // - the ModelStructure
         // - the List of Paths
-        ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(lifeCell)).getSocietyCell())).killCell(lifeCell);
+        ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(lifeCell)).getSocietyCell())).killCell();
         modelStructure.deleteCoordinate(lifeCell);
         globalLifeCellList.remove(lifeCell);
         List<LinkedList<Node>> elementsToRemove = listOfPaths.parallelStream().filter(Objects::nonNull).filter(e -> {

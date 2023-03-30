@@ -19,7 +19,7 @@ public class SocietyCell implements IMapCell {
     private int tint;
     private BufferedImage texture;
     private LinkedList<NutrientCell> nutrientCells;
-    private LinkedList<Point> lifeCells;
+    private int lifeCells;
     private int quotient;
 
 
@@ -36,25 +36,19 @@ public class SocietyCell implements IMapCell {
         this.tint = tint;
         this.texture = texture;
         nutrientCells = new LinkedList<>();
-        lifeCells = new LinkedList<>();
+        lifeCells = 0;
         quotient = 0;
     }
 
     public void addNutrientCells(NutrientCell nutrientCell) {
         nutrientCells.add(nutrientCell);
     }
-    public LinkedList<Point> getLifeCells() {
+    public int getLifeCells() {
         return lifeCells;
     }
 
-    public void addLifeCells(Point lifeCellCoordinates) {
-        lifeCells.add(lifeCellCoordinates);
-        incrementSupportedCount();
-    }
-
-    public void changeLifeCellLoc(Point before, Point after) {
-        lifeCells.remove(before);
-        lifeCells.add(after);
+    public void addLifeCells() {
+        lifeCells++;
     }
 
     private void incrementSupportedCount() {
@@ -65,6 +59,7 @@ public class SocietyCell implements IMapCell {
             }
         }
     }
+
     public int getTint() {
         return tint;
     }
@@ -96,7 +91,7 @@ public class SocietyCell implements IMapCell {
     }
 
     public int getPopulationCount() {
-        return lifeCells.size();
+        return lifeCells;
     }
 
     public int getNutrientCapacity() {
@@ -108,8 +103,8 @@ public class SocietyCell implements IMapCell {
         return capacity;
     }
 
-    public void killCell(Point point) {
-        lifeCells.remove(point);
+    public void killCell() {
+        lifeCells--;
     }
 
     @Override

@@ -2,8 +2,10 @@ package org.basmat.map.util;
 
 import com.google.common.collect.ObjectArrays;
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
+import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.basmat.map.util.path.Pathfind;
 
@@ -79,14 +81,22 @@ public class PointUtilities {
         });
     }
 
-    public static void untintArea(int radius, Point centralCoordinate, ModelStructure modelStructure) {
+    public static void resetArea(int radius, Point centralCoordinate, ModelStructure modelStructure) {
         CellFactory cellFactory = new CellFactory();
         HashMap<ECellType, BufferedImage> cache = TextureHelper.cacheCellTextures();
+        SocietyCell coordinate = modelStructure.getCoordinate(centralCoordinate);
         calculateArea(radius, centralCoordinate, (point) -> {
-            ECellType celltype = modelStructure.getCoordinate(point).getECellType();
-            modelStructure.deleteCoordinate(point);
-            WorldCell worldCell = cellFactory.createWorldCell(celltype, cache.get(celltype));
-            modelStructure.setBackLayer(point, worldCell);
+            if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell) {
+                if (iOwnedCell.getOwner() == coordinate) {
+                    //Reset the world cell by getting the cell type and creating a new object with the same cell type and set it to the same coordinates.
+                    //As the tint is applied with an OR operator, it cannot be reversed as OR operations are destructive
+                    //So we need to reset the texture by re-applying it from the cache, which means making a new object.
+                    ECellType celltype = modelStructure.getBackLayer(point).getECellType();
+                    modelStructure.deleteCoordinate(point);
+                    WorldCell worldCell = cellFactory.createWorldCell(celltype, cache.get(celltype));
+                    modelStructure.setBackLayer(point, worldCell);
+                }
+            }
         });
     }
 

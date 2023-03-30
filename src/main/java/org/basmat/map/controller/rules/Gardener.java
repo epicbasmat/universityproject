@@ -109,7 +109,6 @@ public class Gardener {
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCellPoint : copyOfList) {
             LifeCell parent1 = modelStructure.getCoordinate(lifeCellPoint);
-
             //Get a 3x3 area from the origin of the cell and see if there are any life cell to reproduce with
             List<Point> allValidatedNeighbours = PointUtilities.getAllValidatedNeighbours(lifeCellPoint);
             for (Point parent2 : allValidatedNeighbours) {
@@ -139,7 +138,7 @@ public class Gardener {
                     ((LifeCell) modelStructure.getCoordinate(parent2)).setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(newLifeCell)).setReproductionCooldown();
                     System.out.println("A new life cell has been created!");
-                    ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells(newLifeCell);
+                    ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells();
                     break;
                 }
             }
@@ -188,7 +187,6 @@ public class Gardener {
                 modelStructure.replaceFrontLayerAt(cPoint, toMoveTo.point());
                 globalLifeCellList.remove(cPoint);
                 globalLifeCellList.add(toMoveTo.point());
-                ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(toMoveTo.point())).getSocietyCell())).changeLifeCellLoc(current.point(), toMoveTo.point());
             }
         }
     }
@@ -215,7 +213,7 @@ public class Gardener {
             }
 
             if (reproduceProbability > Math.random() * 100) {
-                LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
+                LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(point);
                 //We want to make sure no current paths for the life cell exists and the path generated isnt empty
                 if (listOfPaths.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
                     listOfPaths.add(pathBetweenCouple);
@@ -224,7 +222,7 @@ public class Gardener {
         }
     }
 
-    private LinkedList<Node> getPathBetweenCouple(SocietyCell societyCell) {
+    private LinkedList<Node> getPathBetweenCouple(Point societyCell) {
         Point[] couple = selectCoupleLifeCell(societyCell);
         LifeCell coordinate = modelStructure.getCoordinate(couple[0]);
         LifeCell coordinate2 = modelStructure.getCoordinate(couple[1]);
@@ -232,11 +230,13 @@ public class Gardener {
         return Pathfind.aStar(250, modelStructure, couple[0], couple[1]);
     }
 
-    private Point selectRandomLifeCell(SocietyCell societyCell) {
-        return societyCell.getLifeCells().get((int) (Math.random() * societyCell.getPopulationCount()));
+    private Point selectRandomLifeCell(Point societyCell) {
+        //return societyCell.getLifeCells()((int) (Math.random() * societyCell.getPopulationCount()));
+        List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == societyCell).toList();
+        return points.get((int) (Math.random() * points.size()));
     }
 
-    private Point[] selectCoupleLifeCell(SocietyCell societyCell) {
+    private Point[] selectCoupleLifeCell(Point societyCell) {
         Point[] points = new Point[2];
         points[0] = selectRandomLifeCell(societyCell);
         do {
