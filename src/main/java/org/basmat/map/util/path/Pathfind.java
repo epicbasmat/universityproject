@@ -36,7 +36,7 @@ public class Pathfind {
 
     public static boolean isInvalid(ECellType cellType) {
         return switch (cellType) {
-            case NUTRIENTS, SOCIETY_CELL, LIFE_CELL, MOUNTAIN_PEAK, DEEP_WATER -> true;
+            case NUTRIENTS, SOCIETY_CELL, LIFE_CELL, MOUNTAIN_PEAK, DEEP_WATER, WATER, MOUNTAIN_BODY -> true;
             default -> false;
         };
     }

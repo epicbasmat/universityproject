@@ -8,8 +8,10 @@ import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.view.ViewStructure;
+import org.checkerframework.checker.units.qual.C;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -54,17 +56,28 @@ public class Winnower {
     }
 
     public void collapse() {
-        for (Point point : globalSocietyCellList) {
-            SocietyCell coordinate = modelStructure.getCoordinate(point);
-            double circleArea = 3.141529 * Math.pow(coordinate.getRadius(), 2);
-            if (circleArea/coordinate.getPopulationCount() < 3) {
+        for (Iterator<Point> iterator = globalSocietyCellList.iterator(); iterator.hasNext();) {
+            Point next = iterator.next();
+            SocietyCell coordinate = modelStructure.getCoordinate(next);
+            if (coordinate.getLandPerLifeCell() > 75) {
                 System.out.println("Society collapsed, too much land for people!");
+                PointUtilities.untintArea(coordinate.getRadius(), next, modelStructure);
                 coordinate.getLifeCells().stream().toList().forEach(this::kill);
+                modelStructure.deleteCoordinate(next);
+                globalSocietyCellList.remove(next);
             }
         }
     }
 
+
+    /**
+     * Removes all instances of the lifecell from the simulation.
+     * @param lifeCell
+     */
     public void kill(Point lifeCell) {
+        //To remove every instance that the LifeCell has, you need to remove the coordinate references from
+        // - the ModelStructure
+        // - the List of Paths
         ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(lifeCell)).getSocietyCell())).killCell(lifeCell);
         modelStructure.deleteCoordinate(lifeCell);
         globalLifeCellList.remove(lifeCell);

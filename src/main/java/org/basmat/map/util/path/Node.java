@@ -9,7 +9,7 @@ import java.awt.*;
  * A representation of a point in a graph, recording additional data for analysis.
  * @param point The point that the node represents
  * @param f f(n) in A* traversal, a combination of g(n) + h(n)
- * @param g g(n) in A* traversal, the culmination of every prior search's g(n) function
+ * @param g g(n) in A* traversal, the culmination of every prior search's g(n) function. Represents the cost from the initial node to the current node
  * @param cellType The CellType that the modelStructures `getCoordinate()` returns
  */
 public record Node(Point point, int f, int g, ECellType cellType, Node parent) implements Comparable<Node> {
@@ -22,4 +22,4 @@ public record Node(Point point, int f, int g, ECellType cellType, Node parent) i
     public boolean equals(Object obj) {
         return obj instanceof Node node && node.point().equals(this.point());
     }
-};
+}

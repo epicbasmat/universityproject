@@ -6,7 +6,6 @@ import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
-import org.basmat.map.util.TextureHelper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -175,7 +174,7 @@ public class ModelSetup {
                 globalSocietyCellList.add(point);
 
                 //Give the society cell a minimum of 1 nutrient cell
-                Point randomNutrient = PointUtilities.calculateValidCoordinates(point, radius, modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
+                Point randomNutrient = PointUtilities.calculateRandomValidCoordinates(point, radius, modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
                 modelStructure.setFrontLayer(randomNutrient, cellFactory.createNutrientCell(modelStructure.getFrontLayer(point), imageCache.get(ECellType.NUTRIENTS)));
                 ((SocietyCell) modelStructure.getFrontLayer(point)).addNutrientCells(modelStructure.getFrontLayer(randomNutrient));
 

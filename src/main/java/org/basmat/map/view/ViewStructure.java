@@ -66,6 +66,10 @@ public class ViewStructure extends JPanel implements MouseListener{
         this.revalidate();
     }
 
+    public void refreshImage() {
+        this.revalidate();
+    }
+
     public CellPanel getPanel(Point point) {
         return cellPanelMatrix[point.x][point.y];
     }

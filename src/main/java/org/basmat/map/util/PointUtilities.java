@@ -2,10 +2,14 @@ package org.basmat.map.util;
 
 import com.google.common.collect.ObjectArrays;
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.model.cells.WorldCell;
+import org.basmat.map.model.cells.factory.CellFactory;
+import org.basmat.map.model.cells.factory.IOwnedCell;
+import org.basmat.map.util.path.Pathfind;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Collection;
+import java.awt.image.BufferedImage;
+import java.util.*;
 import java.util.List;
 
 public class PointUtilities {
@@ -42,7 +46,7 @@ public class PointUtilities {
      * @param validCells A list of valid cells to generate on
      * @return A random coordinate with the set bounds
      */
-    public static Point calculateValidCoordinates(Point point, int radius, ModelStructure modelStructure, Collection<ECellType> validCells) {
+    public static Point calculateRandomValidCoordinates(Point point, int radius, ModelStructure modelStructure, Collection<ECellType> validCells) {
         Point destination;
         int breakcnd = 0;
         do {
@@ -57,31 +61,77 @@ public class PointUtilities {
     /**
      * This method calculates all points in the area of a circle, determined by the radius and initial coordinate, and tints them according to the tint provided
      * @param radius The radius from the centre to tint
-     * @param societyCoordinate The centre of the Society
+     * @param centralCoordinate The centre of the circle
      * @param tint The RGB colour to tint
      * @param modelStructure The ModelStructure to manipulate
      */
-    public static void tintArea(int radius, Point societyCoordinate, int tint, ModelStructure modelStructure) {
-        for (int c = 0; c <= 90; c += 5) {
-            int circumferenceX = (int) (radius * Math.cos(c * 3.141519 / 180));
-            int circumferenceY = (int) (radius * Math.sin(c * 3.141519 / 180));
-            //Get the coordinate of the circumference of the circle and the diametric coordinate of the circle, and fills in the cells between the two calculated coordinates
-            //TODO: Reject any attempts to generate a society cell if it is within an AOE of another society cell
-            for (int circleX = -circumferenceX + societyCoordinate.x; circleX < circumferenceX + societyCoordinate.x; circleX++) {
-                for (int circleY = -circumferenceY + societyCoordinate.y; circleY < circumferenceY + societyCoordinate.y; circleY++) {
-                    Point circlePoint = new Point(circleX, circleY);
-                    if (validateBounds(circlePoint)) {
-                        //Checks to make sure the x and y are not out of bounds, the currently selected cell is of type worldcell, it has no owner and that it is habitable
-                        if ( modelStructure.getBackLayer(circlePoint).getECellType().isHabitable() && modelStructure.getBackLayer(circlePoint).getOwner() == null) {
-                            //set the tint associated with the society cell
-                            TextureHelper.setTint(modelStructure.getBackLayer(circlePoint).getTexture(), tint);
-                            //Set the owner from the back layer
-                            modelStructure.getBackLayer(circlePoint).setOwner(modelStructure.getFrontLayer(societyCoordinate));
-                        }
+    public static void tintArea(int radius, Point centralCoordinate, int tint, ModelStructure modelStructure) {
+        calculateArea(radius, centralCoordinate, (point) -> {
+            if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell && iOwnedCell.getOwner() == null && !Pathfind.isInvalid(iOwnedCell.getECellType())) {
+                BufferedImage texture = modelStructure.getCoordinate(point).getTexture();
+                for (int x = 0; x < texture.getWidth(); x++) {
+                    for (int y = 0; y < texture.getHeight(); y++) {
+                        texture.setRGB(x, y, texture.getRGB(x, y) | tint);
                     }
+                }
+                iOwnedCell.setOwner(modelStructure.getFrontLayer(centralCoordinate));
+            }
+        });
+    }
+
+    public static void untintArea(int radius, Point centralCoordinate, ModelStructure modelStructure) {
+        CellFactory cellFactory = new CellFactory();
+        HashMap<ECellType, BufferedImage> cache = TextureHelper.cacheCellTextures();
+        calculateArea(radius, centralCoordinate, (point) -> {
+            ECellType celltype = modelStructure.getCoordinate(point).getECellType();
+            modelStructure.deleteCoordinate(point);
+            WorldCell worldCell = cellFactory.createWorldCell(celltype, cache.get(celltype));
+            modelStructure.setBackLayer(point, worldCell);
+        });
+    }
+
+    public static void calculateArea(int radius, Point centralCoordinate, Action<Point> action) {
+        for (Map.Entry<Point, Point> kvPair : PointUtilities.midpointAlgorithm(radius, centralCoordinate)) {
+            for (int i = kvPair.getKey().x; i < kvPair.getValue().x; i++) {
+                Point point = new Point(i, kvPair.getKey().y);
+                if (validateBounds(point)) {
+                    action.action(point);
                 }
             }
         }
+    }
+
+    public static List<Map.Entry<Point, Point>> midpointAlgorithm(int radius, Point centralCoordinate) {
+        int x = radius, y = 0;
+        List<Map.Entry<Point,Point>> pairList = new java.util.ArrayList<>();
+        int p = 1 - radius;
+        while (x > y) {
+            y++;
+            if (p <= 0) {
+                p = p + 2 * y + 1;
+            } else {
+                x--;
+                p = p + 2 * y - 2 * x + 1;
+            }
+            if (x < y) {
+                break;
+            }
+            /*This maps the left hand side of the circle to the right side of the circle like so by reflecting the calculated quadrant
+                (-y,o+x) x---------x (o+y,o+x)
+            (o-x,o+y) x-----------------x (o+x,o+y)
+                               o
+            (o-x,o-y) x-----------------x (o+x,o-y)
+                (o-y,o-x) x---------x (o+y,o-x)
+             Credit to user Shahbaz on stack overflow for the ascii diagram
+             */
+            pairList.add(new AbstractMap.SimpleEntry<>(new Point(-y + centralCoordinate.x, x + centralCoordinate.y), new Point(y + centralCoordinate.x, x + centralCoordinate.y)));
+            pairList.add(new AbstractMap.SimpleEntry<>(new Point(-x + centralCoordinate.x, y + centralCoordinate.y), new Point(x + centralCoordinate.x, y + centralCoordinate.y)));
+            pairList.add(new AbstractMap.SimpleEntry<>(new Point(-x + centralCoordinate.x, -y + centralCoordinate.y), new Point(x + centralCoordinate.x, -y + centralCoordinate.y)));
+            pairList.add(new AbstractMap.SimpleEntry<>(new Point(-y + centralCoordinate.x, -x + centralCoordinate.y), new Point(y + centralCoordinate.x, -x + centralCoordinate.y)));
+        }
+        pairList.add(new AbstractMap.SimpleEntry<>(new Point(centralCoordinate.x - radius - 1, centralCoordinate.y), new Point(centralCoordinate.x + radius + 1, centralCoordinate.y)));
+
+        return pairList;
     }
 
     public static Point[] getImmediateNeighbours(Point point) {

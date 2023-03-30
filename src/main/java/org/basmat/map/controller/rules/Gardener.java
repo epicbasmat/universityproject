@@ -85,7 +85,7 @@ public class Gardener {
             SocietyCell societyCell = modelStructure.getCoordinate(lifeCell.getSocietyCell());
             if (lifeCell.getReproductionCooldown() == 9) {
                 //If the lifecell has recently reproduced, we want it to scatter to avoid overcrowding. To assert this, we want to check if it currently has any paths to follow, if so remove it and replace it with the scatter function
-                Point destination = PointUtilities.calculateValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
+                Point destination = PointUtilities.calculateRandomValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
                 LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, destination);
                 if (!value.isEmpty()) {
                     //Remove any current paths if the life cell has one as to avoid conflicts.
@@ -127,9 +127,13 @@ public class Gardener {
                         continue;
                     }
 
-                    //If horrible things havent happened:
+                    if (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType())) {
+                        System.out.println("!!!!!!!===============!!!!!!!!");
+                        throw new RuntimeException("Trying to overwrite an important cell!");
+                    }
+                    //If horrible things haven't happened:
                     //Create a new life cell and add it to the global array, and add it to the model
-                    modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures(new HashMap<>()).get(ECellType.LIFE_CELL)));
+                    modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures().get(ECellType.LIFE_CELL)));
                     globalLifeCellList.add(newLifeCell);
                     parent1.setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(parent2)).setReproductionCooldown();
@@ -146,6 +150,7 @@ public class Gardener {
     /**
      * This method manages any active life cells currently moving around. For each life cell path in the List containing all current paths, the head is removed from the path and the model and view structures are updated to reflect the LifeCell's
      * current position.
+     * @
      */
     public void unison() {
         //Concurrency exception dodging
@@ -165,6 +170,8 @@ public class Gardener {
             Node toMoveTo = value.peek();
 
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
+            //We can guarantee that the life cell traversing will never overwrite a cell that it's moving to, as any invalid cells would have been avoided at the time of path generation,
+            //we can ensure that as long as there has been no change to the state of the co-ordinate at path generation, the path is valid.
             if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
                 listOfPaths.remove(value);
                 LinkedList<Node> newPath = Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point());
@@ -173,6 +180,10 @@ public class Gardener {
                 }
             } else {
                 //Get the current node which should be the node the cell is on, and then the cell to move to.
+                if (Pathfind.isInvalid(modelStructure.getCoordinate(toMoveTo.point()).getECellType())) {
+                    System.out.println("!!!!!!!===============!!!!!!!!");
+                    throw new RuntimeException("Trying to overwrite an important cell!");
+                }
                 Point cPoint = current.point();
                 modelStructure.replaceFrontLayerAt(cPoint, toMoveTo.point());
                 globalLifeCellList.remove(cPoint);
@@ -205,7 +216,7 @@ public class Gardener {
 
             if (reproduceProbability > Math.random() * 100) {
                 LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
-                //We want to make sure no current paths for the life cell exists and the path generated isnt useless
+                //We want to make sure no current paths for the life cell exists and the path generated isnt empty
                 if (listOfPaths.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
                     listOfPaths.add(pathBetweenCouple);
                 }

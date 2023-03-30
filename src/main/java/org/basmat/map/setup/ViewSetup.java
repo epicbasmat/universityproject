@@ -34,6 +34,10 @@ public class ViewSetup {
         });
     }
 
+    public static void revalidate(ViewStructure viewStructure) {
+        SwingUtilities.invokeLater(viewStructure::revalidate);
+    }
+
     private static void setPanel(ViewStructure viewStructure, ModelStructure modelStructure, int x, int y) {
         IMapCell coordinate = modelStructure.getCoordinate(new Point(x, y));
         CellPanel cellPanel = new CellPanel(coordinate.getTexture());

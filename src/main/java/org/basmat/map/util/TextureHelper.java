@@ -12,10 +12,11 @@ import java.util.HashMap;
 public class TextureHelper {
     /**
      * This method will load in all textures within the designated path and map the CellType to the loaded BufferedImage
-     * @param imageCache The image cache to load into
-     * @return The fully mapped imageCache
+     *
+     * @return A HashMap mapping Enum CellType to it's texture
      */
-    public static HashMap<ECellType, BufferedImage> cacheCellTextures(HashMap<ECellType, BufferedImage> imageCache) {
+    public static HashMap<ECellType, BufferedImage> cacheCellTextures() {
+        HashMap<ECellType, BufferedImage> imageCache = new HashMap<>();
         //System.out.println("Grabbing textures");
         for (ECellType cellType : ECellType.values()) {
             try {
@@ -35,6 +36,7 @@ public class TextureHelper {
 
     /**
      * This method will copy any texture and return it with the colorSpace of TYPE_INT_ARGB, this is done to enable alpha transparency as default-loaded images do not have that enabled.
+     *
      * @param reference The reference image to copy
      * @return The same image, but with TYPE_INT_ARGB
      */
@@ -47,18 +49,5 @@ public class TextureHelper {
             }
         }
         return texture;
-    }
-
-
-    /**
-     * Tints the loaded bufferedimage from the view.
-     * @param tint The RGB value to mask the image, using an OR operator. \n 0xAARRGGBB - AA = Alpha, RR = Red, GG = Green, BB = Blue
-     */
-    public static void setTint(BufferedImage texture, int tint) {
-        for (int x = 0; x < texture.getWidth(); x++) {
-            for (int y = 0; y < texture.getHeight(); y++) {
-                texture.setRGB(x, y, texture.getRGB(x, y) | tint);
-            }
-        }
     }
 }
