@@ -4,7 +4,9 @@ import com.google.common.collect.ObjectArrays;
 import org.basmat.map.model.ModelStructure;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class PointUtilities {
     /**
@@ -28,7 +30,7 @@ public class PointUtilities {
      * @return A boolean describing if the point is out of bounds
      */
     public static boolean validateBounds(Point point) {
-        return point.x >= 0 && point.x < 145 && point.y >= 0 && point.y < 145;
+        return point.x >= 0 && point.x < 150 && point.y >= 0 && point.y < 150;
     }
 
 
@@ -42,9 +44,12 @@ public class PointUtilities {
      */
     public static Point calculateValidCoordinates(Point point, int radius, ModelStructure modelStructure, Collection<ECellType> validCells) {
         Point destination;
+        int breakcnd = 0;
         do {
             destination = PointUtilities.calculateRandomCoordinates(point, radius);
-        } while (!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType())));
+            breakcnd++;
+
+        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8);
         return destination;
     }
 
@@ -90,5 +95,13 @@ public class PointUtilities {
                                                 new Point(point.x + 1,point.y + 1)},
                                    getImmediateNeighbours(point),
                                    Point.class);
+    }
+
+    public static List<Point> getAllValidatedNeighbours(Point point) {
+        return Arrays.stream(getAllNeighbours(point)).filter(PointUtilities::validateBounds).toList();
+    }
+
+    public static List<Point> getImmediateValidatedNeighbours(Point point) {
+        return Arrays.stream(getImmediateNeighbours(point)).filter(PointUtilities::validateBounds).toList();
     }
 }

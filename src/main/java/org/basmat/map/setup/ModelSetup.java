@@ -114,8 +114,8 @@ public class ModelSetup {
      * @param cellSize The cell size to provide
      */
     private void setupWorldCells(int cellSize) {
-        for (int x = 0; x <= 150 - 5; x++) {
-            for (int y = 0; y <= 150 - 5; y++) {
+        for (int x = 0; x <= 150 - 1; x++) {
+            for (int y = 0; y <= 150 - 1; y++) {
                 int average = 0;
                 //Calculate average RGB value of a 5x5 grid
                 for (int i = x * cellSize; i < x * cellSize + 5; i++) {
@@ -160,8 +160,8 @@ public class ModelSetup {
         int counter = 0;
         int radius = 7;
         while (counter < target) {
-            int newSocietyCoordinateX = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
-            int newSocietyCoordinateY = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            int newSocietyCoordinateX = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
+            int newSocietyCoordinateY = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             Point point = new Point(newSocietyCoordinateX, newSocietyCoordinateY);
             //check if the coordinate that was gotten was an instance of worldcell, has no owner and is of type grass
             if (modelStructure.getBackLayer(point).getOwner() == null && modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
@@ -191,8 +191,8 @@ public class ModelSetup {
     private void setupNutrientCells() {
         for (int i = 0; i < 100; i++) {
             //Randomly generate point
-            int j = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
-            int k = (int) (Math.random() * (145 - 1 - 1 + 1) + 1);
+            int j = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
+            int k = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             Point point = new Point(j, k);
             //Make sure that the nutrient cell generates on grass, and set its owner
             if (modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
@@ -216,7 +216,7 @@ public class ModelSetup {
             while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds
                 Point coords = PointUtilities.calculateRandomCoordinates(societyCellPoint, frontLayer.getRadius());
-                if (coords.x <= 145 && coords.y <= 145 && coords.x >= 0 && coords.y >= 0) {
+                if (PointUtilities.validateBounds(coords)) {
                     //Enforce that whatever we're replacing is not being occupied currently
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
                         i++;

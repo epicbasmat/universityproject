@@ -3,7 +3,6 @@ package org.basmat.map.controller.rules;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
-import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.ECellType;
@@ -67,9 +66,9 @@ public class Gardener {
         for (Point societyCellPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyCellPoint);
             //If the life cell count is divisable by six and the previous capacity is not the same as the current capacity, expand the borders
-            if ((societyCell.getSize() % 6) == 0 && societyCell.getPreviousExpansionQuotient() != societyCell.getSize()/6) {
+            if (societyCell.getPreviousExpansionQuotient() != societyCell.getPopulationCount()/6) {
                 societyCell.setRadius(societyCell.getRadius() + 2);
-                societyCell.setPreviousExpansionQuotient(societyCell.getSize() / 6);
+                societyCell.setPreviousExpansionQuotient(societyCell.getPopulationCount() / 6);
                 PointUtilities.tintArea(societyCell.getRadius(), societyCellPoint, societyCell.getTint(), modelStructure);
                 System.out.println(societyCell.getName() + " just expanded!");
             }
@@ -88,41 +87,41 @@ public class Gardener {
                 //If the lifecell has recently reproduced, we want it to scatter to avoid overcrowding. To assert this, we want to check if it currently has any paths to follow, if so remove it and replace it with the scatter function
                 Point destination = PointUtilities.calculateValidCoordinates(lifeCell.getSocietyCell(), societyCell.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
                 LinkedList<Node> value = Pathfind.aStar(250, modelStructure, lifeCellPoint, destination);
-                if (value.isEmpty()) {
-                    continue;
+                if (!value.isEmpty()) {
+                    //Remove any current paths if the life cell has one as to avoid conflicts.
+                    List<LinkedList<Node>> elementsToRemove = listOfPaths.parallelStream().filter(Objects::nonNull).filter(e -> {
+                        assert e.peek() != null;
+                        return e.peek().equals(value.peek());
+                    }).toList();
+                    listOfPaths.removeAll(elementsToRemove);
+                    listOfPaths.add(value);
                 }
-                //Remove any current paths if the life cell has one as to avoid conflicts.
-                List<LinkedList<Node>> elementsToRemove = listOfPaths.parallelStream().filter(Objects::nonNull).filter(e -> e.peek().equals(value.peek())).toList();
-                listOfPaths.removeAll(elementsToRemove);
-                listOfPaths.add(value);
             }
         }
     }
 
-    public void checkForReproductionRules() {
+    /**
+     * Scans all life cells and their area to see if they have a partner, if they do then try to generate a new life cell.
+     */
+    public void checkForValidReproduction() {
         //System.out.println("Checking reproduction rules");
         //Copy list to prevent concurrency exceptions
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCellPoint : copyOfList) {
             LifeCell parent1 = modelStructure.getCoordinate(lifeCellPoint);
-            List<int[]> coordinateRef = getLocalPoints(lifeCellPoint);
-            List<int[]> ints = coordinateRef.stream().filter(e -> e[0] < 150
-                    && e[1] < 150
-                    && e[0] > 0
-                    && e[1] > 0).toList();
 
             //Get a 3x3 area from the origin of the cell and see if there are any life cell to reproduce with
-            for (int[] point : ints) {
-                if (modelStructure.getCoordinate(new Point(point[0], point[1])) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && parent1.getReproductionCooldown() == 0) {
+            List<Point> allValidatedNeighbours = PointUtilities.getAllValidatedNeighbours(lifeCellPoint);
+            for (Point parent2 : allValidatedNeighbours) {
+                if (modelStructure.getCoordinate(parent2) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && parent1.getReproductionCooldown() == 0) {
                     Point newLifeCell;
-                    int[] ints1;
                     //for the little list surrounding the cell, try to generate a new life cell, however if the break condition is reached (to prevent hard lock) then we cannot create one
                     int breakcnd = 0;
                     do {
-                        ints1 = coordinateRef.get(((int) (Math.random() * coordinateRef.size())));
-                        newLifeCell = new Point(ints1[0], ints1[1]);
+                        newLifeCell = allValidatedNeighbours.get(((int) (Math.random() * allValidatedNeighbours.size())));
                         breakcnd++;
-                    } while (!(modelStructure.getCoordinate(newLifeCell) instanceof WorldCell) && breakcnd != 4);/* && !(worldCell.getECellType().isHabitable())*/;
+                        //Repeat if there is no valid spawn place -- try to find one within 4 attempts or failure
+                    } while (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType()) && breakcnd < 4);/* && !(worldCell.getECellType().isHabitable())*/;
                     if (breakcnd == 4) {
                         System.out.println("A life cell cannot be created!");
                         continue;
@@ -133,7 +132,7 @@ public class Gardener {
                     modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures(new HashMap<>()).get(ECellType.LIFE_CELL)));
                     globalLifeCellList.add(newLifeCell);
                     parent1.setReproductionCooldown();
-                    ((LifeCell) modelStructure.getCoordinate(new Point(point[0], point[1]))).setReproductionCooldown();
+                    ((LifeCell) modelStructure.getCoordinate(parent2)).setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(newLifeCell)).setReproductionCooldown();
                     System.out.println("A new life cell has been created!");
                     ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells(newLifeCell);
@@ -142,14 +141,6 @@ public class Gardener {
             }
             parent1.decrementReproductionCooldown();
         }
-    }
-
-    public static List<int[]> getLocalPoints(Point point) {
-        int[][] ints = {{(int) point.getX(), (int) (point.getY() - 1)}, {(int) point.getX(), (int) (point.getY() + 1)}, {(int) (point.getX() - 1), (int) point.getY()}, {(int) (point.getX() + 1), (int) point.getY()}};
-        return Arrays.stream(ints).filter(e -> e[0] < 145
-                && e[1] < 145
-                && e[0] > 0
-                && e[1] > 0).toList();
     }
 
     /**
@@ -163,12 +154,7 @@ public class Gardener {
         for (LinkedList<Node> value : copyOfList){
             //Get the LinkedList containing all nodes from point A to point B
 
-            //TODO: Make this not terrible, though its a fix for now
-            if (value.isEmpty()) {
-                listOfPaths.remove(value);
-                continue;
-            }
-
+            //All passed paths should have a minimum of a head, if only a head is present then it will be removed and the loop continued to prevent overwriting
             Node current = value.remove();
 
             if (value.isEmpty()) {
@@ -179,27 +165,21 @@ public class Gardener {
             Node toMoveTo = value.peek();
 
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
-            ECellType tocheck = modelStructure.getCoordinate(toMoveTo.point()).getECellType();
-            if (tocheck != toMoveTo.cellType() || Pathfind.isInvalid(tocheck) ) {
-                //System.out.println("Regenerating path");
+            if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
                 listOfPaths.remove(value);
                 LinkedList<Node> newPath = Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point());
                 if (!(newPath.isEmpty())) {
                     listOfPaths.add(newPath);
-                } else {
-                    //System.out.println("Failure to regenerate path. ");
                 }
-                continue;
+            } else {
+                //Get the current node which should be the node the cell is on, and then the cell to move to.
+                Point cPoint = current.point();
+                modelStructure.replaceFrontLayerAt(cPoint, toMoveTo.point());
+                globalLifeCellList.remove(cPoint);
+                globalLifeCellList.add(toMoveTo.point());
+                ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(toMoveTo.point())).getSocietyCell())).changeLifeCellLoc(current.point(), toMoveTo.point());
             }
-
-            //Get the current node which should be the node the cell is on, and then the cell to move to.
-            Point cPoint = current.point();
-            modelStructure.replaceFrontLayerAt(cPoint, toMoveTo.point());
-            globalLifeCellList.remove(cPoint);
-            globalLifeCellList.add(toMoveTo.point());
-            ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(toMoveTo.point())).getSocietyCell())).changeLifeCellLoc(current.point(), toMoveTo.point());
         }
-        //System.out.println("Finished processing");
     }
 
     /**
@@ -209,7 +189,7 @@ public class Gardener {
         //System.out.println("Reproduce time");
         for (Point point : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(point);
-            int percentageCapacity = societyCell.getSize() / societyCell.getNutrientCapacity() * 100;
+            int percentageCapacity = societyCell.getPopulationCount() / societyCell.getNutrientCapacity() * 100;
             //The population and it's resources determine the probability of a societycell determining if it needs to reproduce.
             // A high population and not a lot of food left means there is a lower chance of reproduction. Vice versa.
             int reproduceProbability;
@@ -225,7 +205,8 @@ public class Gardener {
 
             if (reproduceProbability > Math.random() * 100) {
                 LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(societyCell);
-                if (listOfPaths.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek()))){
+                //We want to make sure no current paths for the life cell exists and the path generated isnt useless
+                if (listOfPaths.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
                     listOfPaths.add(pathBetweenCouple);
                 }
             }
@@ -234,11 +215,14 @@ public class Gardener {
 
     private LinkedList<Node> getPathBetweenCouple(SocietyCell societyCell) {
         Point[] couple = selectCoupleLifeCell(societyCell);
+        LifeCell coordinate = modelStructure.getCoordinate(couple[0]);
+        LifeCell coordinate2 = modelStructure.getCoordinate(couple[1]);
+
         return Pathfind.aStar(250, modelStructure, couple[0], couple[1]);
     }
 
     private Point selectRandomLifeCell(SocietyCell societyCell) {
-        return societyCell.getLifeCells().get((int) (Math.random() * societyCell.getSize()));
+        return societyCell.getLifeCells().get((int) (Math.random() * societyCell.getPopulationCount()));
     }
 
     private Point[] selectCoupleLifeCell(SocietyCell societyCell) {

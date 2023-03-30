@@ -36,7 +36,7 @@ public class CellMatrixController {
         globalLifeCellList = new LinkedList<>();
         modelStructure = new ModelStructure();
         imageCache = TextureHelper.cacheCellTextures(new HashMap<>());
-        viewStructure = new ViewStructure(150, 150, this);
+        viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
         ruleApplier = new RuleApplier(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
         ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
         PanelContainer panelContainer = new PanelContainer(viewStructure, new UI(this));
@@ -68,7 +68,7 @@ public class CellMatrixController {
      */
     public void displayData(MouseEvent e) {
         //Weird subtractions are necessary to align click co-ordinate with cell matrix co-ordinate
-        int x = (int) e.getPoint().getX() / 5 - 17;
+        int x = (int) e.getPoint().getX() / 5 - 15;
         int y = (int) e.getPoint().getY() / 5 - 7;
         System.out.println("==");
         System.out.println(x + ", " + y);

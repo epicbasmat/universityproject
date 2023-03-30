@@ -20,8 +20,8 @@ public class ViewSetup {
     public static void setupView(ViewStructure viewStructure, ModelStructure modelStructure, int isLazy) {
         //TODO: Release 145 from it's hardcoded hell
         SwingUtilities.invokeLater(() -> {
-            for (int x = 0; x < 145; x++) {
-                for (int y = 0; y < 145; y++) {
+            for (int x = 0; x < 150; x++) {
+                for (int y = 0; y < 150; y++) {
                     if (isLazy == IS_LAZY) {
                         if (!(viewStructure.getPanel(new Point(x, y)).isEqualTexture(modelStructure.getCoordinate(new Point(x, y)).getTexture()))) {
                             viewStructure.overwriteCell(new Point(x, y), new CellPanel(modelStructure.getCoordinate(new Point(x, y)).getTexture()));

@@ -1,9 +1,6 @@
 package org.basmat.map.controller.rules;
 
 import org.basmat.map.model.ModelStructure;
-import org.basmat.map.model.cells.LifeCell;
-import org.basmat.map.model.cells.NutrientCell;
-import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.view.ViewStructure;
@@ -11,7 +8,6 @@ import org.basmat.map.view.ViewStructure;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.TimerTask;
 
 /**
  * RuleApplier applies the gardeners and the winnowers ruleset using a Java Timer, recurring at a set time inverval.
@@ -23,7 +19,7 @@ In the day between the morning and the evening, the gardener and the winnower pl
  */
 public class RuleApplier {
     private final HashMap<Point, LinkedList<Node>> activeSocietyCells;
-    //private final Winnower winnower;
+    private final Winnower winnower;
     private Gardener gardener;
     private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalSocietyCellList;
@@ -46,7 +42,7 @@ public class RuleApplier {
         this.modelStructure = modelStructure;
         this.listOfPaths = new LinkedList<>();
         this.gardener = new Gardener(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        //this.winnower = new Winnower(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        this.winnower = new Winnower(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
@@ -57,12 +53,13 @@ public class RuleApplier {
         //new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
         //    @Override
         //    public void run() {
+        gardener.checkForValidReproduction();
         gardener.reproduce();
-        gardener.unison();
         gardener.scatter();
-        gardener.checkForReproductionRules();
         gardener.expand();
-       // winnower.overcrowded();
+        gardener.unison();
+        winnower.overcrowded();
+        winnower.collapse();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
         System.out.println("Finished processing");
         //    }

@@ -73,14 +73,7 @@ public class Pathfind {
                 return path;
             }
 
-            int[][] coordinateRef = {{(int) current.point().getX(), (int) (current.point().getY() - 1)}, {(int) current.point().getX(), (int) (current.point().getY() + 1)}, {(int) (current.point().getX() - 1), (int) current.point().getY()}, {(int) (current.point().getX() + 1), (int) current.point().getY()}};
-
-            //Neighbours need to be filtered if they are to be examined, such as ensuring they are in range of the overall matrix
-            //List<Point> neighbours = Arrays.stream(coordinateRef).filter(coords -> PointUtilities.noOOBRandomCoords(new Point(coords[0], coords[1]))).map(f -> new Point(f[0], f[1])).toList();
-            List<Point> neighbours = Arrays.stream(coordinateRef)
-                    .map(coordinates -> new Point(coordinates[0], coordinates[1]))
-                    .filter(PointUtilities::validateBounds).toList();
-            for (Point point : neighbours) {
+            for (Point point : PointUtilities.getAllValidatedNeighbours(current.point())) {
                 /*
                 f(n) = g(n) + h(n)
                 n is the current selected node

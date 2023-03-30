@@ -89,6 +89,6 @@ class Coordinates {
     //hashCode is overridden to ensure that even though an object could be different, if the coordinates match then the bucket will be the same.
     @Override
     public int hashCode() {
-        return (y * 145) + x;
+        return (y * 150) + x;
     }
 }

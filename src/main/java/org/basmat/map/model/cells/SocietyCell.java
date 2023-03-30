@@ -90,11 +90,12 @@ public class SocietyCell implements IMapCell {
                 "Cell Description: " + getECellType().getCellDescription() + "\n" +
                 "Owned nutrient cells: " + nutrientCells.size() + "\n" +
                 "Capacity of nutrient cells: " + getNutrientCapacity() + "\n" +
-                "Population: " + getSize();
+                "Population: " + getPopulationCount() + "\n" +
+                "Population to land ratio: " + getLandPerLifeCell();
 
     }
 
-    public int getSize() {
+    public int getPopulationCount() {
         return lifeCells.size();
     }
 
@@ -105,6 +106,10 @@ public class SocietyCell implements IMapCell {
             capacity = capacity + e.getCapacity();
         }
         return capacity;
+    }
+
+    public void killCell(Point point) {
+        lifeCells.remove(point);
     }
 
     @Override
@@ -122,5 +127,9 @@ public class SocietyCell implements IMapCell {
 
     public void setPreviousExpansionQuotient(int quotient) {
         this.quotient = quotient;
+    }
+
+    public double getLandPerLifeCell() {
+        return (3.1415 * (this.getRadius() * this.getRadius()))/this.getPopulationCount();
     }
 }
