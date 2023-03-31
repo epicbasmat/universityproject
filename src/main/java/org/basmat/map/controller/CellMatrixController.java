@@ -25,6 +25,7 @@ public class CellMatrixController {
     private final ViewStructure viewStructure;
     private final ModelStructure modelStructure;
     private final RuleApplier ruleApplier;
+    private final UI ui;
     private LinkedList<Point> globalSocietyCellList;
     private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalLifeCellList;
@@ -39,7 +40,8 @@ public class CellMatrixController {
         viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
         ruleApplier = new RuleApplier(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
         ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
-        PanelContainer panelContainer = new PanelContainer(viewStructure, new UI(this));
+        ui = new UI(this);
+        PanelContainer panelContainer = new PanelContainer(viewStructure, ui);
         modelSetup.setupMap();
         ViewSetup.setupView(viewStructure, modelStructure);
         ruleApplier.gen();
@@ -48,6 +50,7 @@ public class CellMatrixController {
     public void doThing(){
         ruleApplier.invokeGardener();
     }
+
 
 
     public LinkedList<Point> getGlobalSocietyCellList() {
@@ -66,12 +69,8 @@ public class CellMatrixController {
      * Provides a temporary method for viewing data requested by the cell matrix view.
      * @param e the MouseEvent that the cell captures
      */
-    public void displayData(MouseEvent e) {
+    public void displayData(Point e) {
         //Weird subtractions are necessary to align click co-ordinate with cell matrix co-ordinate
-        int x = (int) e.getPoint().getX() / 5 - 15;
-        int y = (int) e.getPoint().getY() / 5 - 7;
-        System.out.println("==");
-        System.out.println(x + ", " + y);
-        System.out.println(modelStructure.getCoordinate(new Point(x, y)).toString());
+        ui.appendText(modelStructure.getCoordinate(e).toString() + "\n");
     }
 }

@@ -1,6 +1,7 @@
 package org.basmat.map.view;
 
 import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.util.PointUtilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +12,7 @@ import java.awt.event.MouseListener;
  * CellMatrixPanel provides a container to child all individual CellPanels, extending a JFrame.
  * @see CellPanel
  */
-public class ViewStructure extends JPanel implements MouseListener{
+public class ViewStructure extends JPanel implements MouseListener {
     private final CellMatrixController cellMatrixController;
     private GridBagConstraints c;
     private CellPanel[][] cellPanelMatrix;
@@ -24,11 +25,12 @@ public class ViewStructure extends JPanel implements MouseListener{
      */
     public ViewStructure(int matrixWidth, int matrixHeight, CellMatrixController cellMatrixController) {
         cellPanelMatrix = new CellPanel[matrixWidth][matrixHeight];
-        setSize(matrixWidth * 5, matrixHeight * 5);
         this.cellMatrixController = cellMatrixController;
         setVisible(true);
         c = new GridBagConstraints();
         setLayout(new GridBagLayout());
+        this.setMinimumSize(new Dimension(matrixWidth * 5, matrixHeight * 5));
+
     }
 
     /**
@@ -89,11 +91,14 @@ public class ViewStructure extends JPanel implements MouseListener{
         revalidate();
     }
 
-
-
     @Override
     public void mouseClicked(MouseEvent e) {
-        cellMatrixController.displayData(e);
+        Dimension difference = new Dimension((int) (this.getSize().getWidth() - 750) / 2, (int) (this.getSize().getHeight() - 750) / 2);
+        Point e1 = new Point((int) Math.ceil(e.getPoint().x - difference.width) / 5 - 1, (int) (Math.ceil(e.getPoint().y - difference.height) / 5) - 6) ;
+        System.out.println(e.getPoint());
+        System.out.println(difference);
+        System.out.println(e1);
+        cellMatrixController.displayData(e1);
     }
 
     @Override

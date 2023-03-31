@@ -34,6 +34,12 @@ public class Pathfind {
         };
     }
 
+
+    /**
+     * Returns a boolean
+     * @param cellType
+     * @return
+     */
     public static boolean isInvalid(ECellType cellType) {
         return switch (cellType) {
             case NUTRIENTS, SOCIETY_CELL, LIFE_CELL, MOUNTAIN_PEAK, DEEP_WATER, WATER, MOUNTAIN_BODY -> true;
@@ -57,6 +63,7 @@ public class Pathfind {
         int currentIterations = 0;
         while (!openList.isEmpty() && allowedIterations > currentIterations) {
 
+            //if it ever hits the allowed iterations, which it generally will not, we will just deem the path impossible or not worth the trade-off for compute time.
             currentIterations++;
 
             Node current = openList.peek();
@@ -73,6 +80,8 @@ public class Pathfind {
                 return path;
             }
 
+            //For each validated neighbours, calculate their h and g score and add them to the open list.
+            // If the calculated cost g is less than the current g then the node needs to be re-added to the openlist as there is a better path for that candidate.
             for (Point point : PointUtilities.getAllValidatedNeighbours(current.point())) {
                 /*
                 f(n) = g(n) + h(n)

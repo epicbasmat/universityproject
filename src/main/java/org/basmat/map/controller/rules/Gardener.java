@@ -62,6 +62,9 @@ public class Gardener {
         }
     }
 
+    /**
+     * Expands the area of influence for the society cell if the amount of life cells in the society cell has gone up by a certain amount.
+     */
     public void expand() {
         for (Point societyCellPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyCellPoint);
@@ -76,7 +79,7 @@ public class Gardener {
     }
 
     /**
-     * Tells any cells with a certain reproduction cool down to go to a randomized coordinate with it's SocietyCell to prevent overcrowding.
+     * Tells any cells with a certain reproduction cool down to go to a randomized coordinate with it's SocietyCell area of influence to prevent overcrowding.
      */
     public void scatter() {
         //System.out.println("Scattering");
@@ -104,7 +107,6 @@ public class Gardener {
      * Scans all life cells and their area to see if they have a partner, if they do then try to generate a new life cell.
      */
     public void checkForValidReproduction() {
-        //System.out.println("Checking reproduction rules");
         //Copy list to prevent concurrency exceptions
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCellPoint : copyOfList) {
@@ -149,7 +151,6 @@ public class Gardener {
     /**
      * This method manages any active life cells currently moving around. For each life cell path in the List containing all current paths, the head is removed from the path and the model and view structures are updated to reflect the LifeCell's
      * current position.
-     * @
      */
     public void unison() {
         //Concurrency exception dodging
@@ -157,7 +158,6 @@ public class Gardener {
         //For each society cell that has an active path
         for (LinkedList<Node> value : copyOfList){
             //Get the LinkedList containing all nodes from point A to point B
-
             //All passed paths should have a minimum of a head, if only a head is present then it will be removed and the loop continued to prevent overwriting
             Node current = value.remove();
 
@@ -170,7 +170,7 @@ public class Gardener {
 
             //For each movement, we need to evaluate if there has been a model change since the initial pathfind. If there has been a change, we need to regenerate the path
             //We can guarantee that the life cell traversing will never overwrite a cell that it's moving to, as any invalid cells would have been avoided at the time of path generation,
-            //we can ensure that as long as there has been no change to the state of the co-ordinate at path generation, the path is valid.
+            //as long as there has been no change to the state of the co-ordinate at path generation, the path is valid.
             if (modelStructure.getCoordinate(toMoveTo.point()).getECellType() != toMoveTo.cellType()) {
                 listOfPaths.remove(value);
                 LinkedList<Node> newPath = Pathfind.aStar(250, modelStructure, current.point(), value.getLast().point());
@@ -179,10 +179,6 @@ public class Gardener {
                 }
             } else {
                 //Get the current node which should be the node the cell is on, and then the cell to move to.
-                if (Pathfind.isInvalid(modelStructure.getCoordinate(toMoveTo.point()).getECellType())) {
-                    System.out.println("!!!!!!!===============!!!!!!!!");
-                    throw new RuntimeException("Trying to overwrite an important cell!");
-                }
                 Point cPoint = current.point();
                 modelStructure.replaceFrontLayerAt(cPoint, toMoveTo.point());
                 globalLifeCellList.remove(cPoint);
@@ -192,7 +188,8 @@ public class Gardener {
     }
 
     /**
-     * Logic provider for reproduction. Determines if a society cell will cause reproduction in it's owned life cells.
+     * This method determines if any life cells within a society cell will generate a path to seek another life cell to create. The chance of this happening is determined by the current
+     * population by the amount of food distributed by the society cell.
      */
     public void reproduce() {
         //System.out.println("Reproduce time");
@@ -224,9 +221,6 @@ public class Gardener {
 
     private LinkedList<Node> getPathBetweenCouple(Point societyCell) {
         Point[] couple = selectCoupleLifeCell(societyCell);
-        LifeCell coordinate = modelStructure.getCoordinate(couple[0]);
-        LifeCell coordinate2 = modelStructure.getCoordinate(couple[1]);
-
         return Pathfind.aStar(250, modelStructure, couple[0], couple[1]);
     }
 

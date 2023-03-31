@@ -28,6 +28,7 @@ public class ModelStructure {
         backLayer.put(new Coordinates(point), toSet);
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends IMapCell> T getFrontLayer(Point point) {
         return (T) frontLayer.get(new Coordinates(point));
     }
@@ -40,6 +41,7 @@ public class ModelStructure {
      * This method returns the object that is current on either matrix's coordinate. If the top layer contains an object, then that overrides returning the bottom object.
      * @return The object that is in the coordinates, with the front layer taking priority
      */
+    @SuppressWarnings("unchecked")
     public <T extends IMapCell> T getCoordinate(Point point) {
         return getFrontLayer(point) == null ? (T) getBackLayer(point) : getFrontLayer(point);
     }

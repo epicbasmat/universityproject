@@ -36,7 +36,6 @@ public class TextureHelper {
 
     /**
      * This method will copy any texture and return it with the colorSpace of TYPE_INT_ARGB, this is done to enable alpha transparency as default-loaded images do not have that enabled.
-     *
      * @param reference The reference image to copy
      * @return The same image, but with TYPE_INT_ARGB
      */

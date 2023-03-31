@@ -1,7 +1,6 @@
 package org.basmat.map.view;
 
 import org.basmat.map.controller.CellMatrixController;
-import org.basmat.map.controller.rules.Gardener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,31 +9,45 @@ import java.awt.event.ActionListener;
 
 public class UI extends JPanel {
 
-    private final GridBagConstraints c;
+    private JScrollPane txtArea;
     private CellMatrixController cellMatrixController;
+    private JTextArea textArea;
+    private JScrollPane textScrollArea;
 
     public UI(CellMatrixController cellMatrixController) {
         this.cellMatrixController = cellMatrixController;
         setSize(100,100);
         setVisible(true);
-        c = new GridBagConstraints();
-        setLayout(new GridBagLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         button();
+        textArea();
     }
 
     public void button() {
-        Button scrumpMonkeys = new Button("Generate paths");
-        scrumpMonkeys.addActionListener(new Temp(cellMatrixController));
-        scrumpMonkeys.setSize(30, 30);
-        this.add(scrumpMonkeys);
+        Button paths = new Button("Generate paths");
+        paths.addActionListener(new PathButton(cellMatrixController));
+        paths.setSize(30, 30);
+        this.add(paths);
+    }
+
+    public void textArea() {
+        textArea = new JTextArea(null, null, 10, 10);
+        textScrollArea = new JScrollPane(textArea);
+        textScrollArea.setPreferredSize(new Dimension(300, 300));
+        textArea.setEditable(false);
+        this.add(textScrollArea);
+    }
+
+    public void appendText(String string) {
+        textArea.append(string);
     }
 }
 
-class Temp implements ActionListener {
+class PathButton implements ActionListener {
 
     private CellMatrixController cellMatrixController;
 
-    public Temp(CellMatrixController cellMatrixController){
+    public PathButton(CellMatrixController cellMatrixController){
         this.cellMatrixController = cellMatrixController;
     }
 

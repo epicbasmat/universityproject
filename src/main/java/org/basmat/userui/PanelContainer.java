@@ -11,14 +11,15 @@ import java.awt.*;
  */
 public class PanelContainer extends JFrame {
     public PanelContainer(ViewStructure viewStructure, UI ui) {
-        this.setLayout(new FlowLayout());
-        add(viewStructure);
-        add(ui);
-        addMouseListener(viewStructure);
+        this.setLayout(new BorderLayout());
+        add(viewStructure, BorderLayout.CENTER);
+        add(ui, BorderLayout.AFTER_LINE_ENDS);
         setTitle("SIMULATION");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1000, 1000));
+        addMouseListener(viewStructure);
+        setPreferredSize(new Dimension(1200, 1200));
         pack();
         setVisible(true);
+
     }
 }
