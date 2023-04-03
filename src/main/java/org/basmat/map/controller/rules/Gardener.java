@@ -131,9 +131,9 @@ public class Gardener {
                     //Create a new life cell and add it to the global array, and add it to the model
                     modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures().get(ECellType.LIFE_CELL)));
                     globalLifeCellList.add(newLifeCell);
-                    parent1.setReproductionCooldown();
-                    ((LifeCell) modelStructure.getCoordinate(parent2)).setReproductionCooldown();
-                    ((LifeCell) modelStructure.getCoordinate(newLifeCell)).setReproductionCooldown();
+                    parent1.resetReproductionCooldown();
+                    ((LifeCell) modelStructure.getCoordinate(parent2)).resetReproductionCooldown();
+                    ((LifeCell) modelStructure.getCoordinate(newLifeCell)).resetReproductionCooldown();
                     ui.appendText("A new life cell has been created!");
                     ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells();
                     break;

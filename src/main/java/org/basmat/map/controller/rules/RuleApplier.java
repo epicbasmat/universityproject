@@ -62,6 +62,7 @@ public class RuleApplier {
         winnower.overcrowded();
         winnower.collapse();
         winnower.famine();
+        winnower.stagnation();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
         //ViewSetup.revalidate(viewStructure);
         //    }

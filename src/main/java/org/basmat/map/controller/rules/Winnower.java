@@ -59,10 +59,34 @@ public class Winnower {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
             int population = coordinate.getPopulationCount();
             int nutrientCapacity = coordinate.getNutrientCapacity();
+            //If the ratio of nutrient to population goes below 0.6, i.e food cannot be split much more than 33% below then a random cell cannot be fed and will die
             if (nutrientCapacity / population < 0.6) {
                 List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();
                 kill(points.get((int) (Math.random() * points.size())));
-                ui.appendText("A death has occurred at " + coordinate.getName() + " due to starvation!");
+                ui.appendText("A death has occurred due to starvation!");
+            }
+        }
+    }
+
+
+    public void stagnation() {
+        List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
+        for (Point point : copyOfList) {
+            LifeCell lifeCell = modelStructure.getCoordinate(point);
+            lifeCell.incrementAttrition();
+            boolean hasPartner = false;
+            for (Point partner : PointUtilities.getAllValidatedNeighbours(point)) {
+                if (modelStructure.getCoordinate(partner) instanceof LifeCell ) {
+                    lifeCell.resetAttrition();
+                    hasPartner = true;
+                    break;
+                }
+            }
+            if (!hasPartner) {
+                if (lifeCell.getAttrition() > 20) {
+                    kill(point);
+                    ui.appendText("A death cells has occurred because it has not had any other cells visit it");
+                }
             }
         }
     }
@@ -72,7 +96,7 @@ public class Winnower {
         for (Point point : copyOfList) {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
             if (coordinate.getLandPerLifeCell() > 75) {
-                ui.appendText("Society collapsed, too much land for people at " + point);
+                ui.appendText("Society collapsed, the population was overstretched too much over the land it had at:  " + point);
                 globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
                 PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);
                 modelStructure.deleteCoordinate(point);
@@ -84,7 +108,7 @@ public class Winnower {
 
     /**
      * Removes all instances of the lifecell from the simulation.
-     * @param lifeCell
+     * @param lifeCell The life cell to remove
      */
     public void kill(Point lifeCell) {
         //To remove every instance that the LifeCell has, we need to remove the coordinate references from

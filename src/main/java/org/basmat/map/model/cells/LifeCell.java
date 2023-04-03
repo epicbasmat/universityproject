@@ -42,6 +42,14 @@ public class LifeCell implements IMapCell {
         attrition++;
     }
 
+    public int getAttrition() {
+        return this.attrition;
+    }
+
+    public void resetAttrition() {
+        attrition = 0;
+    }
+
     @Override
     public BufferedImage getTexture() {
         return texture;
@@ -66,7 +74,7 @@ public class LifeCell implements IMapCell {
         }
     }
 
-    public void setReproductionCooldown() {
+    public void resetReproductionCooldown() {
         reproductionCooldown = 11;
     }
 }
