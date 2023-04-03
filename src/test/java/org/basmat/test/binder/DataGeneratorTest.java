@@ -1,12 +1,10 @@
 package org.basmat.test.binder;
 
-import org.basmat.map.cellfactory.CellFactory;
-import org.basmat.map.cellfactory.WorldCell;
-import org.basmat.map.controller.MVBinder;
-import org.basmat.map.data.CellDataHelper;
-import org.basmat.map.setup.MapSetup;
+import org.basmat.map.model.cells.factory.CellFactory;
+import org.basmat.map.model.cells.WorldCell;
+import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.util.ECellType;
-import org.basmat.map.view.CellMatrixPanel;
+import org.basmat.map.view.ViewStructure;
 import org.basmat.map.view.CellPanel;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +15,7 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DataGeneratorTest {
-    private final CellMatrixPanel cellMatrixPanel;
+    private final ViewStructure viewStructure;
     private final CellDataHelper cellDataHelper;
     private final CellFactory cellFactory;
     private final HashMap<ECellType, BufferedImage> cache;
@@ -28,9 +26,9 @@ public class DataGeneratorTest {
 
     DataGeneratorTest() {
         this.cellFactory = new CellFactory();
-        cache = new MapSetup(null, null, null, null).getImageCache();
-        cellMatrixPanel = new CellMatrixPanel(750, 750, null);
-        cellDataHelper = new CellDataHelper(cellMatrixPanel, cache);
+        cache = new ModelSetup(null, null, null, null, null, null, globalLifeCellList).getImageCache();
+        viewStructure = new ViewStructure(750, 750, null);
+        cellDataHelper = new CellDataHelper(viewStructure, cache);
         view = new CellPanel(cache.get(ECellType.GRASS), 400);
         model = cellFactory.createWorldCell(ECellType.GRASS, null, 400);
         point = new Point(40, 40);
@@ -56,7 +54,7 @@ public class DataGeneratorTest {
 
     @Test
     void CreateSocietyBinder_CellDataHelperGenerators_True() {
-        MVBinder<?> name = cellDataHelper.generateSocietyBinder("name", 600, new Point(45, 45));
+        MVBinder<?> name = cellDataHelper.generateSocietyBinder("name", 600, 12, new Point(45, 45));
         assertInstanceOf(MVBinder.class, name);
         assertEquals(ECellType.SOCIETY_CELL, name.model().getECellType());
     }
@@ -64,6 +62,6 @@ public class DataGeneratorTest {
     @Test
     void GetIdFromModel_CellPanelMatrix_True() {
         cellDataHelper.setCellData(binder);
-        assertEquals(400, cellMatrixPanel.getPanel(40, 40).getId());
+        assertEquals(400, viewStructure.getPanel(40, 40).getId());
     }
 }

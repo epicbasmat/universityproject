@@ -27,10 +27,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return null;
-		}
 	},
 	DEEP_WATER {
 		@Override
@@ -55,10 +51,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return WATER;
-		}
 	},
 	WATER {
 		@Override
@@ -83,10 +75,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return this;
-		}
 	},
 	LIGHT_WATER {
 		@Override
@@ -111,10 +99,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return WATER;
-		}
 	},
 	MOUNTAIN_BASE {
 		@Override
@@ -139,10 +123,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return this;
-		}
 	},
 	MOUNTAIN_BODY {
 		@Override
@@ -167,10 +147,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return MOUNTAIN_BASE;
-		}
 	},
 	MOUNTAIN_PEAK {
 		@Override
@@ -195,10 +171,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return MOUNTAIN_BASE;
-		}
 	},
 	GRASS {
 		@Override
@@ -223,10 +195,6 @@ public enum ECellType {
 			return true;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return this;
-		}
 	},
 	SAND {
 		@Override
@@ -250,10 +218,6 @@ public enum ECellType {
 			return true;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return GRASS;
-		}
 	},
 	SOCIETY_CELL {
 		@Override
@@ -278,10 +242,6 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return GRASS;
-		}
 	},
 	NUTRIENTS{
 		@Override
@@ -304,10 +264,29 @@ public enum ECellType {
 			return true;
 		}
 
+	},
+
+	LIFE_CELL {
 		@Override
-		public ECellType getParent() {
-			return GRASS;
+		public String getPath() {
+			return BASE_PATH.getPath() + "./life.png";
 		}
+
+		@Override
+		public String getCellDescription() {
+			return "A cell that is sentient and requires food to live.";
+		}
+
+		@Override
+		public String getCellName() {
+			return "Life cell";
+		}
+
+		@Override
+		public boolean isHabitable() {
+			return false;
+		}
+
 	},
 	MISSING_TEXTURE{
 		@Override
@@ -330,17 +309,11 @@ public enum ECellType {
 			return false;
 		}
 
-		@Override
-		public ECellType getParent() {
-			return null;
-		}
 	};
-
 
 	
 	abstract public String getPath();
-	abstract public  String getCellDescription();
+	abstract public String getCellDescription();
 	abstract public String getCellName();
 	abstract public boolean isHabitable();
-	abstract public ECellType getParent();
 }
