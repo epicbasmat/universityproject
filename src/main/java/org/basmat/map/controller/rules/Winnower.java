@@ -7,6 +7,7 @@ import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.path.Node;
+import org.basmat.map.view.UI;
 import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
@@ -22,15 +23,15 @@ import java.util.Objects;
  */
 public class Winnower {
 
-    private ViewStructure viewStructure;
+    private final UI ui;
     private ModelStructure modelStructure;
     private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalSocietyCellList;
     private LinkedList<Point> globalLifeCellList;
     private LinkedList<LinkedList<Node>> listOfPaths;
 
-    public Winnower(ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
-        this.viewStructure = viewStructure;
+    public Winnower(UI ui, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+        this.ui = ui;
         this.modelStructure = modelStructure;
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
@@ -47,7 +48,7 @@ public class Winnower {
                     overcrowd++;
                 }
             } if (overcrowd > 4) {
-                System.out.println("A life cell has been killed from overcrowding!");
+                ui.appendText("A life cell has been killed from overcrowding!");
                 kill(lifeCell);
             }
         }
@@ -58,7 +59,7 @@ public class Winnower {
         for (Point point : copyOfList) {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
             if (coordinate.getLandPerLifeCell() > 75) {
-                System.out.println("Society collapsed, too much land for people at " + point);
+                ui.appendText("Society collapsed, too much land for people at " + point);
                 globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
                 PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);
                 modelStructure.deleteCoordinate(point);

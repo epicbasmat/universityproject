@@ -9,6 +9,7 @@ import org.basmat.map.util.ECellType;
 import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
+import org.basmat.map.view.UI;
 import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
@@ -30,19 +31,18 @@ public class Gardener {
     //Update
     private LinkedList<LinkedList<Node>> listOfPaths;
     private ViewStructure viewStructure;
+    private final UI ui;
     private final ModelStructure modelStructure;
 
     /**
-     *
-     *
-     * @param viewStructure
+     * @param ui
      * @param modelStructure
      * @param globalNutrientCellList
      * @param globalSocietyCellList
      * @param globalLifeCellList
      */
-    public Gardener(ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
-        this.viewStructure = viewStructure;
+    public Gardener(UI ui, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+        this.ui = ui;
         this.modelStructure = modelStructure;
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
@@ -73,7 +73,7 @@ public class Gardener {
                 societyCell.setRadius(societyCell.getRadius() + 2);
                 societyCell.setPreviousExpansionQuotient(societyCell.getPopulationCount() / 6);
                 PointUtilities.tintArea(societyCell.getRadius(), societyCellPoint, societyCell.getTint(), modelStructure);
-                System.out.println(societyCell.getName() + " just expanded!");
+                ui.appendText(societyCell.getName() + " just expanded!");
             }
         }
     }
@@ -124,13 +124,8 @@ public class Gardener {
                         //Repeat if there is no valid spawn place -- try to find one within 4 attempts or failure
                     } while (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType()) && breakcnd < 4);/* && !(worldCell.getECellType().isHabitable())*/;
                     if (breakcnd == 4) {
-                        System.out.println("A life cell cannot be created!");
+                        ui.appendText("A life cell failed to be created! Too many cells in the surrounding area.");
                         continue;
-                    }
-
-                    if (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType())) {
-                        System.out.println("!!!!!!!===============!!!!!!!!");
-                        throw new RuntimeException("Trying to overwrite an important cell!");
                     }
                     //If horrible things haven't happened:
                     //Create a new life cell and add it to the global array, and add it to the model
@@ -139,7 +134,7 @@ public class Gardener {
                     parent1.setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(parent2)).setReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(newLifeCell)).setReproductionCooldown();
-                    System.out.println("A new life cell has been created!");
+                    ui.appendText("A new life cell has been created!");
                     ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells();
                     break;
                 }

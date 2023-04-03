@@ -38,9 +38,9 @@ public class CellMatrixController {
         modelStructure = new ModelStructure();
         imageCache = TextureHelper.cacheCellTextures();
         viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
-        ruleApplier = new RuleApplier(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
-        ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
         ui = new UI(this);
+        ruleApplier = new RuleApplier(ui, viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
+        ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
         PanelContainer panelContainer = new PanelContainer(viewStructure, ui);
         modelSetup.setupMap();
         ViewSetup.setupView(viewStructure, modelStructure);

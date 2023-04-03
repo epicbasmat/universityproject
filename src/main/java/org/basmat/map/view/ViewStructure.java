@@ -30,7 +30,6 @@ public class ViewStructure extends JPanel implements MouseListener {
         c = new GridBagConstraints();
         setLayout(new GridBagLayout());
         this.setMinimumSize(new Dimension(matrixWidth * 5, matrixHeight * 5));
-
     }
 
     /**

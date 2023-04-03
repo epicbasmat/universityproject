@@ -23,23 +23,23 @@ public class UI extends JPanel {
         textArea();
     }
 
-    public void button() {
+    private void button() {
         Button paths = new Button("Generate paths");
         paths.addActionListener(new PathButton(cellMatrixController));
         paths.setSize(30, 30);
         this.add(paths);
     }
 
-    public void textArea() {
+    private void textArea() {
         textArea = new JTextArea(null, null, 10, 10);
         textScrollArea = new JScrollPane(textArea);
-        textScrollArea.setPreferredSize(new Dimension(300, 300));
+        textScrollArea.setPreferredSize(new Dimension(400, 300));
         textArea.setEditable(false);
         this.add(textScrollArea);
     }
 
     public void appendText(String string) {
-        textArea.append(string);
+        textArea.append(string + "\n");
     }
 }
 

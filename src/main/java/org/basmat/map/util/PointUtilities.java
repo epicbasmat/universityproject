@@ -2,6 +2,7 @@ package org.basmat.map.util;
 
 import com.google.common.collect.ObjectArrays;
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
@@ -68,15 +69,23 @@ public class PointUtilities {
      * @param modelStructure The ModelStructure to manipulate
      */
     public static void tintArea(int radius, Point centralCoordinate, int tint, ModelStructure modelStructure) {
+        HashSet<ECellType> illegalCellTypes = new HashSet<>();
+        illegalCellTypes.add(ECellType.DEEP_WATER);
+        illegalCellTypes.add(ECellType.MOUNTAIN_BODY);
+        illegalCellTypes.add(ECellType.MOUNTAIN_PEAK);
+        illegalCellTypes.add(ECellType.WATER);
         calculateArea(radius, centralCoordinate, (point) -> {
-            if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell && iOwnedCell.getOwner() == null && !Pathfind.isInvalid(iOwnedCell.getECellType())) {
+            if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell && !illegalCellTypes.contains(iOwnedCell.getECellType()) && iOwnedCell.getOwner() == null) {
                 BufferedImage texture = modelStructure.getCoordinate(point).getTexture();
                 for (int x = 0; x < texture.getWidth(); x++) {
                     for (int y = 0; y < texture.getHeight(); y++) {
                         texture.setRGB(x, y, texture.getRGB(x, y) | tint);
                     }
                 }
-                iOwnedCell.setOwner(modelStructure.getFrontLayer(centralCoordinate));
+                iOwnedCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
+                if (iOwnedCell instanceof NutrientCell nutrientCell) {
+                    ((SocietyCell) modelStructure.getCoordinate(centralCoordinate)).addNutrientCells(nutrientCell);
+                }
             }
         });
     }

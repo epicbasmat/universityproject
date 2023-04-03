@@ -3,6 +3,7 @@ package org.basmat.map.controller.rules;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.path.Node;
+import org.basmat.map.view.UI;
 import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
@@ -37,12 +38,12 @@ public class RuleApplier {
      * @param globalSocietyCellList
      * @param globalLifeCellList
      */
-    public RuleApplier(ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public RuleApplier(UI ui, ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
         this.viewStructure = viewStructure;
         this.modelStructure = modelStructure;
         this.listOfPaths = new LinkedList<>();
-        this.gardener = new Gardener(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        this.winnower = new Winnower(viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        this.gardener = new Gardener(ui, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        this.winnower = new Winnower(ui, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
