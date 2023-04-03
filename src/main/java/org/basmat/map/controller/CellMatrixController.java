@@ -33,18 +33,16 @@ public class CellMatrixController {
 
     public CellMatrixController(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
         globalSocietyCellList = new LinkedList<>();
-        globalNutrientCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         modelStructure = new ModelStructure();
         imageCache = TextureHelper.cacheCellTextures();
         viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
         ui = new UI(this);
-        ruleApplier = new RuleApplier(ui, viewStructure, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList);
+        ruleApplier = new RuleApplier(ui, viewStructure, modelStructure, globalSocietyCellList, globalLifeCellList);
         ModelSetup modelSetup = new ModelSetup(imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
         PanelContainer panelContainer = new PanelContainer(viewStructure, ui);
         modelSetup.setupMap();
         ViewSetup.setupView(viewStructure, modelStructure);
-        ruleApplier.gen();
     }
 
     public void doThing(){
