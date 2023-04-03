@@ -207,7 +207,7 @@ public class Gardener {
             if (reproduceProbability > Math.random() * 100) {
                 LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(point);
                 //We want to make sure no current paths for the life cell exists and the path generated isnt empty
-                if (listOfPaths.stream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
+                if (listOfPaths.parallelStream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
                     listOfPaths.add(pathBetweenCouple);
                 }
             }
@@ -220,7 +220,6 @@ public class Gardener {
     }
 
     private Point selectRandomLifeCell(Point societyCell) {
-        //return societyCell.getLifeCells()((int) (Math.random() * societyCell.getPopulationCount()));
         List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == societyCell).toList();
         return points.get((int) (Math.random() * points.size()));
     }

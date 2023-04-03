@@ -6,15 +6,17 @@ import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.model.cells.factory.IOwnedCell;
-import org.basmat.map.util.path.Pathfind;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
+
+/**
+ * PointUtilities contains static methods to help Point calculations, such as getting neighbours in taxicab geometry, or calculating all points within a circle.
+ */
 public class PointUtilities {
     /**
      * Returns a random coordinate with a circle's area
@@ -74,7 +76,7 @@ public class PointUtilities {
         illegalCellTypes.add(ECellType.MOUNTAIN_BODY);
         illegalCellTypes.add(ECellType.MOUNTAIN_PEAK);
         illegalCellTypes.add(ECellType.WATER);
-        calculateArea(radius, centralCoordinate, (point) -> {
+        forPointsInCircle(radius, centralCoordinate, (point) -> {
             if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell && !illegalCellTypes.contains(iOwnedCell.getECellType()) && iOwnedCell.getOwner() == null) {
                 BufferedImage texture = modelStructure.getCoordinate(point).getTexture();
                 for (int x = 0; x < texture.getWidth(); x++) {
@@ -90,11 +92,17 @@ public class PointUtilities {
         });
     }
 
+    /**
+     * This method resets an area in a circle, removing all tints and any ownership of a SocietyCell.
+     * @param radius The radius of the circle
+     * @param centralCoordinate The central coordinate of the point, usually a societycell
+     * @param modelStructure The current ModelStructure containing all simulation data.
+     */
     public static void resetArea(int radius, Point centralCoordinate, ModelStructure modelStructure) {
         CellFactory cellFactory = new CellFactory();
         HashMap<ECellType, BufferedImage> cache = TextureHelper.cacheCellTextures();
         SocietyCell coordinate = modelStructure.getCoordinate(centralCoordinate);
-        calculateArea(radius, centralCoordinate, (point) -> {
+        forPointsInCircle(radius, centralCoordinate, (point) -> {
             if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell) {
                 if (iOwnedCell.getOwner() == coordinate) {
                     //Reset the world cell by getting the cell type and creating a new object with the same cell type and set it to the same coordinates.
@@ -109,7 +117,15 @@ public class PointUtilities {
         });
     }
 
-    public static void calculateArea(int radius, Point centralCoordinate, Action<Point> action) {
+    /**
+     * This calculates the circumference of a circle and all points in the circle,
+     * and for each point in the circle, executes an action defined by functional interface <code> Action </code>
+     * @see Action
+     * @param radius The radius of the circle
+     * @param centralCoordinate The central coordinate of the circle
+     * @param action An action to execute for each point in the circle
+     */
+    public static void forPointsInCircle(int radius, Point centralCoordinate, Action<Point> action) {
         for (Map.Entry<Point, Point> kvPair : PointUtilities.midpointAlgorithm(radius, centralCoordinate)) {
             for (int i = kvPair.getKey().x; i < kvPair.getValue().x; i++) {
                 Point point = new Point(i, kvPair.getKey().y);
@@ -120,6 +136,13 @@ public class PointUtilities {
         }
     }
 
+    /**
+     * An implementation of the midpoint algorithm to calculate the circumference of a circle through mirroring quadrants,
+     * and for each quadrant there exists a map mapping one side of the circle to another.
+     * @param radius The radius of a circle
+     * @param centralCoordinate The central coordinate of a circle
+     * @return A comprehensive list containing maps, mapping all left hand side of the circumference to the right hand of the circle.
+     */
     public static List<Map.Entry<Point, Point>> midpointAlgorithm(int radius, Point centralCoordinate) {
         int x = radius, y = 0;
         List<Map.Entry<Point,Point>> pairList = new java.util.ArrayList<>();

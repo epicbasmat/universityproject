@@ -54,6 +54,19 @@ public class Winnower {
         }
     }
 
+    public void famine() {
+        for (Point point : globalSocietyCellList) {
+            SocietyCell coordinate = modelStructure.getCoordinate(point);
+            int population = coordinate.getPopulationCount();
+            int nutrientCapacity = coordinate.getNutrientCapacity();
+            if (nutrientCapacity / population < 0.6) {
+                List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();
+                kill(points.get((int) (Math.random() * points.size())));
+                ui.appendText("A death has occurred at " + coordinate.getName() + " due to starvation!");
+            }
+        }
+    }
+
     public void collapse() {
         List<Point> copyOfList = new LinkedList<>(globalSocietyCellList);
         for (Point point : copyOfList) {
