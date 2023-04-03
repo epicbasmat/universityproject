@@ -25,15 +25,13 @@ public class Winnower {
 
     private final UI ui;
     private ModelStructure modelStructure;
-    private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalSocietyCellList;
     private LinkedList<Point> globalLifeCellList;
     private LinkedList<LinkedList<Node>> listOfPaths;
 
-    public Winnower(UI ui, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+    public Winnower(UI ui, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
         this.ui = ui;
         this.modelStructure = modelStructure;
-        this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
         this.listOfPaths = listOfPaths;
@@ -73,7 +71,6 @@ public class Winnower {
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point point : copyOfList) {
             LifeCell lifeCell = modelStructure.getCoordinate(point);
-            lifeCell.incrementAttrition();
             boolean hasPartner = false;
             for (Point partner : PointUtilities.getAllValidatedNeighbours(point)) {
                 if (modelStructure.getCoordinate(partner) instanceof LifeCell ) {
@@ -83,6 +80,7 @@ public class Winnower {
                 }
             }
             if (!hasPartner) {
+                lifeCell.incrementAttrition();
                 if (lifeCell.getAttrition() > 20) {
                     kill(point);
                     ui.appendText("A death cells has occurred because it has not had any other cells visit it");

@@ -197,7 +197,6 @@ public class ModelSetup {
             if (modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
                 SocietyCell owner = modelStructure.getBackLayer(point).getOwner();
                 modelStructure.setFrontLayer(point, cellFactory.createNutrientCell(owner, imageCache.get(ECellType.NUTRIENTS)));
-                globalNutrientCellList.add(point);
                 if (owner != null) {
                     //Add the nutrient cell to the list of owned cells that the society cell can call its own
                     owner.addNutrientCells(modelStructure.getFrontLayer(point));

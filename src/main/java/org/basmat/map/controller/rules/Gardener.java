@@ -23,43 +23,26 @@ import java.util.List;
  In the morning, the gardener pushed the seeds down into the wet loam of the garden to see what they would become
  */
 public class Gardener {
-
-    private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalSocietyCellList;
     private LinkedList<Point> globalLifeCellList;
 
     //Update
     private LinkedList<LinkedList<Node>> listOfPaths;
-    private ViewStructure viewStructure;
     private final UI ui;
     private final ModelStructure modelStructure;
 
     /**
      * @param ui
      * @param modelStructure
-     * @param globalNutrientCellList
      * @param globalSocietyCellList
      * @param globalLifeCellList
      */
-    public Gardener(UI ui, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+    public Gardener(UI ui, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
         this.ui = ui;
         this.modelStructure = modelStructure;
-        this.globalNutrientCellList = globalNutrientCellList;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
         this.listOfPaths = listOfPaths;
-    }
-
-    /**
-     *
-     * @param societyCell The society cell to determine if anything needs to happen
-     * @param percentageCapacity The population / nutrient capacity * 100
-     */
-    public void scavenge(SocietyCell societyCell, double percentageCapacity) {
-        //If the nutrient capacity of the society exceeds 85%, then tell someone to scavenge
-        if (percentageCapacity > 85) {
-            //Look for food, or risk dying
-        }
     }
 
     /**
@@ -69,7 +52,7 @@ public class Gardener {
         for (Point societyCellPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyCellPoint);
             //If the life cell count is divisable by six and the previous capacity is not the same as the current capacity, expand the borders
-            if (societyCell.getPreviousExpansionQuotient() != societyCell.getPopulationCount()/6) {
+            if (societyCell.getPreviousExpansionQuotient() < societyCell.getPopulationCount()/6) {
                 societyCell.setRadius(societyCell.getRadius() + 2);
                 societyCell.setPreviousExpansionQuotient(societyCell.getPopulationCount() / 6);
                 PointUtilities.tintArea(societyCell.getRadius(), societyCellPoint, societyCell.getTint(), modelStructure);

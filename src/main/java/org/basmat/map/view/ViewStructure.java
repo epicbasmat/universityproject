@@ -94,9 +94,6 @@ public class ViewStructure extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         Dimension difference = new Dimension((int) (this.getSize().getWidth() - 750) / 2, (int) (this.getSize().getHeight() - 750) / 2);
         Point e1 = new Point((int) Math.ceil(e.getPoint().x - difference.width) / 5 - 1, (int) (Math.ceil(e.getPoint().y - difference.height) / 5) - 6) ;
-        System.out.println(e.getPoint());
-        System.out.println(difference);
-        System.out.println(e1);
         cellMatrixController.displayData(e1);
     }
 
