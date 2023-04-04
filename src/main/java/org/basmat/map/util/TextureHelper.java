@@ -1,7 +1,6 @@
 package org.basmat.map.util;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 public class TextureHelper {
     /**
      * This method will load in all textures within the designated path and map the CellType to the loaded BufferedImage
-     *
      * @return A HashMap mapping Enum CellType to it's texture
      */
     public static HashMap<ECellType, BufferedImage> cacheCellTextures() {

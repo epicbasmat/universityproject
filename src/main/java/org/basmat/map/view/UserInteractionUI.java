@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class UI extends JPanel {
+public class UserInteractionUI extends JPanel {
 
     private JPanel userPanel;
     private CellMatrixController cellMatrixController;
@@ -16,7 +16,7 @@ public class UI extends JPanel {
     private JScrollPane textScrollArea;
     private int timestep;
 
-    public UI(CellMatrixController cellMatrixController) {
+    public UserInteractionUI(CellMatrixController cellMatrixController) {
         userPanel = new JPanel();
         userPanel.setLayout(new GridLayout());
         userPanel.setVisible(true);

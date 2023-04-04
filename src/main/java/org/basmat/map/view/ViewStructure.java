@@ -1,7 +1,6 @@
 package org.basmat.map.view;
 
 import org.basmat.map.controller.CellMatrixController;
-import org.basmat.map.util.PointUtilities;
 
 import javax.swing.*;
 import java.awt.*;

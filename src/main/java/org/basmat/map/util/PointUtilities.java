@@ -10,9 +10,8 @@ import org.basmat.map.model.cells.factory.IOwnedCell;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
-
+import java.util.*;
 
 /**
  * PointUtilities contains static methods to help Point calculations, such as getting neighbours in taxicab geometry, or calculating all points within a circle.
