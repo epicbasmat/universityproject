@@ -82,7 +82,7 @@ public class Pathfind {
 
             //For each validated neighbours, calculate their h and g score and add them to the open list.
             // If the calculated cost g is less than the current g then the node needs to be re-added to the openlist as there is a better path for that candidate.
-            for (Point point : PointUtilities.getAllValidatedNeighbours(current.point())) {
+            for (Point point : PointUtilities.getImmediateValidatedNeighbours(current.point())) {
                 /*
                 f(n) = g(n) + h(n)
                 n is the current selected node

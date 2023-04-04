@@ -9,51 +9,90 @@ import java.awt.event.ActionListener;
 
 public class UI extends JPanel {
 
-    private JScrollPane txtArea;
+    private JPanel userPanel;
     private CellMatrixController cellMatrixController;
-    private JTextArea textArea;
+    private JTextArea simulationTextInfo;
+    private JTextArea timeStepTextInfo;
     private JScrollPane textScrollArea;
+    private int timestep;
 
     public UI(CellMatrixController cellMatrixController) {
+        userPanel = new JPanel();
+        userPanel.setLayout(new GridLayout());
+        userPanel.setVisible(true);
         this.cellMatrixController = cellMatrixController;
         setSize(100,100);
         setVisible(true);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        button();
+        setupButtonPanel();
+        this.add(userPanel);
+        timeStepSetup();
+        userPanel.add(timeStepTextInfo);
         textArea();
     }
 
-    private void button() {
-        Button paths = new Button("Generate paths");
-        paths.addActionListener(new PathButton(cellMatrixController));
-        paths.setSize(30, 30);
-        this.add(paths);
+    private void timeStepSetup() {
+        timeStepTextInfo = new JTextArea(1, 1);
+        timeStepTextInfo.setEditable(false);
+        timeStepTextInfo.setSize(10, 10);
+        timestep = 0;
+    }
+
+    public void incrementTimeStep() {
+        timestep++;
+        timeStepTextInfo.setText(Integer.toString(timestep));
+    }
+
+    private void setupButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setVisible(true);
+        buttonPanel.setLayout(new FlowLayout());
+        Button play = new Button("Play simulation");
+        play.addActionListener(new PlayListener(cellMatrixController));
+        Button pause = new Button("Pause simulation");
+        pause.addActionListener(new PauseListener(cellMatrixController));
+        play.setSize(30, 30);
+        buttonPanel.add(play);
+        buttonPanel.add(pause);
+        userPanel.add(buttonPanel);
     }
 
     private void textArea() {
-        textArea = new JTextArea(null, null, 10, 10);
-        textScrollArea = new JScrollPane(textArea);
+        simulationTextInfo = new JTextArea(null, null, 10, 10);
+        textScrollArea = new JScrollPane(simulationTextInfo);
         textScrollArea.setPreferredSize(new Dimension(400, 300));
-        textArea.setEditable(false);
+        simulationTextInfo.setEditable(false);
         this.add(textScrollArea);
     }
 
     public void appendText(String string) {
-        textArea.append(string + "\n");
+        simulationTextInfo.append(string + "\n");
     }
 }
 
-class PathButton implements ActionListener {
+class PlayListener implements ActionListener {
+    private final CellMatrixController cellMatrixController;
 
-    private CellMatrixController cellMatrixController;
-
-    public PathButton(CellMatrixController cellMatrixController){
+    public PlayListener(CellMatrixController cellMatrixController){
         this.cellMatrixController = cellMatrixController;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         cellMatrixController.doThing();
+    }
+}
+
+class PauseListener implements ActionListener {
+    private final CellMatrixController cellMatrixController;
+
+    public PauseListener(CellMatrixController cellMatrixController){
+        this.cellMatrixController = cellMatrixController;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //cellMatrixController.pauseEngine();
     }
 }
 

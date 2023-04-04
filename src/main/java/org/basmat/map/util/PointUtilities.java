@@ -77,16 +77,19 @@ public class PointUtilities {
         illegalCellTypes.add(ECellType.MOUNTAIN_PEAK);
         illegalCellTypes.add(ECellType.WATER);
         forPointsInCircle(radius, centralCoordinate, (point) -> {
-            if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell && !illegalCellTypes.contains(iOwnedCell.getECellType()) && iOwnedCell.getOwner() == null) {
+            WorldCell worldCell = modelStructure.getBackLayer(point);
+            if (!illegalCellTypes.contains(worldCell.getECellType()) && worldCell.getOwner() == null) {
                 BufferedImage texture = modelStructure.getCoordinate(point).getTexture();
                 for (int x = 0; x < texture.getWidth(); x++) {
                     for (int y = 0; y < texture.getHeight(); y++) {
                         texture.setRGB(x, y, texture.getRGB(x, y) | tint);
                     }
                 }
-                iOwnedCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
-                if (iOwnedCell instanceof NutrientCell nutrientCell) {
+                worldCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
+                if (modelStructure.getFrontLayer(point) instanceof NutrientCell nutrientCell) {
                     ((SocietyCell) modelStructure.getCoordinate(centralCoordinate)).addNutrientCells(nutrientCell);
+                    nutrientCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
+
                 }
             }
         });

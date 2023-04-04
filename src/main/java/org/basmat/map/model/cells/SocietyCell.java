@@ -14,9 +14,9 @@ import java.util.LinkedList;
  */
 public class SocietyCell implements IMapCell {
 
-    private String societyName;
+    private final String societyName;
     private int radius;
-    private int tint;
+    private final int tint;
     private BufferedImage texture;
     private LinkedList<NutrientCell> nutrientCells;
     private int lifeCells;

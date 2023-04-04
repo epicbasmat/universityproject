@@ -18,9 +18,15 @@ import java.util.LinkedList;
 They existed, because they had to exist. They had no antecedent and no constituents, and there is no instrument of causality by which they could be portioned into components and assigned a schematic of their origin.
 In the day between the morning and the evening, the gardener and the winnower played a game of possibilities.
  */
+
+/**
+ * RuleApplier initializes the Gardener and the Winnower and applies their rules in a sequence,
+ * and then re-renders the view with what has changed in the model
+  */
 public class RuleApplier {
     private final HashMap<Point, LinkedList<Node>> activeSocietyCells;
     private final Winnower winnower;
+    private final UI ui;
     private Gardener gardener;
     private LinkedList<Point> globalNutrientCellList;
     private LinkedList<Point> globalSocietyCellList;
@@ -32,19 +38,18 @@ public class RuleApplier {
 
     /**
      *
-     * @param viewStructure
-     * @param modelStructure
-     * @param globalNutrientCellList
-     * @param globalSocietyCellList
-     * @param globalLifeCellList
+     * @param viewStructure The view structure to update
+     * @param modelStructure The model structure to apply the rules to
+     * @param globalSocietyCellList The list of all society cell's coordinates.
+     * @param globalLifeCellList The list of all life cell's coordinates
      */
-    public RuleApplier(UI ui, ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public RuleApplier(UI ui, ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+        this.ui = ui;
         this.viewStructure = viewStructure;
         this.modelStructure = modelStructure;
         this.listOfPaths = new LinkedList<>();
-        this.gardener = new Gardener(ui, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        this.winnower = new Winnower(ui, modelStructure, globalNutrientCellList, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        this.globalNutrientCellList = globalNutrientCellList;
+        this.gardener = new Gardener(ui, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        this.winnower = new Winnower(ui, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
         activeSocietyCells = new HashMap<>();
@@ -62,15 +67,13 @@ public class RuleApplier {
         winnower.overcrowded();
         winnower.collapse();
         winnower.famine();
+        winnower.stagnation();
         ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
+        ui.incrementTimeStep();
         //ViewSetup.revalidate(viewStructure);
         //    }
         //}, 0, 750);
 
-    }
-
-    public void gen() {
-        //gardener.reproduce();
     }
 
     private void applyRulesToCells() {
