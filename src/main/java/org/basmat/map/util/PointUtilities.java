@@ -56,7 +56,6 @@ public class PointUtilities {
         do {
             destination = PointUtilities.calculateRandomCoordinates(point, radius);
             breakcnd++;
-
         } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8);
         return destination;
     }
@@ -178,11 +177,11 @@ public class PointUtilities {
         return pairList;
     }
 
-    public static Point[] getImmediateNeighbours(Point point) {
+    private static Point[] getImmediateNeighbours(Point point) {
         return new Point[]{new Point(point.x,point.y - 1), new Point(point.x,point.y + 1), new Point(point.x - 1, point.y), new Point(point.x + 1, point.y)};
     }
 
-    public static Point[] getAllNeighbours(Point point) {
+    private static Point[] getAllNeighbours(Point point) {
         return ObjectArrays.concat(new Point[]{new Point(point.x-1,point.y - 1),
                                                 new Point(point.x + 1,point.y - 1),
                                                 new Point(point.x -1 ,point.y + 1),
