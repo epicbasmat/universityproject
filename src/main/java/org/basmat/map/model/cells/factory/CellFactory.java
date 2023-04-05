@@ -32,7 +32,7 @@ public class CellFactory extends AbstractCellFactory {
     }
 
     @Override
-    public IMapCell createLifeCell(Point societyCell, BufferedImage texture) {
+    public LifeCell createLifeCell(Point societyCell, BufferedImage texture) {
         return new LifeCell(societyCell, TextureHelper.copyTexture(texture));
     }
 }
