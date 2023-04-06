@@ -22,6 +22,7 @@ public class PanelContainer extends JFrame {
 
     public PanelContainer(ViewStructure viewStructure, UserInteractionUI userInteractionUi, MenuUI menuUI) {
         this.setTitle("Simulation");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
             this.setIconImage(ImageIO.read(new File(ECellType.BASE_PATH.getPath() + "icon.png")));
         } catch (IOException e) {
