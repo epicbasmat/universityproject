@@ -4,17 +4,18 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.ECellType;
+import org.basmat.map.util.PointUtilities;
+import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
-import org.basmat.map.view.UI;
-import org.basmat.map.view.ViewStructure;
+import org.basmat.map.view.UserInteractionUI;
 
 import java.awt.*;
-import java.util.*;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The gardener rule set provides methods into life. The rules govern how the life cells will recreate, as well as attempts to survive, such as scavenge if food resources are low.
@@ -28,17 +29,19 @@ public class Gardener {
 
     //Update
     private LinkedList<LinkedList<Node>> listOfPaths;
-    private final UI ui;
+    private final SimulationProperties simulationProperties;
+    private final UserInteractionUI userInteractionUi;
     private final ModelStructure modelStructure;
 
     /**
-     * @param ui
+     * @param userInteractionUi
      * @param modelStructure
      * @param globalSocietyCellList
      * @param globalLifeCellList
      */
-    public Gardener(UI ui, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
-        this.ui = ui;
+    public Gardener(SimulationProperties simulationProperties, UserInteractionUI userInteractionUi, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+        this.simulationProperties = simulationProperties;
+        this.userInteractionUi = userInteractionUi;
         this.modelStructure = modelStructure;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
@@ -56,7 +59,7 @@ public class Gardener {
                 societyCell.setRadius(societyCell.getRadius() + 2);
                 societyCell.setPreviousExpansionQuotient(societyCell.getPopulationCount() / 6);
                 PointUtilities.tintArea(societyCell.getRadius(), societyCellPoint, societyCell.getTint(), modelStructure);
-                ui.appendText(societyCell.getName() + " just expanded!");
+                userInteractionUi.appendText(societyCell.getName() + " just expanded!");
             }
         }
     }
@@ -107,7 +110,7 @@ public class Gardener {
                         //Repeat if there is no valid spawn place -- try to find one within 4 attempts or failure
                     } while (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType()) && breakcnd < 4);/* && !(worldCell.getECellType().isHabitable())*/;
                     if (breakcnd == 4) {
-                        ui.appendText("A life cell failed to be created! Too many cells in the surrounding area.");
+                        userInteractionUi.appendText("A life cell failed to be created! Too many cells in the surrounding area.");
                         continue;
                     }
                     //If horrible things haven't happened:
@@ -117,7 +120,7 @@ public class Gardener {
                     parent1.resetReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(parent2)).resetReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(newLifeCell)).resetReproductionCooldown();
-                    ui.appendText("A new life cell has been created!");
+                    userInteractionUi.appendText("A new life cell has been created!");
                     ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells();
                     break;
                 }

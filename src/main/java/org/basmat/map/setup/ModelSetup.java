@@ -3,9 +3,10 @@ package org.basmat.map.setup;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
+import org.basmat.map.util.PointUtilities;
+import org.basmat.map.util.SimulationProperties;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,6 +24,8 @@ import java.util.UUID;
  If you followed the umbilical of history in search of some ultimate atavistic embryo that became them, then your journey would end here, in this garden.
  */
 public class ModelSetup {
+    private final SimulationProperties simulationProperties;
+
     private BufferedImage noiseGraph;
     private final HashMap<ECellType, BufferedImage> imageCache;
     private final LinkedList<Point> globalSocietyCellList;
@@ -39,7 +42,8 @@ public class ModelSetup {
      * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public ModelSetup(SimulationProperties simulationProperties, HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+        this.simulationProperties = simulationProperties;
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;
         this.imageCache = imageCache;
@@ -60,7 +64,7 @@ public class ModelSetup {
         System.out.println("Applying texture filter");
         setupWorldCells(5);
         System.out.println("Applying society cells and rendering area of effect");
-        setupSocietyCells(7);
+        setupSocietyCells();
         System.out.println("Applying nutrient cells");
         setupNutrientCells();
         System.out.println("Appyling life cells to society cells");
@@ -152,13 +156,12 @@ public class ModelSetup {
 
     /**
      * This method sets up the society cell generation by spawning society cells at random coordinates and generating an area of effect visualized through tinting all affected cells
-     * @param target The amount of society cells to generate
      */
-    private void setupSocietyCells(int target) {
+    private void setupSocietyCells() {
         //The counter provides an incrementing integer for each time a successful society creation occurs
         int counter = 0;
         int radius = 7;
-        while (counter < target) {
+        while (counter < simulationProperties.societyCount()) {
             int newSocietyCoordinateX = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             int newSocietyCoordinateY = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             Point point = new Point(newSocietyCoordinateX, newSocietyCoordinateY);
@@ -188,7 +191,7 @@ public class ModelSetup {
      * This method sets up nutrient cell generation, using a similar way of society cell generation.
      */
     private void setupNutrientCells() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < simulationProperties.nutrientCount(); i++) {
             //Randomly generate point
             int j = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
@@ -209,7 +212,6 @@ public class ModelSetup {
         for (Point societyCellPoint: globalSocietyCellList) {
             // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
             SocietyCell frontLayer = modelStructure.getFrontLayer(societyCellPoint);
-            //for (int i = 0; i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2; i++) {
             int i = 0;
             while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds

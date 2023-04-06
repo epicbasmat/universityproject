@@ -3,7 +3,6 @@ package org.basmat.map.model.cells;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.util.ECellType;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
