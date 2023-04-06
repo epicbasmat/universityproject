@@ -212,7 +212,6 @@ public class ModelSetup {
         for (Point societyCellPoint: globalSocietyCellList) {
             // Generate an amount of life cells between 2 and 50% of the capacity of the society cell
             SocietyCell frontLayer = modelStructure.getFrontLayer(societyCellPoint);
-            //for (int i = 0; i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2; i++) {
             int i = 0;
             while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds

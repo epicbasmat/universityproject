@@ -24,6 +24,7 @@ public class CellMatrixController {
     private final HashMap<ECellType, BufferedImage> imageCache;
     private final ViewStructure viewStructure;
     private final ModelStructure modelStructure;
+    private final PanelContainer panelContainer;
     private RuleApplier ruleApplier;
     private final UserInteractionUI userInteractionUi;
     private final MenuUI menuUi;
@@ -40,7 +41,7 @@ public class CellMatrixController {
         viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
         userInteractionUi = new UserInteractionUI(this);
         menuUi = new MenuUI(this);
-        PanelContainer panelContainer = new PanelContainer(viewStructure, userInteractionUi, menuUi);
+        panelContainer = new PanelContainer(viewStructure, userInteractionUi, menuUi);
     }
 
     public void doThing(){
@@ -56,6 +57,7 @@ public class CellMatrixController {
             throw new RuntimeException(e);
         }
         ViewSetup.setupView(viewStructure, modelStructure);
+        panelContainer.nextCard();
     }
 
     public LinkedList<Point> getGlobalSocietyCellList() {
