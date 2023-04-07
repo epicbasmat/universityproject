@@ -41,6 +41,21 @@ class RuleTest {
     }
 
     @Test
+    void expansion_checkExpansionDoesNotOccur_expansionDoesNotOccur() {
+        Point society = new Point(90, 90);
+        globalLifeCellList.add(society);
+        modelStructure.setFrontLayer(society, cellFactory.createSocietyCell("test zero", 10, 0x00000000));
+        SocietyCell frontLayer = modelStructure.getFrontLayer(society);
+        for (int i = 0; i < 5; i++) {
+            frontLayer.addLifeCells();
+        }
+        PointUtilities.tintArea(10, society, 0x00, modelStructure);
+        gardener.expand();
+        assertEquals(0, frontLayer.getPreviousExpansionQuotient());
+        assertNull(modelStructure.getCoordinate(new Point(101, 90)));
+    }
+
+    @Test
     void expansion_checkExpansionOccurs_expansionOccurs() {
         Point society = new Point(75, 75);
         globalSocietyCellList.add(society);
@@ -108,7 +123,7 @@ class RuleTest {
     }
 
     @Test
-    void checkForValidReproduction_cellsDoNotReproduce_lifeCellIsNotCreated(){
+    void checkForValidReproduction_cellsDoNotReproduce_lifeCellIsNotCreated() {
         SocietyCell societyCell = cellFactory.createSocietyCell("test four", 10, 0x00000000);
         Point societyPoint = new Point(50, 100);
         modelStructure.setFrontLayer(societyPoint, societyCell);

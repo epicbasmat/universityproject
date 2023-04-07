@@ -99,7 +99,7 @@ public class Gardener {
         for (Point lifeCellPoint : copyOfList) {
             LifeCell parent1 = modelStructure.getCoordinate(lifeCellPoint);
             //Get a 3x3 area from the origin of the cell and see if there are any life cell to reproduce with
-            List<Point> allValidatedNeighbours = PointUtilities.getAllValidatedNeighbours(lifeCellPoint);
+            List<Point> allValidatedNeighbours = PointUtilities.getImmediateValidatedNeighbours(lifeCellPoint);
             for (Point parent2 : allValidatedNeighbours) {
                 if (modelStructure.getCoordinate(parent2) instanceof LifeCell lifeCell && lifeCell.getReproductionCooldown() == 0 && parent1.getReproductionCooldown() == 0) {
                     Point newLifeCell;
