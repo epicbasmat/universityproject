@@ -17,7 +17,6 @@ public class ViewStructure extends JPanel implements MouseListener {
     private CellPanel[][] cellPanelMatrix;
 
     /**
-     * Instantiate the object with current parameters
      * @param matrixWidth the width of the matrix
      * @param matrixHeight the height of the matrix
      * @param cellMatrixController the cell controller matrix that instantiated this object
@@ -70,6 +69,12 @@ public class ViewStructure extends JPanel implements MouseListener {
         this.revalidate();
     }
 
+
+    /**
+     * Gets the CellPanel at the designated point within the internal array
+     * @param point The point to get
+     * @return The specified CellPanel
+     */
     public CellPanel getPanel(Point point) {
         return cellPanelMatrix[point.x][point.y];
     }

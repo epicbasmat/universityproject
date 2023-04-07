@@ -9,30 +9,37 @@ import org.basmat.map.util.TextureHelper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 
 /**
- * This class is the primary interface to create a cell class.
+ * This class is the primary interface to create a cell class. Textures are generated automatically and copied to prevent duplication and enable alpha transparency.
  */
 public class CellFactory extends AbstractCellFactory {
 
-    @Override
-    public NutrientCell createNutrientCell(SocietyCell owner, BufferedImage texture) {
-        return new NutrientCell(owner, TextureHelper.copyTexture(texture));
+    private final HashMap<ECellType, BufferedImage> imageCache;
+
+    public CellFactory () {
+        imageCache = TextureHelper.cacheCellTextures();
     }
 
     @Override
-    public SocietyCell createSocietyCell(String name, int radius, int tint, BufferedImage texture) {
-        return new SocietyCell(name, radius, tint, TextureHelper.copyTexture(texture));
+    public NutrientCell createNutrientCell(SocietyCell owner) {
+        return new NutrientCell(owner, TextureHelper.copyTexture(imageCache.get(ECellType.NUTRIENTS)));
     }
 
     @Override
-    public WorldCell createWorldCell(ECellType cellType, BufferedImage texture) {
-        return new WorldCell(cellType, TextureHelper.copyTexture(texture));
+    public SocietyCell createSocietyCell(String name, int radius, int tint) {
+        return new SocietyCell(name, radius, tint, TextureHelper.copyTexture(imageCache.get(ECellType.SOCIETY_CELL)));
     }
 
     @Override
-    public LifeCell createLifeCell(Point societyCell, BufferedImage texture) {
-        return new LifeCell(societyCell, TextureHelper.copyTexture(texture));
+    public WorldCell createWorldCell(ECellType cellType) {
+        return new WorldCell(cellType, TextureHelper.copyTexture(imageCache.get(cellType)));
+    }
+
+    @Override
+    public LifeCell createLifeCell(Point societyCell) {
+        return new LifeCell(societyCell, TextureHelper.copyTexture(imageCache.get(ECellType.LIFE_CELL)));
     }
 }

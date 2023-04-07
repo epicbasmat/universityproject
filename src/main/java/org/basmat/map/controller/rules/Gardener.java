@@ -7,7 +7,6 @@ import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.SimulationProperties;
-import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
 import org.basmat.map.view.UserInteractionUI;
@@ -32,6 +31,7 @@ public class Gardener {
     private final SimulationProperties simulationProperties;
     private final UserInteractionUI userInteractionUi;
     private final ModelStructure modelStructure;
+    private CellFactory cellFactory;
 
     /**
      * @param userInteractionUi
@@ -46,6 +46,7 @@ public class Gardener {
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
         this.listOfPaths = listOfPaths;
+        cellFactory = new CellFactory();
     }
 
     /**
@@ -115,7 +116,7 @@ public class Gardener {
                     }
                     //If horrible things haven't happened:
                     //Create a new life cell and add it to the global array, and add it to the model
-                    modelStructure.setFrontLayer(newLifeCell, new CellFactory().createLifeCell(lifeCell.getSocietyCell(), TextureHelper.cacheCellTextures().get(ECellType.LIFE_CELL)));
+                    modelStructure.setFrontLayer(newLifeCell, cellFactory.createLifeCell(lifeCell.getSocietyCell()));
                     globalLifeCellList.add(newLifeCell);
                     parent1.resetReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(parent2)).resetReproductionCooldown();

@@ -1,6 +1,7 @@
 package org.basmat.map.setup;
 
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.CubicInterpolation;
@@ -10,7 +11,6 @@ import org.basmat.map.util.SimulationProperties;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +27,6 @@ public class ModelSetup {
     private final SimulationProperties simulationProperties;
 
     private BufferedImage noiseGraph;
-    private final HashMap<ECellType, BufferedImage> imageCache;
     private final LinkedList<Point> globalSocietyCellList;
     private final LinkedList<Point> globalNutrientCellList;
     private final LinkedList<Point> globalLifeCellList;
@@ -36,17 +35,15 @@ public class ModelSetup {
 
 
     /**
-     * @param imageCache The cache of textures for rendering
      * @param modelStructure The ModelStructure containing all the model data within 2 matrices.
      * @param globalNutrientCellList The list of which all nutrient cells have a reference within
      * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(SimulationProperties simulationProperties, HashMap<ECellType, BufferedImage> imageCache, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public ModelSetup(SimulationProperties simulationProperties, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
         this.simulationProperties = simulationProperties;
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;
-        this.imageCache = imageCache;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalNutrientCellList = globalNutrientCellList;
         this.globalLifeCellList = globalLifeCellList;
@@ -130,25 +127,25 @@ public class ModelSetup {
                 //Sets the texture according to the averaged colour's RGB bands
                 Color averagedColour = new Color(average / (cellSize * cellSize));
                 if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //DEEP_WATER
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.DEEP_WATER, imageCache.get(ECellType.DEEP_WATER)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.DEEP_WATER));
                 } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //WATER
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.WATER, imageCache.get(ECellType.WATER)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.WATER));
                 } else if ((averagedColour.getBlue() >= 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) {// LIGHT WATER
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.LIGHT_WATER, imageCache.get(ECellType.LIGHT_WATER)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.LIGHT_WATER));
                 } else if (averagedColour.getRed() > 0) { //SAND
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.SAND, imageCache.get(ECellType.SAND)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.SAND));
                 } else if (averagedColour.getGreen() <= 255 && averagedColour.getGreen() > 210) { //GRASS
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.GRASS, imageCache.get(ECellType.GRASS)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.GRASS));
                 } else if (averagedColour.getGreen()  <= 210 && averagedColour.getGreen() > 160) { //MOUNTAIN BASE
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_BASE, imageCache.get(ECellType.MOUNTAIN_BASE)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_BASE));
                 } else if (averagedColour.getGreen()  <= 160 && averagedColour.getGreen() > 120) { //MOUNTAIN BODY
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_BODY, imageCache.get(ECellType.MOUNTAIN_BODY)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_BODY));
                 } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) { //MOUNTAIN PEAK
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_PEAK, imageCache.get(ECellType.MOUNTAIN_PEAK)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_PEAK));
                 } else {
                     System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
                     System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
-                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MISSING_TEXTURE, imageCache.get(ECellType.MISSING_TEXTURE)));
+                    modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MISSING_TEXTURE));
                 }
             }
         }
@@ -173,13 +170,8 @@ public class ModelSetup {
                 tint = tint | (int) (Math.random() * 255 - 150) + 150; //Set blue to align it to blue bytes
                 counter++;
                 //Create a new cell that is on top of the cell that currently inhabits the coordinates
-                modelStructure.setFrontLayer(point, cellFactory.createSocietyCell(UUID.randomUUID().toString(), radius, tint, imageCache.get(ECellType.SOCIETY_CELL)));
+                modelStructure.setFrontLayer(point, cellFactory.createSocietyCell(UUID.randomUUID().toString(), radius, tint));
                 globalSocietyCellList.add(point);
-
-                //Give the society cell a minimum of 1 nutrient cell
-                Point randomNutrient = PointUtilities.calculateRandomValidCoordinates(point, radius, modelStructure, List.of(new ECellType[]{ECellType.GRASS, ECellType.SAND}));
-                modelStructure.setFrontLayer(randomNutrient, cellFactory.createNutrientCell(modelStructure.getFrontLayer(point), imageCache.get(ECellType.NUTRIENTS)));
-                ((SocietyCell) modelStructure.getFrontLayer(point)).addNutrientCells(modelStructure.getFrontLayer(randomNutrient));
 
                 //1 unit of radius is 1 cell
                 PointUtilities.tintArea(radius, point, tint, modelStructure);
@@ -191,21 +183,33 @@ public class ModelSetup {
      * This method sets up nutrient cell generation, using a similar way of society cell generation.
      */
     private void setupNutrientCells() {
-        for (int i = 0; i < simulationProperties.nutrientCount(); i++) {
+        for (Point societyPoint : globalSocietyCellList) {
+            SocietyCell societyCell = modelStructure.getCoordinate(societyPoint);
+            for (int initialNutrients = 0; initialNutrients < simulationProperties.initialNutrientCount(); initialNutrients++) {
+                Point nutrientPoint = PointUtilities.calculateRandomValidCoordinates(societyPoint, societyCell.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
+                NutrientCell nutrientCell = cellFactory.createNutrientCell(societyCell);
+                modelStructure.setFrontLayer(nutrientPoint, nutrientCell);
+                societyCell.addNutrientCells(nutrientCell);
+            }
+        }
+
+        int i = 0;
+        do {
             //Randomly generate point
             int j = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             int k = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             Point point = new Point(j, k);
             //Make sure that the nutrient cell generates on grass, and set its owner
-            if (modelStructure.getBackLayer(point).getECellType() == ECellType.GRASS) {
+            if (modelStructure.getCoordinate(point).getECellType() == ECellType.GRASS) {
+                i++;
                 SocietyCell owner = modelStructure.getBackLayer(point).getOwner();
-                modelStructure.setFrontLayer(point, cellFactory.createNutrientCell(owner, imageCache.get(ECellType.NUTRIENTS)));
+                modelStructure.setFrontLayer(point, cellFactory.createNutrientCell(owner));
                 if (owner != null) {
                     //Add the nutrient cell to the list of owned cells that the society cell can call its own
                     owner.addNutrientCells(modelStructure.getFrontLayer(point));
                 }
             }
-        }
+        } while (i < simulationProperties.nutrientCount());
     }
 
     private void setupLifeCells() {
@@ -220,7 +224,7 @@ public class ModelSetup {
                     //Enforce that whatever we're replacing is not being occupied currently
                     if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
                         i++;
-                        modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(societyCellPoint, imageCache.get(ECellType.LIFE_CELL)));
+                        modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(societyCellPoint));
                         ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells();
                         globalLifeCellList.add(coords);
                     }

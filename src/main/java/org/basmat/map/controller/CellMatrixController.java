@@ -5,23 +5,18 @@ import org.basmat.map.controller.rules.RuleApplier;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.setup.ViewSetup;
-import org.basmat.map.util.ECellType;
 import org.basmat.map.util.SimulationProperties;
-import org.basmat.map.util.TextureHelper;
 import org.basmat.map.view.MenuUI;
 import org.basmat.map.view.UserInteractionUI;
 import org.basmat.map.view.ViewStructure;
 import org.basmat.userui.PanelContainer;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 public class CellMatrixController {
 
 
-    private final HashMap<ECellType, BufferedImage> imageCache;
     private final ViewStructure viewStructure;
     private final ModelStructure modelStructure;
     private final PanelContainer panelContainer;
@@ -37,7 +32,6 @@ public class CellMatrixController {
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         modelStructure = new ModelStructure();
-        imageCache = TextureHelper.cacheCellTextures();
         viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
         userInteractionUi = new UserInteractionUI(this);
         menuUi = new MenuUI(this);
@@ -49,7 +43,7 @@ public class CellMatrixController {
     }
 
     public void constructSimulation(SimulationProperties simulationProperties) {
-        ModelSetup modelSetup = new ModelSetup(simulationProperties, imageCache, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
+        ModelSetup modelSetup = new ModelSetup(simulationProperties, modelStructure, globalNutrientCellList,  globalSocietyCellList, globalLifeCellList);
         ruleApplier = new RuleApplier(simulationProperties, userInteractionUi, viewStructure, modelStructure, globalSocietyCellList, globalLifeCellList);
         try {
             modelSetup.setupMap();
@@ -58,18 +52,6 @@ public class CellMatrixController {
         }
         ViewSetup.setupView(viewStructure, modelStructure);
         panelContainer.nextCard();
-    }
-
-    public LinkedList<Point> getGlobalSocietyCellList() {
-        return globalSocietyCellList;
-    }
-
-    public LinkedList<Point> getGlobalNutrientCellList() {
-        return globalNutrientCellList;
-    }
-
-    public LinkedList<Point> getGlobalLifeCellList() {
-        return globalLifeCellList;
     }
 
     /**
