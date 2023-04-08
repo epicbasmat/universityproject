@@ -23,11 +23,11 @@ import java.util.Objects;
  In the morning, the gardener pushed the seeds down into the wet loam of the garden to see what they would become
  */
 public class Gardener {
-    private LinkedList<Point> globalSocietyCellList;
-    private LinkedList<Point> globalLifeCellList;
+    private final LinkedList<Point> globalSocietyCellList;
+    private final LinkedList<Point> globalLifeCellList;
 
     //Update
-    private LinkedList<LinkedList<Node>> listOfPaths;
+    private final LinkedList<LinkedList<Node>> listOfPaths;
     private final SimulationProperties simulationProperties;
     private final UserInteractionUI userInteractionUi;
     private final ModelStructure modelStructure;

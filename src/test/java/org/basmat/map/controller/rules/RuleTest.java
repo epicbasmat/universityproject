@@ -3,7 +3,9 @@ package org.basmat.map.controller.rules;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
+import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
+import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.SimulationProperties;
@@ -52,7 +54,7 @@ class RuleTest {
         PointUtilities.tintArea(10, society, 0x00, modelStructure);
         gardener.expand();
         assertEquals(0, frontLayer.getPreviousExpansionQuotient());
-        assertNull(modelStructure.getCoordinate(new Point(101, 90)));
+        assertNull(((IOwnedCell) modelStructure.getCoordinate(new Point(101, 90))).getOwner());
     }
 
     @Test
