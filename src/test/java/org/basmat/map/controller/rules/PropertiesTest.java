@@ -38,7 +38,7 @@ public class PropertiesTest {
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         listOfPaths = new LinkedList<>();
-        new ModelSetup(simulationProperties1, textureCache, modelStructure, new LinkedList<>(), globalSocietyCellList, globalLifeCellList).setupMap();
+        new ModelSetup(simulationProperties1, modelStructure, new LinkedList<>(), globalSocietyCellList, globalLifeCellList).setupMap();
         UserInteractionUI userInteractionUi = new UserInteractionUI(null);
         gardener = new Gardener(simulationProperties1, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
         winnower = new Winnower(simulationProperties1, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, new LinkedList<>());

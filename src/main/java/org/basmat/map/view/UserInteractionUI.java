@@ -4,9 +4,10 @@ import org.basmat.map.controller.CellMatrixController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+/**
+ * This class sets up the Panel used for user selection of system variables
+ */
 public class UserInteractionUI extends JPanel {
 
     private JPanel userPanel;
@@ -48,9 +49,9 @@ public class UserInteractionUI extends JPanel {
         buttonPanel.setVisible(true);
         buttonPanel.setLayout(new FlowLayout());
         Button play = new Button("Play simulation");
-        play.addActionListener(new PlayListener(cellMatrixController));
+        play.addActionListener((point) -> cellMatrixController.doThing());
         Button pause = new Button("Pause simulation");
-        pause.addActionListener(new PauseListener(cellMatrixController));
+        pause.addActionListener((point) -> cellMatrixController.doThing());
         play.setSize(30, 30);
         buttonPanel.add(play);
         buttonPanel.add(pause);
@@ -67,32 +68,6 @@ public class UserInteractionUI extends JPanel {
 
     public void appendText(String string) {
         simulationTextInfo.append(string + "\n");
-    }
-}
-
-class PlayListener implements ActionListener {
-    private final CellMatrixController cellMatrixController;
-
-    public PlayListener(CellMatrixController cellMatrixController){
-        this.cellMatrixController = cellMatrixController;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        cellMatrixController.doThing();
-    }
-}
-
-class PauseListener implements ActionListener {
-    private final CellMatrixController cellMatrixController;
-
-    public PauseListener(CellMatrixController cellMatrixController){
-        this.cellMatrixController = cellMatrixController;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        //cellMatrixController.pauseEngine();
     }
 }
 

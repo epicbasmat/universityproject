@@ -46,7 +46,7 @@ class PointUtilitiesTest {
         HashMap<ECellType, BufferedImage> eCellTypeBufferedImageHashMap = TextureHelper.cacheCellTextures();
         ModelStructure modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
-        modelStructure.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff09ff, eCellTypeBufferedImageHashMap.get(ECellType.SOCIETY_CELL)));
+        modelStructure.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff09ff));
         LinkedList<ECellType> valid = new LinkedList<>();
         valid.add(ECellType.GRASS);
         for (int i = 0; i < 100; i++) {
@@ -60,7 +60,7 @@ class PointUtilitiesTest {
         HashMap<ECellType, BufferedImage> eCellTypeBufferedImageHashMap = TextureHelper.cacheCellTextures();
         ModelStructure modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
-        modelStructure.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff00ff, eCellTypeBufferedImageHashMap.get(ECellType.SOCIETY_CELL)));
+        modelStructure.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff00ff));
         PointUtilities.tintArea(10, new Point(50, 50), 0x00f009f0, modelStructure);
         PointUtilities.forPointsInCircle(10, new Point(50, 50), (point -> {
             int actual = modelStructure.getCoordinate(point).getTexture().getRGB(2, 2);
@@ -73,10 +73,9 @@ class PointUtilitiesTest {
 
     @Test
     void resetArea_setsAllPointsInCircleToNull_IsAllNull() {
-        HashMap<ECellType, BufferedImage> eCellTypeBufferedImageHashMap = TextureHelper.cacheCellTextures();
         ModelStructure modelStructureTinted = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructureTinted, ECellType.GRASS);
-        modelStructureTinted.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff00ff, eCellTypeBufferedImageHashMap.get(ECellType.SOCIETY_CELL)));
+        modelStructureTinted.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff00ff));
         PointUtilities.tintArea(10, new Point(50, 50), 0x00f009f0, modelStructureTinted);
         PointUtilities.resetArea(10, new Point(50, 50), modelStructureTinted);
         PointUtilities.forPointsInCircle(10, new Point(50, 50), point -> {

@@ -48,6 +48,7 @@ public class SocietyCell implements IMapCell {
 
     public void addLifeCells() {
         lifeCells++;
+        incrementSupportedCount();
     }
 
     private void incrementSupportedCount() {

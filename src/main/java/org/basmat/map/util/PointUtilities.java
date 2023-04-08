@@ -87,7 +87,6 @@ public class PointUtilities {
                 if (modelStructure.getFrontLayer(point) instanceof NutrientCell nutrientCell) {
                     ((SocietyCell) modelStructure.getCoordinate(centralCoordinate)).addNutrientCells(nutrientCell);
                     nutrientCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
-
                 }
             }
         });
@@ -101,7 +100,6 @@ public class PointUtilities {
      */
     public static void resetArea(int radius, Point centralCoordinate, ModelStructure modelStructure) {
         CellFactory cellFactory = new CellFactory();
-        HashMap<ECellType, BufferedImage> cache = TextureHelper.cacheCellTextures();
         SocietyCell coordinate = modelStructure.getCoordinate(centralCoordinate);
         forPointsInCircle(radius, centralCoordinate, (point) -> {
             if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell) {
@@ -111,7 +109,7 @@ public class PointUtilities {
                     //So we need to reset the texture by re-applying it from the cache, which means making a new object.
                     ECellType celltype = modelStructure.getBackLayer(point).getECellType();
                     modelStructure.deleteCoordinate(point);
-                    WorldCell worldCell = cellFactory.createWorldCell(celltype, cache.get(celltype));
+                    WorldCell worldCell = cellFactory.createWorldCell(celltype);
                     modelStructure.setBackLayer(point, worldCell);
                 }
             }
