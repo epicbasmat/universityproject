@@ -1,6 +1,7 @@
 package org.basmat.map.controller.rules;
 
 
+import org.basmat.map.controller.Controller;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
@@ -22,17 +23,14 @@ import java.util.Objects;
  "The winnower reaped the day's crop, and separated what would flourish from what had failed."
  */
 public class Winnower {
-
-    private final SimulationProperties simulationProperties;
-    private final UserInteractionUI userInteractionUi;
+    private final Controller controller;
     private final ModelStructure modelStructure;
     private final LinkedList<Point> globalSocietyCellList;
     private final LinkedList<Point> globalLifeCellList;
     private final LinkedList<LinkedList<Node>> listOfPaths;
 
-    public Winnower(SimulationProperties simulationProperties, UserInteractionUI userInteractionUi, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
-        this.simulationProperties = simulationProperties;
-        this.userInteractionUi = userInteractionUi;
+    public Winnower(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+        this.controller = controller;
         this.modelStructure = modelStructure;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
@@ -51,8 +49,8 @@ public class Winnower {
                 if (modelStructure.getCoordinate(coords).getECellType() == ECellType.LIFE_CELL) {
                     overcrowd++;
                 }
-            } if (overcrowd > simulationProperties.overcrowdThreshold()) {
-                userInteractionUi.appendText("A life cell has been killed from overcrowding!");
+            } if (overcrowd > controller.getSimulationProperties().overcrowdThreshold()) {
+                controller.pushText("A life cell has been killed from overcrowding!");
                 kill(lifeCell);
             }
         }
@@ -68,11 +66,11 @@ public class Winnower {
             int population = coordinate.getPopulationCount();
             int nutrientCapacity = coordinate.getNutrientCapacity();
             //If the ratio of nutrient to population goes below 0.6, i.e food cannot be split much more than 33% below then a random cell cannot be fed and will die
-            if (nutrientCapacity / population < simulationProperties.foodThreshold()) {
+            if (nutrientCapacity / population < controller.getSimulationProperties().foodThreshold()) {
                 //get all cells allocated to a society cell and put them in a list, then randomly kill one
                 List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();
                 kill(points.get((int) (Math.random() * points.size())));
-                userInteractionUi.appendText("A death has occurred due to starvation!");
+                controller.pushText("A death has occurred due to starvation!");
             }
         }
     }
@@ -96,9 +94,9 @@ public class Winnower {
             }
             if (!hasPartner) {
                 lifeCell.incrementAttrition();
-                if (lifeCell.getAttrition() > simulationProperties.attritionThreshold()) {
+                if (lifeCell.getAttrition() > controller.getSimulationProperties().attritionThreshold()) {
                     kill(point);
-                    userInteractionUi.appendText("A death cells has occurred because it has not had any other cells visit it");
+                    controller.pushText("A death cells has occurred because it has not had any other cells visit it");
                 }
             }
         }
@@ -112,8 +110,8 @@ public class Winnower {
         List<Point> copyOfList = new LinkedList<>(globalSocietyCellList);
         for (Point point : copyOfList) {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
-            if (coordinate.getLandPerLifeCell() > simulationProperties.ratioThreshold()) {
-                userInteractionUi.appendText("Society collapsed, the population was overstretched too much over the land it had at:  " + point);
+            if (coordinate.getLandPerLifeCell() > controller.getSimulationProperties().ratioThreshold()) {
+                controller.pushText("Society collapsed, the population was overstretched too much over the land it had at:  " + point);
                 globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
                 PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);
                 modelStructure.deleteCoordinate(point);

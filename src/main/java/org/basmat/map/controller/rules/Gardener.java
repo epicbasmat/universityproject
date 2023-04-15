@@ -1,5 +1,6 @@
 package org.basmat.map.controller.rules;
 
+import org.basmat.map.controller.Controller;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
@@ -28,20 +29,13 @@ public class Gardener {
 
     //Update
     private final LinkedList<LinkedList<Node>> listOfPaths;
-    private final SimulationProperties simulationProperties;
-    private final UserInteractionUI userInteractionUi;
+
+    private final Controller controller;
     private final ModelStructure modelStructure;
     private CellFactory cellFactory;
 
-    /**
-     * @param userInteractionUi
-     * @param modelStructure
-     * @param globalSocietyCellList
-     * @param globalLifeCellList
-     */
-    public Gardener(SimulationProperties simulationProperties, UserInteractionUI userInteractionUi, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
-        this.simulationProperties = simulationProperties;
-        this.userInteractionUi = userInteractionUi;
+    public Gardener(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+        this.controller = controller;
         this.modelStructure = modelStructure;
         this.globalSocietyCellList = globalSocietyCellList;
         this.globalLifeCellList = globalLifeCellList;
@@ -60,7 +54,7 @@ public class Gardener {
                 societyCell.setRadius(societyCell.getRadius() + 2);
                 societyCell.setPreviousExpansionQuotient(societyCell.getPopulationCount() / 6);
                 PointUtilities.tintArea(societyCell.getRadius(), societyCellPoint, societyCell.getTint(), modelStructure);
-                userInteractionUi.appendText(societyCell.getName() + " just expanded!");
+                controller.pushText(societyCell.getName() + " just expanded!");
             }
         }
     }
@@ -111,7 +105,7 @@ public class Gardener {
                         //Repeat if there is no valid spawn place -- try to find one within 4 attempts or failure
                     } while (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType()) && breakcnd < 4);/* && !(worldCell.getECellType().isHabitable())*/;
                     if (breakcnd == 4) {
-                        userInteractionUi.appendText("A life cell failed to be created! Too many cells in the surrounding area.");
+                        controller.pushText("A life cell failed to be created! Too many cells in the surrounding area.");
                         continue;
                     }
                     //If horrible things haven't happened:
@@ -121,7 +115,7 @@ public class Gardener {
                     parent1.resetReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(parent2)).resetReproductionCooldown();
                     ((LifeCell) modelStructure.getCoordinate(newLifeCell)).resetReproductionCooldown();
-                    userInteractionUi.appendText("A new life cell has been created!");
+                    controller.pushText("A new life cell has been created!");
                     ((SocietyCell) modelStructure.getCoordinate(parent1.getSocietyCell())).addLifeCells();
                     break;
                 }
@@ -196,6 +190,7 @@ public class Gardener {
                 //We want to make sure no current paths for the life cell exists and the path generated isnt empty
                 if (listOfPaths.parallelStream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
                     listOfPaths.add(pathBetweenCouple);
+                    controller.pushText("A society has decided to reproduce Life Cells");
                 }
             }
         }

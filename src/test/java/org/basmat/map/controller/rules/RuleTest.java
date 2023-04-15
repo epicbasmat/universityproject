@@ -1,5 +1,6 @@
 package org.basmat.map.controller.rules;
 
+import org.basmat.map.controller.Controller;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
@@ -29,7 +30,7 @@ class RuleTest {
     private final LinkedList<Point> globalLifeCellList;
     private final LinkedList<LinkedList<Node>> listOfPaths;
 
-    RuleTest() {
+    RuleTest() throws InterruptedException {
         cellFactory = new CellFactory();
         modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
@@ -38,8 +39,9 @@ class RuleTest {
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         listOfPaths = new LinkedList<>();
-        gardener = new Gardener(simulationProperties, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        winnower = new Winnower(simulationProperties, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, new LinkedList<>());
+        Controller c = new Controller(150,150);
+        gardener = new Gardener(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        winnower = new Winnower(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
     }
 
     @Test

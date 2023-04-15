@@ -1,6 +1,6 @@
 package org.basmat.map.view;
 
-import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,18 +10,18 @@ import java.awt.*;
  */
 public class UserInteractionUI extends JPanel {
 
-    private JPanel userPanel;
-    private CellMatrixController cellMatrixController;
+    private final JPanel userPanel;
+    private final Controller controller;
     private JTextArea simulationTextInfo;
     private JTextArea timeStepTextInfo;
     private JScrollPane textScrollArea;
     private int timestep;
 
-    public UserInteractionUI(CellMatrixController cellMatrixController) {
+    public UserInteractionUI(Controller controller) {
         userPanel = new JPanel();
         userPanel.setLayout(new GridLayout());
         userPanel.setVisible(true);
-        this.cellMatrixController = cellMatrixController;
+        this.controller = controller;
         setSize(100,100);
         setVisible(true);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -41,7 +41,7 @@ public class UserInteractionUI extends JPanel {
 
     public void incrementTimeStep() {
         timestep++;
-        timeStepTextInfo.setText(Integer.toString(timestep));
+        timeStepTextInfo.setText(Integer.toString(timestep) + "\n" + "Seed: " + controller.getSeed());
     }
 
     private void setupButtonPanel() {
@@ -49,13 +49,23 @@ public class UserInteractionUI extends JPanel {
         buttonPanel.setVisible(true);
         buttonPanel.setLayout(new FlowLayout());
         Button play = new Button("Play simulation");
-        play.addActionListener((point) -> cellMatrixController.doThing());
         Button pause = new Button("Pause simulation");
-        pause.addActionListener((point) -> cellMatrixController.doThing());
+        pause.setEnabled(false);
+        play.addActionListener((point) -> {
+            play.setEnabled(false);
+            controller.play();
+            pause.setEnabled(true);
+        });
+        pause.addActionListener((point) -> {
+            pause.setEnabled(false);
+            controller.pause();
+            play.setEnabled(true);
+        });
         play.setSize(30, 30);
         buttonPanel.add(play);
         buttonPanel.add(pause);
         userPanel.add(buttonPanel);
+        revalidate();
     }
 
     private void textArea() {

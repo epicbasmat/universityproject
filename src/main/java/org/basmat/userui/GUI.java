@@ -14,13 +14,13 @@ import java.io.IOException;
 /**
  * Parent JFrame to hold all components of the simulation UI, such as the matrix, outputs, buttons etc.
  */
-public class PanelContainer extends JFrame {
+public class GUI extends JFrame {
 
     private final CardLayout layout;
     private final JPanel simUI;
     private final JPanel cardLayout;
 
-    public PanelContainer(ViewStructure viewStructure, UserInteractionUI userInteractionUi, MenuUI menuUI) {
+    public GUI(ViewStructure viewStructure, UserInteractionUI userInteractionUi, MenuUI menuUI) {
         this.setTitle("Simulation");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
