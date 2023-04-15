@@ -1,9 +1,9 @@
 package org.basmat.map.controller.rules;
 
+import org.basmat.map.controller.Controller;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
-import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.basmat.map.util.ECellType;
@@ -11,7 +11,7 @@ import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.TestUtilities;
 import org.basmat.map.util.path.Node;
-import org.basmat.map.view.UserInteractionUI;
+import org.basmat.map.view.SimulationInteractionUI;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -29,17 +29,18 @@ class RuleTest {
     private final LinkedList<Point> globalLifeCellList;
     private final LinkedList<LinkedList<Node>> listOfPaths;
 
-    RuleTest() {
+    RuleTest() throws InterruptedException {
         cellFactory = new CellFactory();
         modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
         SimulationProperties simulationProperties = new SimulationProperties(7, 100, 1, 20, 5, 75, 0.6);
-        UserInteractionUI userInteractionUi = new UserInteractionUI(null);
+        SimulationInteractionUI userInteractionUi = new SimulationInteractionUI(null);
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         listOfPaths = new LinkedList<>();
-        gardener = new Gardener(simulationProperties, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        winnower = new Winnower(simulationProperties, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, new LinkedList<>());
+        Controller c = new Controller(150,150);
+        gardener = new Gardener(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        winnower = new Winnower(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
     }
 
     @Test

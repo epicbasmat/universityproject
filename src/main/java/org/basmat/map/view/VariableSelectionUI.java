@@ -1,12 +1,12 @@
 package org.basmat.map.view;
 
-import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.controller.Controller;
 import org.basmat.map.util.SimulationProperties;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MenuUI extends JPanel {
+public class VariableSelectionUI extends JPanel {
 
     private final JSpinner societyCount;
     private final JSpinner nutrientCount;
@@ -16,7 +16,7 @@ public class MenuUI extends JPanel {
     private final JSpinner ratioThreshold;
     private final JSpinner foodThreshold;
 
-    public MenuUI(CellMatrixController cellMatrixController) {
+    public VariableSelectionUI(Controller controller) {
         this.setLayout(new BorderLayout());
         JPanel buttonBox = new JPanel();
         buttonBox.setLayout(new BoxLayout(buttonBox, BoxLayout.Y_AXIS));
@@ -37,7 +37,7 @@ public class MenuUI extends JPanel {
         this.add(buttonBox, BorderLayout.CENTER);
         Button confirmSystemVariables = new Button("Confirm system variables");
         confirmSystemVariables.addActionListener(e ->
-                cellMatrixController.constructSimulation(new SimulationProperties(
+                controller.constructSimulation(new SimulationProperties(
                     (Integer) societyCount.getValue(),
                     (Integer) nutrientCount.getValue(),
                     (Integer) initialNutrientCount.getValue(),

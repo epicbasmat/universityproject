@@ -1,5 +1,6 @@
 package org.basmat.map.setup;
 
+import org.basmat.map.controller.Controller;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
@@ -24,11 +25,9 @@ import java.util.UUID;
  If you followed the umbilical of history in search of some ultimate atavistic embryo that became them, then your journey would end here, in this garden.
  */
 public class ModelSetup {
-    private final SimulationProperties simulationProperties;
-
+    private final Controller controller;
     private BufferedImage noiseGraph;
     private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalNutrientCellList;
     private final LinkedList<Point> globalLifeCellList;
     private final ModelStructure modelStructure;
     private final CellFactory cellFactory;
@@ -36,16 +35,14 @@ public class ModelSetup {
 
     /**
      * @param modelStructure The ModelStructure containing all the model data within 2 matrices.
-     * @param globalNutrientCellList The list of which all nutrient cells have a reference within
      * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(SimulationProperties simulationProperties, ModelStructure modelStructure, LinkedList<Point> globalNutrientCellList, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
-        this.simulationProperties = simulationProperties;
+    public ModelSetup(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+        this.controller = controller;
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;
         this.globalSocietyCellList = globalSocietyCellList;
-        this.globalNutrientCellList = globalNutrientCellList;
         this.globalLifeCellList = globalLifeCellList;
         noiseGraph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
     }
@@ -56,17 +53,17 @@ public class ModelSetup {
      */
     public void setupMap() throws InterruptedException {
         BufferedImage graph = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
-        System.out.println("Generating gradient graph");
+        controller.pushText("Generating gradient graph");
         setupGradientGraph(-1);
-        System.out.println("Applying texture filter");
+        controller.pushText("Applying texture filter");
         setupWorldCells(5);
-        System.out.println("Applying society cells and rendering area of effect");
+        controller.pushText("Applying society cells and rendering area of effect");
         setupSocietyCells();
-        System.out.println("Applying nutrient cells");
+        controller.pushText("Applying nutrient cells");
         setupNutrientCells();
-        System.out.println("Appyling life cells to society cells");
+        controller.pushText("Appyling life cells to society cells");
         setupLifeCells();
-        System.out.println("Complete");
+        controller.pushText("Complete");
     }
 
     /**
@@ -74,7 +71,8 @@ public class ModelSetup {
      * @param seed the seed to provide the noise generator
      */
     private void setupGradientGraph(int seed) {
-        CubicInterpolation ci = new CubicInterpolation((int) (Math.random() * (10000 - 1 + 1) + 1));
+        CubicInterpolation ci = new CubicInterpolation((int) (Math.random() * (10000000 - 1 + 1) + 1));
+        controller.setSeed(ci.getSeed());
         //For X and Y coordinate in the bufferedimage, apply a noise gradient filter to the x,y coords and set an RGB value applied to the coordinates
         for (int i = 0; i < noiseGraph.getWidth(); i++) {
             for (int j = 0; j < noiseGraph.getHeight(); j++) {
@@ -158,7 +156,7 @@ public class ModelSetup {
         //The counter provides an incrementing integer for each time a successful society creation occurs
         int counter = 0;
         int radius = 7;
-        while (counter < simulationProperties.societyCount()) {
+        while (counter < controller.getSimulationProperties().societyCount()) {
             int newSocietyCoordinateX = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             int newSocietyCoordinateY = (int) (Math.random() * (150 - 1 - 1 + 1) + 1);
             Point point = new Point(newSocietyCoordinateX, newSocietyCoordinateY);
@@ -185,7 +183,7 @@ public class ModelSetup {
     private void setupNutrientCells() {
         for (Point societyPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyPoint);
-            for (int initialNutrients = 0; initialNutrients < simulationProperties.initialNutrientCount(); initialNutrients++) {
+            for (int initialNutrients = 0; initialNutrients < controller.getSimulationProperties().initialNutrientCount(); initialNutrients++) {
                 Point nutrientPoint = PointUtilities.calculateRandomValidCoordinates(societyPoint, societyCell.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
                 NutrientCell nutrientCell = cellFactory.createNutrientCell(societyCell);
                 modelStructure.setFrontLayer(nutrientPoint, nutrientCell);
@@ -209,7 +207,7 @@ public class ModelSetup {
                     owner.addNutrientCells(modelStructure.getFrontLayer(point));
                 }
             }
-        } while (i < simulationProperties.nutrientCount());
+        } while (i < controller.getSimulationProperties().nutrientCount());
     }
 
     private void setupLifeCells() {

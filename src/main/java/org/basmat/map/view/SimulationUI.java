@@ -1,6 +1,6 @@
 package org.basmat.map.view;
 
-import org.basmat.map.controller.CellMatrixController;
+import org.basmat.map.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,19 +11,19 @@ import java.awt.event.MouseListener;
  * CellMatrixPanel provides a container to child all individual CellPanels, extending a JFrame.
  * @see CellPanel
  */
-public class ViewStructure extends JPanel implements MouseListener {
-    private final CellMatrixController cellMatrixController;
+public class SimulationUI extends JPanel implements MouseListener {
+    private final Controller controller;
     private GridBagConstraints c;
     private CellPanel[][] cellPanelMatrix;
 
     /**
      * @param matrixWidth the width of the matrix
      * @param matrixHeight the height of the matrix
-     * @param cellMatrixController the cell controller matrix that instantiated this object
+     * @param controller the cell controller matrix that instantiated this object
      */
-    public ViewStructure(int matrixWidth, int matrixHeight, CellMatrixController cellMatrixController) {
+    public SimulationUI(int matrixWidth, int matrixHeight, Controller controller) {
         cellPanelMatrix = new CellPanel[matrixWidth][matrixHeight];
-        this.cellMatrixController = cellMatrixController;
+        this.controller = controller;
         setVisible(true);
         c = new GridBagConstraints();
         setLayout(new GridBagLayout());
@@ -96,9 +96,10 @@ public class ViewStructure extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        //Get the amount of total space occupied by the frame and subtract it from the simulation size (real size), then /2 to create one half of that space
         Dimension difference = new Dimension((int) (this.getSize().getWidth() - 750) / 2, (int) (this.getSize().getHeight() - 750) / 2);
-        Point e1 = new Point((int) Math.ceil(e.getPoint().x - difference.width) / 5 - 1, (int) (Math.ceil(e.getPoint().y - difference.height) / 5) - 6) ;
-        cellMatrixController.displayData(e1);
+        //And then apply weird subtractions to align it to (0,0), using quotients to floor the multiple of 5
+        controller.displayData(new Point((e.getPoint().x - difference.width - 8) / 5, (e.getPoint().y - difference.height - 31) / 5));
     }
 
     @Override
