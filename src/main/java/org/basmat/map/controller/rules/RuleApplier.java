@@ -1,11 +1,8 @@
 package org.basmat.map.controller.rules;
 
+import org.basmat.map.controller.Controller;
 import org.basmat.map.model.ModelStructure;
-import org.basmat.map.setup.ViewSetup;
-import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.path.Node;
-import org.basmat.map.view.UserInteractionUI;
-import org.basmat.map.view.ViewStructure;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -27,39 +24,26 @@ In the day between the morning and the evening, the gardener and the winnower pl
 public class RuleApplier {
     private final HashMap<Point, LinkedList<Node>> activeSocietyCells;
     private final Winnower winnower;
-    private final UserInteractionUI userInteractionUi;
+    private final Controller controller;
     private Gardener gardener;
-    private LinkedList<Point> globalNutrientCellList;
-    private LinkedList<Point> globalSocietyCellList;
-    private LinkedList<Point> globalLifeCellList;
-    private ViewStructure viewStructure;
-    private ModelStructure modelStructure;
 
     private LinkedList<LinkedList<Node>> listOfPaths;
 
     /**
      *
-     * @param viewStructure The view structure to update
      * @param modelStructure The model structure to apply the rules to
      * @param globalSocietyCellList The list of all society cell's coordinates.
      * @param globalLifeCellList The list of all life cell's coordinates
      */
-    public RuleApplier(SimulationProperties simulationProperties, UserInteractionUI userInteractionUi, ViewStructure viewStructure, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
-        this.userInteractionUi = userInteractionUi;
-        this.viewStructure = viewStructure;
-        this.modelStructure = modelStructure;
+    public RuleApplier(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+        this.controller = controller;
         this.listOfPaths = new LinkedList<>();
-        this.gardener = new Gardener(simulationProperties, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        this.winnower = new Winnower(simulationProperties, userInteractionUi, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        this.globalSocietyCellList = globalSocietyCellList;
-        this.globalLifeCellList = globalLifeCellList;
+        this.gardener = new Gardener(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
+        this.winnower = new Winnower(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
         activeSocietyCells = new HashMap<>();
     }
 
-    public void invokeGardener(){
-        //new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
-        //    @Override
-        //    public void run() {
+    public void invokeRules(){
         gardener.checkForValidReproduction();
         gardener.reproduce();
         gardener.scatter();
@@ -69,12 +53,6 @@ public class RuleApplier {
         winnower.collapse();
         winnower.famine();
         winnower.stagnation();
-        ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
-        userInteractionUi.incrementTimeStep();
-        //ViewSetup.revalidate(viewStructure);
-        //    }
-        //}, 0, 750);
-
     }
 
     private void applyRulesToCells() {

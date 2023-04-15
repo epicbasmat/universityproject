@@ -34,7 +34,7 @@ public class ModelStructure {
     }
 
     public <T extends IMapCell> void setFrontLayer(Point point, T toSet) {
-        frontLayer.put(new Coordinates(point.x, point.y), toSet);
+        frontLayer.put(new Coordinates(point), toSet);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ModelStructure {
      * Be careful
      * @param point The coordinate to delete, uses getCoordinate() to get the priority object
      */
-    public <T extends IMapCell> void deleteCoordinate(Point point) {
+    public void deleteCoordinate(Point point) {
         if (getCoordinate(point) instanceof WorldCell) {
             backLayer.remove(new Coordinates(point));
         } else {
@@ -70,22 +70,9 @@ public class ModelStructure {
     }
 }
 
-class Coordinates {
-    public int x;
-    public int y;
-
-    public Coordinates(int x, int y){
-        this.x = x;
-        this.y = y;
-    }
-
+class Coordinates extends Point{
     public Coordinates(Point point){
-        this.x = point.x;
-        this.y = point.y;
-    }
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Coordinates coords && this.x == coords.x && this.y == coords.y;
+        super(point);
     }
 
     //hashCode is overridden to ensure that even though an object could be different, if the coordinates match then the bucket will be the same.
