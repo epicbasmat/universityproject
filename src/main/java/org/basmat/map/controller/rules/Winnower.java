@@ -108,7 +108,7 @@ public class Winnower {
         List<Point> copyOfList = new LinkedList<>(globalSocietyCellList);
         for (Point point : copyOfList) {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
-            if (coordinate.getLandPerLifeCell() > controller.getSimulationProperties().ratioThreshold()) {
+            if (coordinate.getLandPerLifeCell() > controller.getSimulationProperties().ratioThreshold() || coordinate.getPopulationCount() == 0) {
                 controller.pushText("Society collapsed, the population was overstretched too much over the land it had at:  " + point);
                 globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
                 PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);

@@ -169,7 +169,13 @@ public class Gardener {
         //System.out.println("Reproduce time");
         for (Point point : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(point);
-            int percentageCapacity = societyCell.getPopulationCount() / societyCell.getNutrientCapacity() * 100;
+            int percentageCapacity = 0;
+            if (societyCell.getPopulationCount() == 0) {
+                continue;
+            }
+            if (!(societyCell.getNutrientCapacity() == 0)) {
+                percentageCapacity = societyCell.getPopulationCount() / societyCell.getNutrientCapacity() * 100;
+            }
             //The population and it's resources determine the probability of a societycell determining if it needs to reproduce.
             // A high population and not a lot of food left means there is a lower chance of reproduction. Vice versa.
             int reproduceProbability;
@@ -184,22 +190,26 @@ public class Gardener {
             }
 
             if (reproduceProbability > Math.random() * 100) {
-                LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(point);
-                //We want to make sure no current paths for the life cell exists and the path generated isnt empty
-                if (listOfPaths.parallelStream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
-                    listOfPaths.add(pathBetweenCouple);
-                    controller.pushText("A society has decided to reproduce Life Cells");
-                }
+                try {
+                    LinkedList<Node> pathBetweenCouple = getPathBetweenCouple(point);
+                    //We want to make sure no current paths for the life cell exists and the path generated isnt empty
+                    if (listOfPaths.parallelStream().map(LinkedList::peek).filter(Objects::nonNull).noneMatch(e -> e.equals(pathBetweenCouple.peek())) && !pathBetweenCouple.isEmpty()){
+                        listOfPaths.add(pathBetweenCouple);
+                        controller.pushText("A society has decided to reproduce Life Cells");
+                    }
+                } catch (Exception e) {
+                    controller.pushText(e.toString());
+                };
             }
         }
     }
 
-    private LinkedList<Node> getPathBetweenCouple(Point societyCell) {
+    private LinkedList<Node> getPathBetweenCouple(Point societyCell) throws ArrayIndexOutOfBoundsException {
         Point[] couple = selectCoupleLifeCell(societyCell);
         return Pathfind.aStar(250, modelStructure, couple[0], couple[1]);
     }
 
-    private Point selectRandomLifeCell(Point societyCell) {
+    private Point selectRandomLifeCell(Point societyCell) throws ArrayIndexOutOfBoundsException {
         List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == societyCell).toList();
         return points.get((int) (Math.random() * points.size()));
     }
@@ -207,9 +217,14 @@ public class Gardener {
     private Point[] selectCoupleLifeCell(Point societyCell) {
         Point[] points = new Point[2];
         points[0] = selectRandomLifeCell(societyCell);
+        int breakcnd = 0;
         do {
             points[1] = selectRandomLifeCell(societyCell);
-        } while (points[1].equals(points[0]));
+            breakcnd++;
+        } while (points[1].equals(points[0]) && breakcnd < 5);
+        if (breakcnd == 5) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
         return points;
     }
 }

@@ -6,7 +6,7 @@
 
     <groupId>org.basmat</groupId>
     <artifactId>University_Project</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.01</version>
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>
