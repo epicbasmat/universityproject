@@ -1,9 +1,9 @@
 package org.basmat.userui;
 
 import org.basmat.map.util.ECellType;
-import org.basmat.map.view.MenuUI;
-import org.basmat.map.view.UserInteractionUI;
-import org.basmat.map.view.ViewStructure;
+import org.basmat.map.view.VariableSelectionUI;
+import org.basmat.map.view.SimulationInteractionUI;
+import org.basmat.map.view.SimulationUI;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,7 +20,7 @@ public class GUI extends JFrame {
     private final JPanel simUI;
     private final JPanel cardLayout;
 
-    public GUI(ViewStructure viewStructure, UserInteractionUI userInteractionUi, MenuUI menuUI) {
+    public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
         this.setTitle("Simulation");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
@@ -37,7 +37,7 @@ public class GUI extends JFrame {
         this.setLayout(new BorderLayout());
         layout = new CardLayout();
         cardLayout = new JPanel(layout);
-        cardLayout.add(menuUI, "Parameter selection");
+        cardLayout.add(variableSelectionUI, "Parameter selection");
         cardLayout.add(simUI, "Simulation");
         this.add(cardLayout);
         pack();

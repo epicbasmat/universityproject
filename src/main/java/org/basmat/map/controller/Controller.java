@@ -6,27 +6,26 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.SimulationProperties;
-import org.basmat.map.view.MenuUI;
-import org.basmat.map.view.UserInteractionUI;
-import org.basmat.map.view.ViewStructure;
+import org.basmat.map.view.VariableSelectionUI;
+import org.basmat.map.view.SimulationInteractionUI;
+import org.basmat.map.view.SimulationUI;
 import org.basmat.userui.GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
 public class Controller {
 
     private int seed;
-    private final ViewStructure viewStructure;
+    private final SimulationUI viewStructure;
     private final ModelStructure modelStructure;
     private final GUI GUI;
     private final Timer timer;
     private RuleApplier ruleApplier;
-    private final UserInteractionUI userInteractionUi;
-    private final MenuUI menuUi;
+    private final SimulationInteractionUI userInteractionUi;
+    private final VariableSelectionUI variableSelectionUi;
     private final LinkedList<Point> globalSocietyCellList;
     private final LinkedList<Point> globalLifeCellList;
     private SimulationProperties simulationProperties;
@@ -36,10 +35,10 @@ public class Controller {
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         modelStructure = new ModelStructure();
-        viewStructure = new ViewStructure(cellMatrixWidth, cellMatrixHeight, this);
-        userInteractionUi = new UserInteractionUI(this);
-        menuUi = new MenuUI(this);
-        GUI = new GUI(viewStructure, userInteractionUi, menuUi);
+        viewStructure = new SimulationUI(cellMatrixWidth, cellMatrixHeight, this);
+        userInteractionUi = new SimulationInteractionUI(this);
+        variableSelectionUi = new VariableSelectionUI(this);
+        GUI = new GUI(viewStructure, userInteractionUi, variableSelectionUi);
         ActionListener updateAction = e -> {
             ruleApplier.invokeRules();
             ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);

@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * This class sets up the Panel used for user selection of system variables
  */
-public class UserInteractionUI extends JPanel {
+public class SimulationInteractionUI extends JPanel {
 
     private final JPanel userPanel;
     private final Controller controller;
@@ -17,7 +17,7 @@ public class UserInteractionUI extends JPanel {
     private JScrollPane textScrollArea;
     private int timestep;
 
-    public UserInteractionUI(Controller controller) {
+    public SimulationInteractionUI(Controller controller) {
         userPanel = new JPanel();
         userPanel.setLayout(new GridLayout());
         userPanel.setVisible(true);

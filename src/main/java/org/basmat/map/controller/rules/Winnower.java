@@ -7,9 +7,7 @@ import org.basmat.map.model.cells.LifeCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
-import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.path.Node;
-import org.basmat.map.view.UserInteractionUI;
 
 import java.awt.*;
 import java.util.LinkedList;

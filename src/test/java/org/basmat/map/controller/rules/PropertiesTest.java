@@ -8,14 +8,11 @@ import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.TestUtilities;
-import org.basmat.map.util.TextureHelper;
 import org.basmat.map.util.path.Node;
-import org.basmat.map.view.UserInteractionUI;
+import org.basmat.map.view.SimulationInteractionUI;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +33,7 @@ public class PropertiesTest {
         cellFactory = new CellFactory();
         modelStructure = new ModelStructure();
         simulationProperties = new SimulationProperties(7, 100, 1, 20, 5, 75, 0.6);
-        UserInteractionUI userInteractionUi = new UserInteractionUI(null);
+        SimulationInteractionUI userInteractionUi = new SimulationInteractionUI(null);
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         listOfPaths = new LinkedList<>();

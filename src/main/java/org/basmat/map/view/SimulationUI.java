@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
  * CellMatrixPanel provides a container to child all individual CellPanels, extending a JFrame.
  * @see CellPanel
  */
-public class ViewStructure extends JPanel implements MouseListener {
+public class SimulationUI extends JPanel implements MouseListener {
     private final Controller controller;
     private GridBagConstraints c;
     private CellPanel[][] cellPanelMatrix;
@@ -21,7 +21,7 @@ public class ViewStructure extends JPanel implements MouseListener {
      * @param matrixHeight the height of the matrix
      * @param controller the cell controller matrix that instantiated this object
      */
-    public ViewStructure(int matrixWidth, int matrixHeight, Controller controller) {
+    public SimulationUI(int matrixWidth, int matrixHeight, Controller controller) {
         cellPanelMatrix = new CellPanel[matrixWidth][matrixHeight];
         this.controller = controller;
         setVisible(true);

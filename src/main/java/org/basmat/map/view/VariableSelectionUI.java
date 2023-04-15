@@ -6,7 +6,7 @@ import org.basmat.map.util.SimulationProperties;
 import javax.swing.*;
 import java.awt.*;
 
-public class MenuUI extends JPanel {
+public class VariableSelectionUI extends JPanel {
 
     private final JSpinner societyCount;
     private final JSpinner nutrientCount;
@@ -16,7 +16,7 @@ public class MenuUI extends JPanel {
     private final JSpinner ratioThreshold;
     private final JSpinner foodThreshold;
 
-    public MenuUI(Controller controller) {
+    public VariableSelectionUI(Controller controller) {
         this.setLayout(new BorderLayout());
         JPanel buttonBox = new JPanel();
         buttonBox.setLayout(new BoxLayout(buttonBox, BoxLayout.Y_AXIS));
