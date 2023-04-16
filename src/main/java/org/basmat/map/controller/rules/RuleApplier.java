@@ -5,11 +5,10 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.util.path.Node;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * RuleApplier applies the gardeners and the winnowers ruleset using a Java Timer, recurring at a set time inverval.
+ * RuleApplier unvokes the gardener and the winnower in a set order.
  */
 
 /*
@@ -22,12 +21,8 @@ In the day between the morning and the evening, the gardener and the winnower pl
  * and then re-renders the view with what has changed in the model
   */
 public class RuleApplier {
-    private final HashMap<Point, LinkedList<Node>> activeSocietyCells;
     private final Winnower winnower;
-    private final Controller controller;
-    private Gardener gardener;
-
-    private LinkedList<LinkedList<Node>> listOfPaths;
+    private final Gardener gardener;
 
     /**
      *
@@ -36,11 +31,9 @@ public class RuleApplier {
      * @param globalLifeCellList The list of all life cell's coordinates
      */
     public RuleApplier(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
-        this.controller = controller;
-        this.listOfPaths = new LinkedList<>();
+        LinkedList<LinkedList<Node>> listOfPaths = new LinkedList<>();
         this.gardener = new Gardener(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
         this.winnower = new Winnower(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        activeSocietyCells = new HashMap<>();
     }
 
     public void invokeRules(){
@@ -53,9 +46,5 @@ public class RuleApplier {
         winnower.collapse();
         winnower.famine();
         winnower.stagnation();
-    }
-
-    private void applyRulesToCells() {
-        gardener.unison();
     }
 }
