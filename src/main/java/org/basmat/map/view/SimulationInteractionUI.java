@@ -4,6 +4,7 @@ import org.basmat.map.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 /**
  * This class sets up the Panel used for user selection of system variables
@@ -47,9 +48,11 @@ public class SimulationInteractionUI extends JPanel {
     private void setupButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setVisible(true);
-        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setLayout(new GridBagLayout());
         Button play = new Button("Play simulation");
         Button pause = new Button("Pause simulation");
+        Button saveAsPng = new Button("Save as PNG");
+        GridBagConstraints c = new GridBagConstraints();
         pause.setEnabled(false);
         play.addActionListener((point) -> {
             play.setEnabled(false);
@@ -61,9 +64,30 @@ public class SimulationInteractionUI extends JPanel {
             controller.pause();
             play.setEnabled(true);
         });
+        saveAsPng.addActionListener((point) -> {
+            try {
+                controller.save();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         play.setSize(30, 30);
-        buttonPanel.add(play);
-        buttonPanel.add(pause);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.ipady = 10;
+        buttonPanel.add(play, c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.ipady = 10;
+        buttonPanel.add(pause, c);
+        c.gridx = 0;
+        c.gridy = 1;
+        c.ipady = 20;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 2;
+        c.weightx = 0;
+        buttonPanel.add(saveAsPng, c);
         userPanel.add(buttonPanel);
         revalidate();
     }
