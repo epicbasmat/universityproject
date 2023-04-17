@@ -7,7 +7,7 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
- * This class sets up the Panel used for user selection of system variables
+ * This class contains the JFrame responsible for the primary interface for the user. This panel contains the buttons that the user can click on, as well as system output.
  */
 public class SimulationInteractionUI extends JPanel {
 
@@ -17,6 +17,10 @@ public class SimulationInteractionUI extends JPanel {
     private JTextArea timeStepTextInfo;
     private JScrollPane textScrollArea;
     private int timestep;
+    private Button play;
+    private Button pause;
+    private Button saveAsPng;
+    private Button saveData;
 
     public SimulationInteractionUI(Controller controller) {
         userPanel = new JPanel();
@@ -49,9 +53,10 @@ public class SimulationInteractionUI extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setVisible(true);
         buttonPanel.setLayout(new GridBagLayout());
-        Button play = new Button("Play simulation");
-        Button pause = new Button("Pause simulation");
-        Button saveAsPng = new Button("Save as PNG");
+        play = new Button("Play simulation");
+        pause = new Button("Pause simulation");
+        saveAsPng = new Button("Save as PNG");
+        saveData = new Button("Save data");
         GridBagConstraints c = new GridBagConstraints();
         pause.setEnabled(false);
         play.addActionListener((point) -> {
@@ -65,11 +70,10 @@ public class SimulationInteractionUI extends JPanel {
             play.setEnabled(true);
         });
         saveAsPng.addActionListener((point) -> {
-            try {
-                controller.save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            controller.saveAsImage();
+        });
+        saveData.addActionListener((point) ->  {
+            controller.saveAsData();
         });
         play.setSize(30, 30);
 
@@ -88,6 +92,13 @@ public class SimulationInteractionUI extends JPanel {
         c.gridwidth = 2;
         c.weightx = 0;
         buttonPanel.add(saveAsPng, c);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.ipady = 20;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 2;
+        c.weightx = 0;
+        buttonPanel.add(saveData, c);
         userPanel.add(buttonPanel);
         revalidate();
     }
@@ -100,6 +111,22 @@ public class SimulationInteractionUI extends JPanel {
         this.add(textScrollArea);
     }
 
+    public void disablePlayButton() {
+        if (play.isEnabled() && !pause.isEnabled()) {
+            play.setEnabled(false);
+        }
+    }
+
+    public void enablePlayButton() {
+        if (!(play.isEnabled() && pause.isEnabled())) {
+            play.setEnabled(true);
+        }
+    }
+
+    /**
+     * This method sends a string to the view
+     * @param string The string to render
+     */
     public void appendText(String string) {
         simulationTextInfo.append(string + "\n");
     }

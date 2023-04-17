@@ -1,5 +1,6 @@
 package org.basmat.map.model.cells;
 
+import org.basmat.map.model.cells.factory.AbstractSerializableCell;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.util.ECellType;
 
@@ -10,10 +11,9 @@ import java.awt.image.BufferedImage;
 /**
  * LifeCell provides the model of a life cell
  */
-public class LifeCell implements IMapCell {
+public class LifeCell extends AbstractSerializableCell implements IMapCell {
     private int reproductionCooldown;
-    private Point societyCell;
-    private BufferedImage texture;
+    private final Point societyCell;
     private int attrition;
 
 
@@ -23,8 +23,8 @@ public class LifeCell implements IMapCell {
      * @param texture A reference for the life cell texture.
      */
     public LifeCell(Point societyCell, BufferedImage texture) {
+        super(texture);
         this.societyCell = societyCell;
-        this.texture = texture;
         this.attrition = 0;
         this.reproductionCooldown = 0;
     }
@@ -48,11 +48,6 @@ public class LifeCell implements IMapCell {
 
     public void resetAttrition() {
         attrition = 0;
-    }
-
-    @Override
-    public BufferedImage getTexture() {
-        return texture;
     }
 
     @Override

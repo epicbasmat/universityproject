@@ -50,4 +50,9 @@ public class GUI extends JFrame {
             this.setMinimumSize(new Dimension(1200, 950));
         });
     }
+
+    public void throwError(String string) {
+         JOptionPane.showMessageDialog(this, string);
+    }
+
 }

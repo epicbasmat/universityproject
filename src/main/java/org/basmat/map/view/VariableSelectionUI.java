@@ -4,7 +4,10 @@ import org.basmat.map.controller.Controller;
 import org.basmat.map.util.SimulationProperties;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.io.FilenameFilter;
+import java.util.LinkedList;
 
 public class VariableSelectionUI extends JPanel {
 
@@ -15,27 +18,30 @@ public class VariableSelectionUI extends JPanel {
     private final JSpinner overcrowdThreshold;
     private final JSpinner ratioThreshold;
     private final JSpinner foodThreshold;
+    private final LinkedList<JSpinner> spinnerList;
+    private final Button confirmSystemVariables;
+
+    private int maxSize;
 
     public VariableSelectionUI(Controller controller) {
-        this.setLayout(new BorderLayout());
-        JPanel buttonBox = new JPanel();
-        buttonBox.setLayout(new BoxLayout(buttonBox, BoxLayout.Y_AXIS));
+        spinnerList = new LinkedList<>();
+        GridBagConstraints c = new GridBagConstraints();
+        this.setLayout(new GridBagLayout());
         societyCount = new JSpinner(new SpinnerNumberModel(7, 1, 14, 1));
-        buttonBox.add(new UserInput("Society Count", societyCount));
+        setSystemVariable(c, "Society count", societyCount);
         nutrientCount = new JSpinner(new SpinnerNumberModel(100, 5, 300, 5));
-        buttonBox.add(new UserInput("Nutrient Count", nutrientCount));
+        setSystemVariable(c, "Nutrient Count", nutrientCount);
         initialNutrientCount = new JSpinner(new SpinnerNumberModel(1, 0, 4, 1));
-        buttonBox.add(new UserInput("Initial Nutrient Count per Society", initialNutrientCount));
+        setSystemVariable(c, "Initial Nutrient Cells per Society", initialNutrientCount);
         attritionThreshold = new JSpinner(new SpinnerNumberModel(20, 1, 40, 2));
-        buttonBox.add(new UserInput("Time steps before attrition kill", attritionThreshold));
+        setSystemVariable(c, "Time steps before attrition kill", attritionThreshold);
         overcrowdThreshold = new JSpinner(new SpinnerNumberModel(5, 1, 8, 1));
-        buttonBox.add(new UserInput("Overcrowd threshold", overcrowdThreshold));
+        setSystemVariable(c, "Overcrowd threshold", overcrowdThreshold);
         ratioThreshold = new JSpinner(new SpinnerNumberModel(75, 25, 150, 5));
-        buttonBox.add(new UserInput("Ratio of land to life cell before collapsing", ratioThreshold));
+        setSystemVariable(c, "Ratio of land to life cell before collapsing", ratioThreshold);
         foodThreshold = new JSpinner(new SpinnerNumberModel(0.6, 0.1, 1, 0.1));
-        buttonBox.add(new UserInput("Ratio of food to life cell before a death occurs", foodThreshold));
-        this.add(buttonBox, BorderLayout.CENTER);
-        Button confirmSystemVariables = new Button("Confirm system variables");
+        setSystemVariable(c, "Ratio of food to life cell before a death occurs", foodThreshold);
+        confirmSystemVariables = new Button("Generate new simulation");
         confirmSystemVariables.addActionListener(e ->
                 controller.constructSimulation(new SimulationProperties(
                     (Integer) societyCount.getValue(),
@@ -46,22 +52,41 @@ public class VariableSelectionUI extends JPanel {
                     (Integer) ratioThreshold.getValue(),
                     (Double) foodThreshold.getValue()
         )));
-        this.add(confirmSystemVariables, BorderLayout.AFTER_LINE_ENDS);
+        c.gridy = 8;
+        c.gridx = 0;
+        c.ipady = 20;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 3;
+        c.weightx = 0;
+        c.anchor = GridBagConstraints.FIRST_LINE_END;
+        this.add(confirmSystemVariables, c);
+        c.gridy = 9;
+        Button loadFile = new Button("Alternatively, load from a .dat file");
+        loadFile.addActionListener((actionListener) -> {
+             JFileChooser jFileChooser = new JFileChooser("./");
+             int i = jFileChooser.showOpenDialog(this);
+             if (i == JFileChooser.APPROVE_OPTION) {
+                 controller.loadFromFile(jFileChooser.getSelectedFile());
+             }
+        });
+        this.add(loadFile, c);
     }
-}
 
-class UserInput extends JPanel {
-    JLabel systemVariableName;
-    JSpinner spinner;
+    void setEnabledUI(boolean enabled) {
+        spinnerList.forEach(e -> e.setEnabled(enabled));
+        confirmSystemVariables.setEnabled(enabled);
+    }
 
-    public UserInput(String systemVariableName, JSpinner spinner) {
-        this.systemVariableName = new JLabel(systemVariableName);
-        this.spinner = spinner;
-        SpringLayout mgr = new SpringLayout();
-        this.setLayout(mgr);
-        mgr.putConstraint(SpringLayout.WEST, spinner, 5, SpringLayout.EAST, this.systemVariableName);
-        mgr.putConstraint(SpringLayout.NORTH, spinner, 0, SpringLayout.NORTH, this.systemVariableName);
-        this.add(this.systemVariableName);
-        this.add(spinner);
+    void setSystemVariable(GridBagConstraints c, String label, JSpinner spinner) {
+        spinner.setMinimumSize(new Dimension(170, 20));
+        c.gridy++;
+        c.anchor = GridBagConstraints.LINE_START;
+        JLabel comp = new JLabel(label);
+        comp.getInsets().set(100, 100, 100 ,100);
+        this.add(comp, c);
+        c.gridx = + 2;
+        c.anchor = GridBagConstraints.LINE_END;
+        this.add(spinner, c);
+        c.gridx =-1;
     }
 }

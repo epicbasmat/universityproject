@@ -4,6 +4,7 @@ import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.IMapCell;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.HashMap;
 
 
@@ -11,7 +12,8 @@ import java.util.HashMap;
  * ModelStructure provides 2 primary matrices, a WorldCell matrix and a IOwnedCell matrix. The WorldCell matrix acts as a back layer where any unfilled space by the IOwnedLayer will be filled in through the view, and IOwnedLayer acts as the front layer,
  * where any objects in that matrix get priority rendering.
  */
-public class ModelStructure {
+public class ModelStructure implements Serializable {
+
     private final HashMap<Coordinates, WorldCell> backLayer;
     private final HashMap<Coordinates, ? super IMapCell> frontLayer;
 

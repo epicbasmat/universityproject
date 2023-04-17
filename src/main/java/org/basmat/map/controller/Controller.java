@@ -16,8 +16,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -25,29 +25,28 @@ public class Controller {
 
     private final File screenshotDir;
     private int seed;
-    private final SimulationUI viewStructure;
-    private final ModelStructure modelStructure;
-    private final GUI GUI;
+    private final SimulationUI simulationUI;
+    private ModelStructure modelStructure;
+    private final GUI primaryGui;
     private final Timer timer;
     private RuleApplier ruleApplier;
     private final SimulationInteractionUI userInteractionUi;
     private final VariableSelectionUI variableSelectionUi;
-    private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalLifeCellList;
+    private LinkedList<Point> globalSocietyCellList;
+    private LinkedList<Point> globalLifeCellList;
     private SimulationProperties simulationProperties;
-
 
     public Controller(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new LinkedList<>();
         modelStructure = new ModelStructure();
-        viewStructure = new SimulationUI(cellMatrixWidth, cellMatrixHeight, this);
+        simulationUI = new SimulationUI(cellMatrixWidth, cellMatrixHeight, this);
         userInteractionUi = new SimulationInteractionUI(this);
         variableSelectionUi = new VariableSelectionUI(this);
-        GUI = new GUI(viewStructure, userInteractionUi, variableSelectionUi);
+        primaryGui = new GUI(simulationUI, userInteractionUi, variableSelectionUi);
         ActionListener updateAction = e -> {
             ruleApplier.invokeRules();
-            ViewSetup.setupView(viewStructure, modelStructure, ViewSetup.IS_LAZY);
+            ViewSetup.setupView(simulationUI, modelStructure, ViewSetup.IS_LAZY);
             userInteractionUi.incrementTimeStep();
         };
         timer = new Timer(1000, updateAction);
@@ -82,8 +81,8 @@ public class Controller {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        ViewSetup.setupView(viewStructure, modelStructure);
-        GUI.nextCard();
+        ViewSetup.setupView(simulationUI, modelStructure);
+        primaryGui.nextCard();
     }
 
     /**
@@ -103,7 +102,10 @@ public class Controller {
         userInteractionUi.appendText(string + "\n");
     }
 
-    public void save() throws IOException {
+    public void saveAsImage(){
+        userInteractionUi.disablePlayButton();
+        timer.stop();
+        pushText("Screenshot is being saved.");
         BufferedImage screenshot = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = screenshot.createGraphics();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
@@ -114,7 +116,52 @@ public class Controller {
         }
         g2d.dispose();
         String s = UUID.randomUUID() + ".png";
-        ImageIO.write(screenshot, "png", new File("./screenshots/" + s));
-        pushText("Screenshot saved as: " + s);
+        try {
+            ImageIO.write(screenshot, "png", new File("./screenshots/" + s));
+        } catch (IOException e) {
+            primaryGui.throwError("Saving the file as an image has failed. \nError: " + e.getLocalizedMessage());
+        }
+        pushText("Screenshot saved as: " + s + ".");
+        userInteractionUi.enablePlayButton();
+    }
+
+    public void saveAsData() {
+        userInteractionUi.disablePlayButton();
+        timer.stop();
+        pushText("Saving data to file. This may take a minute.");
+        String name = "./saves/" + UUID.randomUUID() + ".dat";
+        try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(name)))) {
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("societycells", globalSocietyCellList);
+            data.put("lifecells", globalLifeCellList);
+            data.put("properties", simulationProperties);
+            data.put("model", modelStructure);
+            out.writeObject(data);
+            pushText("Save complete! Saved at " + name + ".");
+            out.close();
+        } catch (IOException e) {
+            primaryGui.throwError("Serialization of data has failed. \nError: " + e.getLocalizedMessage());
+        }
+        userInteractionUi.enablePlayButton();
+    }
+
+    public void loadFromFile(File currentDirectory) {
+        try {
+            primaryGui.nextCard();
+            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(currentDirectory));
+            HashMap<String, Object> data = (HashMap<String, Object>) objectInputStream.readObject();
+            this.globalLifeCellList = (LinkedList<Point>) data.get("lifecells");
+            this.simulationProperties = (SimulationProperties) data.get("properties");
+            this.globalSocietyCellList = (LinkedList<Point>) data.get("societycells");
+            this.modelStructure = (ModelStructure) data.get("model");
+            ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
+            ViewSetup.setupView(simulationUI, modelStructure);
+        } catch (IOException e) {
+            primaryGui.throwError("A File Reading error has occurred. \nError: " + e.getLocalizedMessage());
+        } catch (ClassNotFoundException e) {
+            primaryGui.throwError("Class cannot be found, this could be due to an incompatible data file. \nError: " + e.getLocalizedMessage());
+        } catch (ClassCastException e) {
+            primaryGui.throwError("Class cannot be cast, this could be due to an incompatable data file, or has been corrupted. \nError: " + e.getLocalizedMessage());
+        }
     }
 }
