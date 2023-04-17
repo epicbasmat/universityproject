@@ -4,7 +4,6 @@ import org.basmat.map.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * This class contains the JFrame responsible for the primary interface for the user. This panel contains the buttons that the user can click on, as well as system output.
@@ -111,16 +110,13 @@ public class SimulationInteractionUI extends JPanel {
         this.add(textScrollArea);
     }
 
-    public void disablePlayButton() {
-        if (play.isEnabled() && !pause.isEnabled()) {
-            play.setEnabled(false);
-        }
+    public void disableUserInput() {
+        play.setEnabled(false);
+        pause.setEnabled(false);
     }
 
-    public void enablePlayButton() {
-        if (!(play.isEnabled() && pause.isEnabled())) {
-            play.setEnabled(true);
-        }
+    public void enableUserInput() {
+        play.setEnabled(true);
     }
 
     /**

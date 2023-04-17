@@ -1,9 +1,9 @@
 package org.basmat.userui;
 
 import org.basmat.map.util.ECellType;
-import org.basmat.map.view.VariableSelectionUI;
 import org.basmat.map.view.SimulationInteractionUI;
 import org.basmat.map.view.SimulationUI;
+import org.basmat.map.view.VariableSelectionUI;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

@@ -4,9 +4,7 @@ import org.basmat.map.controller.Controller;
 import org.basmat.map.util.SimulationProperties;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.io.FilenameFilter;
 import java.util.LinkedList;
 
 public class VariableSelectionUI extends JPanel {

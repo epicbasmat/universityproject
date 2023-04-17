@@ -8,7 +8,6 @@ import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
-import org.basmat.map.util.SimulationProperties;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

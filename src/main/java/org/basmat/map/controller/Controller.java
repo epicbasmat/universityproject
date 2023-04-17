@@ -6,9 +6,9 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.SimulationProperties;
-import org.basmat.map.view.VariableSelectionUI;
 import org.basmat.map.view.SimulationInteractionUI;
 import org.basmat.map.view.SimulationUI;
+import org.basmat.map.view.VariableSelectionUI;
 import org.basmat.userui.GUI;
 
 import javax.imageio.ImageIO;
@@ -103,7 +103,7 @@ public class Controller {
     }
 
     public void saveAsImage(){
-        userInteractionUi.disablePlayButton();
+        userInteractionUi.disableUserInput();
         timer.stop();
         pushText("Screenshot is being saved.");
         BufferedImage screenshot = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
@@ -122,11 +122,11 @@ public class Controller {
             primaryGui.throwError("Saving the file as an image has failed. \nError: " + e.getLocalizedMessage());
         }
         pushText("Screenshot saved as: " + s + ".");
-        userInteractionUi.enablePlayButton();
+        userInteractionUi.enableUserInput();
     }
 
     public void saveAsData() {
-        userInteractionUi.disablePlayButton();
+        userInteractionUi.disableUserInput();
         timer.stop();
         pushText("Saving data to file. This may take a minute.");
         String name = "./saves/" + UUID.randomUUID() + ".dat";
@@ -142,7 +142,7 @@ public class Controller {
         } catch (IOException e) {
             primaryGui.throwError("Serialization of data has failed. \nError: " + e.getLocalizedMessage());
         }
-        userInteractionUi.enablePlayButton();
+        userInteractionUi.enableUserInput();
     }
 
     public void loadFromFile(File currentDirectory) {
