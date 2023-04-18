@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 
+/**
+ * VariableSelectionUI contains all the elements associated with the main menu and variable selection. This menu deals with variable selection from the user, and also loading a file.
+ */
 public class VariableSelectionUI extends JPanel {
 
     private final JSpinner societyCount;
@@ -75,16 +78,25 @@ public class VariableSelectionUI extends JPanel {
         confirmSystemVariables.setEnabled(enabled);
     }
 
+    /**
+     * Sets a JLabel and Spinner to a specific area in the GridBagLayout, defined by the passed GridBagConstraints.
+     * @param c The GridBagConstraints to provide the layout with. Note that this will automatically assign the x,y of the components so there is no need to change it past initialization
+     * @param label The label of the spinner
+     * @param spinner The spinner for the user
+     */
     void setSystemVariable(GridBagConstraints c, String label, JSpinner spinner) {
+        //for a given grid bag constraint c, we want to go down one to set the label
         spinner.setMinimumSize(new Dimension(170, 20));
         c.gridy++;
         c.anchor = GridBagConstraints.LINE_START;
         JLabel comp = new JLabel(label);
         comp.getInsets().set(100, 100, 100 ,100);
         this.add(comp, c);
-        c.gridx = + 2;
+        // and then go across one to set the spinner, this gives the user a visual correlation between the description of the spinner, and the spinner
+        c.gridx = + 1;
         c.anchor = GridBagConstraints.LINE_END;
         this.add(spinner, c);
+        // and then reset the x position, but keep the y position. this means when the next call occurs, no overlapping of elements happens
         c.gridx =-1;
     }
 }

@@ -140,12 +140,14 @@ public class ModelSetup {
                 } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) { //MOUNTAIN PEAK
                     modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_PEAK));
                 } else {
-                    System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
-                    System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
+                    controller.pushText("A non fatal error has occurred.");
+                    controller.pushText("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
+                    controller.pushText("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
                     modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MISSING_TEXTURE));
                 }
             }
         }
+        noiseGraph = null;
     }
 
     /**
@@ -176,9 +178,7 @@ public class ModelSetup {
         }
     }
 
-    /**
-     * This method sets up nutrient cell generation, using a similar way of society cell generation.
-     */
+
     private void setupNutrientCells() {
         for (Point societyPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyPoint);

@@ -76,6 +76,7 @@ public class SimulationInteractionUI extends JPanel {
         });
         play.setSize(30, 30);
 
+        //Setting the simulation buttons position. it's messy
         c.gridx = 0;
         c.gridy = 0;
         c.ipady = 10;
@@ -110,11 +111,18 @@ public class SimulationInteractionUI extends JPanel {
         this.add(textScrollArea);
     }
 
+
+    /**
+     * Disables both the play and pause buttons to prevent user interaction.
+     */
     public void disableUserInput() {
         play.setEnabled(false);
         pause.setEnabled(false);
     }
 
+    /**
+     * Enables the play to enable user interaction
+     */
     public void enableUserInput() {
         play.setEnabled(true);
     }

@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 
 
 /**
- * LifeCell provides the model of a life cell
+ * This class provides a construct to represent the ECellType LifeCell and contains the methods to control it's internal systems such as reproductive cooldown or attrition
  */
 public class LifeCell extends AbstractSerializableCell implements IMapCell {
     private int reproductionCooldown;

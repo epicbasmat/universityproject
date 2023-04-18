@@ -90,7 +90,6 @@ public class Controller {
      * @param e the MouseEvent that the cell captures
      */
     public void displayData(Point e) {
-        //Weird subtractions are necessary to align click co-ordinate with cell matrix co-ordinate
         pushText(modelStructure.getCoordinate(e).toString());
     }
 
@@ -126,9 +125,9 @@ public class Controller {
     }
 
     public void saveAsData() {
+        pushText("Saving data to file. This may take a minute.");
         userInteractionUi.disableUserInput();
         timer.stop();
-        pushText("Saving data to file. This may take a minute.");
         String name = "./saves/" + UUID.randomUUID() + ".dat";
         try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(name)))) {
             HashMap<String, Object> data = new HashMap<>();
@@ -145,6 +144,7 @@ public class Controller {
         userInteractionUi.enableUserInput();
     }
 
+    @SuppressWarnings("unchecked")
     public void loadFromFile(File currentDirectory) {
         try {
             primaryGui.nextCard();
@@ -156,12 +156,15 @@ public class Controller {
             this.modelStructure = (ModelStructure) data.get("model");
             ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
             ViewSetup.setupView(simulationUI, modelStructure);
+            primaryGui.validate();
         } catch (IOException e) {
-            primaryGui.throwError("A File Reading error has occurred. \nError: " + e.getLocalizedMessage());
+            primaryGui.throwError("A File reading error has occurred. \nError: " + e.getLocalizedMessage());
         } catch (ClassNotFoundException e) {
             primaryGui.throwError("Class cannot be found, this could be due to an incompatible data file. \nError: " + e.getLocalizedMessage());
         } catch (ClassCastException e) {
-            primaryGui.throwError("Class cannot be cast, this could be due to an incompatable data file, or has been corrupted. \nError: " + e.getLocalizedMessage());
+            primaryGui.throwError("Class cannot be cast, this could be due to an incompatible data file, or has been corrupted. \nError: " + e.getLocalizedMessage());
+        } catch (IllegalStateException e) {
+            primaryGui.throwError("State of the file is not absolute. This could be due to an incompatible data file, however it is most likely a corrupt data file. \nError: " + e.getLocalizedMessage());
         }
     }
 }

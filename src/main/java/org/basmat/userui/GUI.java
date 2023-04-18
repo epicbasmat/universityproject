@@ -44,6 +44,10 @@ public class GUI extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Switches the current JFrame to the next JFrame.
+     * @deprecated
+     */
     public void nextCard() {
         SwingUtilities.invokeLater(() -> {
             layout.next(cardLayout);
@@ -51,8 +55,12 @@ public class GUI extends JFrame {
         });
     }
 
+    /**
+     * Throws an error to the user, and returns them to the main menu
+     * @param string The error to provide. It's recommended to also include <code> Error.getLocalizedMessage() </code> with the message.
+     */
     public void throwError(String string) {
-         JOptionPane.showMessageDialog(this, string);
+         JOptionPane.showMessageDialog(this, string, "A fatal error has occurred", JOptionPane.ERROR_MESSAGE);
+         layout.first(cardLayout);
     }
-
 }
