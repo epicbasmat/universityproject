@@ -19,7 +19,7 @@ public class NutrientCell extends AbstractSerializableCell implements IOwnedCell
     private SocietyCell owner;
 
     /**
-     *
+     * Instantiates a NutrientCell with an owner, if applicable, and it's texture
      * @param owner The owner of the nutrient cell
      * @param texture The reference texture of the nutrient cell.
      */

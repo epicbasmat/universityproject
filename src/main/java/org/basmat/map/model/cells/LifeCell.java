@@ -18,7 +18,7 @@ public class LifeCell extends AbstractSerializableCell implements IMapCell {
 
 
     /**
-     *
+     * Instantiate a LifeCell with the Society Cell it lives at, alongside its texture.
      * @param societyCell The society cell that the life cell will be apart of
      * @param texture A reference for the life cell texture.
      */

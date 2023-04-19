@@ -16,7 +16,7 @@ public class TestUtilities {
         }
     }
 
-    public static  <T extends IMapCell> void overwriteModelWithWorldCell(ModelStructure modelStructure, ECellType blacklist, ECellType filler) {
+    public static void overwriteModelWithWorldCell(ModelStructure modelStructure, ECellType blacklist, ECellType filler) {
         CellFactory cellFactory = new CellFactory();
         for (int i = 0; i < 150; i++) {
             for (int j = 0; j < 150; j++) {

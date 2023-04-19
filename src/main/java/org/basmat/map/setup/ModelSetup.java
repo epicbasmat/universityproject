@@ -11,6 +11,7 @@ import org.basmat.map.util.PointUtilities;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class ModelSetup {
     private final Controller controller;
     private BufferedImage noiseGraph;
     private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalLifeCellList;
+    private final ArrayList<Point> globalLifeCellList;
     private final ModelStructure modelStructure;
     private final CellFactory cellFactory;
 
@@ -37,7 +38,7 @@ public class ModelSetup {
      * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public ModelSetup(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, ArrayList<Point> globalLifeCellList) {
         this.controller = controller;
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;

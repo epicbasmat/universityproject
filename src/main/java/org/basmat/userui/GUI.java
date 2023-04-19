@@ -1,6 +1,7 @@
 package org.basmat.userui;
 
 import org.basmat.map.util.ECellType;
+import org.basmat.map.view.LoadingScreen;
 import org.basmat.map.view.SimulationInteractionUI;
 import org.basmat.map.view.SimulationUI;
 import org.basmat.map.view.VariableSelectionUI;
@@ -20,6 +21,11 @@ public class GUI extends JFrame {
     private final JPanel simUI;
     private final JPanel cardLayout;
 
+    public final String PARAMETER_CARD = "PARAMETER_CARD";
+    public final String SIMULATION_CARD = "SIMULATION_CARD";
+    public final String LOADING_CARD = "LOADING_CARD";
+
+
     public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
         this.setTitle("Simulation");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,20 +43,17 @@ public class GUI extends JFrame {
         this.setLayout(new BorderLayout());
         layout = new CardLayout();
         cardLayout = new JPanel(layout);
-        cardLayout.add(variableSelectionUI, "Parameter selection");
-        cardLayout.add(simUI, "Simulation");
+        cardLayout.add(variableSelectionUI, this.PARAMETER_CARD);
+        cardLayout.add(simUI, this.SIMULATION_CARD);
         this.add(cardLayout);
         pack();
         setVisible(true);
     }
 
-    /**
-     * Switches the current JFrame to the next JFrame.
-     * @deprecated
-     */
-    public void nextCard() {
+
+    public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {
-            layout.next(cardLayout);
+            layout.show(cardLayout, card);
             this.setMinimumSize(new Dimension(1200, 950));
         });
     }

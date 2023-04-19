@@ -15,6 +15,7 @@ import org.basmat.map.view.SimulationInteractionUI;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,8 +27,8 @@ class RuleTest {
     private final Winnower winnower;
     private final Gardener gardener;
     private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalLifeCellList;
-    private final LinkedList<LinkedList<Node>> listOfPaths;
+    private final ArrayList<Point> globalLifeCellList;
+    private final ArrayList<LinkedList<Node>> listOfPaths;
 
     RuleTest() throws InterruptedException {
         cellFactory = new CellFactory();
@@ -36,8 +37,8 @@ class RuleTest {
         SimulationProperties simulationProperties = new SimulationProperties(7, 100, 1, 20, 5, 75, 0.6);
         SimulationInteractionUI userInteractionUi = new SimulationInteractionUI(null);
         globalSocietyCellList = new LinkedList<>();
-        globalLifeCellList = new LinkedList<>();
-        listOfPaths = new LinkedList<>();
+        globalLifeCellList = new ArrayList<>();
+        listOfPaths = new ArrayList<>();
         Controller c = new Controller(150,150);
         gardener = new Gardener(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
         winnower = new Winnower(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);

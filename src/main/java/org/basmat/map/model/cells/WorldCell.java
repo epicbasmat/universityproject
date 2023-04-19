@@ -16,7 +16,7 @@ public class WorldCell extends AbstractSerializableCell implements IOwnedCell {
 
 
     /**
-     *
+     * Instantiates a WorldCell with the associated CellType and an owner, if it has one.
      * @param cellType The cell type that the WorldCell can be
      * @param texture The referential texture of a WorldCell, ideally matching the passed cellType
      */

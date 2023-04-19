@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -33,12 +34,12 @@ public class Controller {
     private final SimulationInteractionUI userInteractionUi;
     private final VariableSelectionUI variableSelectionUi;
     private LinkedList<Point> globalSocietyCellList;
-    private LinkedList<Point> globalLifeCellList;
+    private ArrayList<Point> globalLifeCellList;
     private SimulationProperties simulationProperties;
 
     public Controller(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
         globalSocietyCellList = new LinkedList<>();
-        globalLifeCellList = new LinkedList<>();
+        globalLifeCellList = new ArrayList<>();
         modelStructure = new ModelStructure();
         simulationUI = new SimulationUI(cellMatrixWidth, cellMatrixHeight, this);
         userInteractionUi = new SimulationInteractionUI(this);
@@ -82,7 +83,7 @@ public class Controller {
             throw new RuntimeException(e);
         }
         ViewSetup.setupView(simulationUI, modelStructure);
-        primaryGui.nextCard();
+        primaryGui.goToCard(primaryGui.SIMULATION_CARD);
     }
 
     /**
@@ -125,6 +126,7 @@ public class Controller {
     }
 
     public void saveAsData() {
+        primaryGui.goToCard(primaryGui.SIMULATION_CARD);
         pushText("Saving data to file. This may take a minute.");
         userInteractionUi.disableUserInput();
         timer.stop();
@@ -146,11 +148,11 @@ public class Controller {
 
     @SuppressWarnings("unchecked")
     public void loadFromFile(File currentDirectory) {
+        primaryGui.goToCard(primaryGui.SIMULATION_CARD);
         try {
-            primaryGui.nextCard();
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(currentDirectory));
             HashMap<String, Object> data = (HashMap<String, Object>) objectInputStream.readObject();
-            this.globalLifeCellList = (LinkedList<Point>) data.get("lifecells");
+            this.globalLifeCellList = (ArrayList<Point>) data.get("lifecells");
             this.simulationProperties = (SimulationProperties) data.get("properties");
             this.globalSocietyCellList = (LinkedList<Point>) data.get("societycells");
             this.modelStructure = (ModelStructure) data.get("model");
