@@ -178,6 +178,7 @@ public class Controller {
                 ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
                 ViewSetup.setupView(simulationUI, modelStructure);
                 primaryGui.validate();
+                userInteractionUi.incrementTimeStep();
                 primaryGui.goToCard(primaryGui.SIMULATION_CARD);
             } catch (IOException e) {
                 primaryGui.throwError("A File reading error has occurred. \nError: " + e.getLocalizedMessage());

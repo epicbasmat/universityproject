@@ -56,8 +56,8 @@ public class GUI extends JFrame {
 
     public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {
-            layout.show(cardLayout, card);
             this.setMinimumSize(new Dimension(1400, 950));
+            layout.show(cardLayout, card);
         });
     }
 
