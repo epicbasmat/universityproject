@@ -8,6 +8,7 @@ target/
 /out
 /output
 /screenshots
+/saves
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

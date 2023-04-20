@@ -1,5 +1,6 @@
 package org.basmat.map.model.cells;
 
+import org.basmat.map.model.cells.factory.AbstractSerializableCell;
 import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.util.ECellType;
 
@@ -11,13 +12,12 @@ import java.util.LinkedList;
  * This class implements IMapCell
  * @see IMapCell
  */
-public class SocietyCell implements IMapCell {
+public class SocietyCell extends AbstractSerializableCell implements IMapCell {
 
     private final String societyName;
     private int radius;
     private final int tint;
-    private BufferedImage texture;
-    private LinkedList<NutrientCell> nutrientCells;
+    private final LinkedList<NutrientCell> nutrientCells;
     private int lifeCells;
     private int quotient;
 
@@ -30,10 +30,10 @@ public class SocietyCell implements IMapCell {
      * @param texture The referential texture of the society cell
      */
     public SocietyCell(String name, int radius, int tint, BufferedImage texture) {
+        super(texture);
         this.societyName = name;
         this.radius = radius;
         this.tint = tint;
-        this.texture = texture;
         nutrientCells = new LinkedList<>();
         lifeCells = 0;
         quotient = 0;
@@ -72,11 +72,6 @@ public class SocietyCell implements IMapCell {
     }
 
     public void setRadius(int radius) { this.radius = radius;};
-
-    @Override
-    public BufferedImage getTexture() {
-        return texture;
-    }
 
     @Override
     public String toString() {

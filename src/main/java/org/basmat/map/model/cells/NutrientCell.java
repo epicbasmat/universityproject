@@ -1,5 +1,6 @@
 package org.basmat.map.model.cells;
 
+import org.basmat.map.model.cells.factory.AbstractSerializableCell;
 import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.basmat.map.util.ECellType;
 
@@ -11,21 +12,20 @@ import java.awt.image.BufferedImage;
  * This class is a concrete implementation of IOwnedCell
  * @see IOwnedCell
  */
-public class NutrientCell implements IOwnedCell {
+public class NutrientCell extends AbstractSerializableCell implements IOwnedCell {
 
     private int capacity;
     private int supporting;
     private SocietyCell owner;
-    private BufferedImage texture;
 
     /**
-     *
+     * Instantiates a NutrientCell with an owner, if applicable, and it's texture
      * @param owner The owner of the nutrient cell
      * @param texture The reference texture of the nutrient cell.
      */
     public NutrientCell(@Nullable SocietyCell owner, BufferedImage texture) {
+        super(texture);
         this.owner = owner;
-        this.texture = texture;
         this.capacity = (int) (Math.random() * 7 - 1) + 2;
         this.supporting = 0;
     }
@@ -62,11 +62,6 @@ public class NutrientCell implements IOwnedCell {
         if (supporting < capacity) {
             supporting++;
         }
-    }
-
-    @Override
-    public BufferedImage getTexture() {
-        return texture;
     }
 
     @Override

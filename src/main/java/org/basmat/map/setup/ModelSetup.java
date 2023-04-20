@@ -8,10 +8,10 @@ import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.CubicInterpolation;
 import org.basmat.map.util.ECellType;
 import org.basmat.map.util.PointUtilities;
-import org.basmat.map.util.SimulationProperties;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +28,7 @@ public class ModelSetup {
     private final Controller controller;
     private BufferedImage noiseGraph;
     private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalLifeCellList;
+    private final ArrayList<Point> globalLifeCellList;
     private final ModelStructure modelStructure;
     private final CellFactory cellFactory;
 
@@ -38,7 +38,7 @@ public class ModelSetup {
      * @param globalSocietyCellList The list of which all society cells have a reference within
      * @param globalLifeCellList The list of which all life cells have a reference within
      */
-    public ModelSetup(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
+    public ModelSetup(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, ArrayList<Point> globalLifeCellList) {
         this.controller = controller;
         this.cellFactory = new CellFactory();
         this.modelStructure = modelStructure;
@@ -141,12 +141,14 @@ public class ModelSetup {
                 } else if (averagedColour.getGreen()  <= 120 && averagedColour.getGreen() > 10) { //MOUNTAIN PEAK
                     modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MOUNTAIN_PEAK));
                 } else {
-                    System.out.println("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
-                    System.out.println("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
+                    controller.pushText("A non fatal error has occurred.");
+                    controller.pushText("Error: no RGB band could be assigned with value " + averagedColour.getRGB() + "!");
+                    controller.pushText("RGB Values: " + "[R: " + averagedColour.getRed() + ", B: " + averagedColour.getBlue() + ", G: " + averagedColour.getGreen() + "]"); //Missing texture
                     modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.MISSING_TEXTURE));
                 }
             }
         }
+        noiseGraph = null;
     }
 
     /**
@@ -177,9 +179,7 @@ public class ModelSetup {
         }
     }
 
-    /**
-     * This method sets up nutrient cell generation, using a similar way of society cell generation.
-     */
+
     private void setupNutrientCells() {
         for (Point societyPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyPoint);

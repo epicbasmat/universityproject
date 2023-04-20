@@ -11,6 +11,7 @@ import org.basmat.map.util.path.Node;
 import org.basmat.map.util.path.Pathfind;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -23,16 +24,16 @@ import java.util.Objects;
  */
 public class Gardener {
     private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalLifeCellList;
+    private final ArrayList<Point> globalLifeCellList;
 
     //Update
-    private final LinkedList<LinkedList<Node>> listOfPaths;
+    private final ArrayList<LinkedList<Node>> listOfPaths;
 
     private final Controller controller;
     private final ModelStructure modelStructure;
     private CellFactory cellFactory;
 
-    public Gardener(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+    public Gardener(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, ArrayList<Point> globalLifeCellList, ArrayList<LinkedList<Node>> listOfPaths) {
         this.controller = controller;
         this.modelStructure = modelStructure;
         this.globalSocietyCellList = globalSocietyCellList;

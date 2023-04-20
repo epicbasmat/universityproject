@@ -4,10 +4,9 @@ import org.basmat.map.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 /**
- * This class sets up the Panel used for user selection of system variables
+ * This class contains the JFrame responsible for the primary interface for the user. This panel contains the buttons that the user can click on, as well as system output.
  */
 public class SimulationInteractionUI extends JPanel {
 
@@ -17,6 +16,10 @@ public class SimulationInteractionUI extends JPanel {
     private JTextArea timeStepTextInfo;
     private JScrollPane textScrollArea;
     private int timestep;
+    private Button play;
+    private Button pause;
+    private Button saveAsPng;
+    private Button saveData;
 
     public SimulationInteractionUI(Controller controller) {
         userPanel = new JPanel();
@@ -35,23 +38,39 @@ public class SimulationInteractionUI extends JPanel {
 
     private void timeStepSetup() {
         timeStepTextInfo = new JTextArea(1, 1);
+        timeStepTextInfo.setFont(new java.awt.Font("Consolas", Font.PLAIN, 12));
         timeStepTextInfo.setEditable(false);
         timeStepTextInfo.setSize(10, 10);
-        timestep = 0;
+        //Initialize to -1 so when incrementTimeStep is initially called, it gets set to zero
+        timestep = -1;
     }
 
     public void incrementTimeStep() {
         timestep++;
-        timeStepTextInfo.setText(Integer.toString(timestep) + "\n" + "Seed: " + controller.getSeed());
+        //timeStepTextInfo.setText(Integer.toString(timestep) + "\n" + "Seed: " + controller.getSeed());
+        timeStepTextInfo.setText("Amount of societies: " + controller.getAmountOfSocieties() + "\n" +
+                "Amount of Life Cells: " + controller.getAmountOfLifeCells() + "\n" +
+                "Attrition threshold: " + controller.getSimulationProperties().attritionThreshold() + "\n" +
+                "Food / life cell before starvation: " + controller.getSimulationProperties().foodThreshold() + "\n" +
+                "Land / Life Cell before collapse: " + controller.getSimulationProperties().ratioThreshold() + "\n" +
+                "Initial Nutrient Cells / Society: " + controller.getSimulationProperties().initialNutrientCount() + "\n" +
+                "Total Nutrient Cells: " + controller.getSimulationProperties().nutrientCount() + "\n" +
+                "Overcrowding threshold: " + controller.getSimulationProperties().overcrowdThreshold()+ "\n" +
+                "Seed: " + controller.getSeed() + "\n" +
+                "**======================**\n" +
+                "||Current timestep: " + timestep + "\n" +
+                "**======================**\n");
+
     }
 
     private void setupButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setVisible(true);
         buttonPanel.setLayout(new GridBagLayout());
-        Button play = new Button("Play simulation");
-        Button pause = new Button("Pause simulation");
-        Button saveAsPng = new Button("Save as PNG");
+        play = new Button("Play simulation");
+        pause = new Button("Pause simulation");
+        saveAsPng = new Button("Save as PNG");
+        saveData = new Button("Save data");
         GridBagConstraints c = new GridBagConstraints();
         pause.setEnabled(false);
         play.addActionListener((point) -> {
@@ -65,14 +84,14 @@ public class SimulationInteractionUI extends JPanel {
             play.setEnabled(true);
         });
         saveAsPng.addActionListener((point) -> {
-            try {
-                controller.save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            controller.saveAsImage();
+        });
+        saveData.addActionListener((point) ->  {
+            controller.saveAsData();
         });
         play.setSize(30, 30);
 
+        //Setting the simulation buttons position. it's messy
         c.gridx = 0;
         c.gridy = 0;
         c.ipady = 10;
@@ -88,6 +107,13 @@ public class SimulationInteractionUI extends JPanel {
         c.gridwidth = 2;
         c.weightx = 0;
         buttonPanel.add(saveAsPng, c);
+        c.gridx = 0;
+        c.gridy = 2;
+        c.ipady = 20;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 2;
+        c.weightx = 0;
+        buttonPanel.add(saveData, c);
         userPanel.add(buttonPanel);
         revalidate();
     }
@@ -100,6 +126,26 @@ public class SimulationInteractionUI extends JPanel {
         this.add(textScrollArea);
     }
 
+
+    /**
+     * Disables both the play and pause buttons to prevent user interaction.
+     */
+    public void disableUserInput() {
+        play.setEnabled(false);
+        pause.setEnabled(false);
+    }
+
+    /**
+     * Enables the play to enable user interaction
+     */
+    public void enableUserInput() {
+        play.setEnabled(true);
+    }
+
+    /**
+     * This method sends a string to the view
+     * @param string The string to render
+     */
     public void appendText(String string) {
         simulationTextInfo.append(string + "\n");
     }

@@ -1,9 +1,10 @@
 package org.basmat.userui;
 
 import org.basmat.map.util.ECellType;
-import org.basmat.map.view.VariableSelectionUI;
+import org.basmat.map.view.LoadingScreen;
 import org.basmat.map.view.SimulationInteractionUI;
 import org.basmat.map.view.SimulationUI;
+import org.basmat.map.view.VariableSelectionUI;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,6 +20,12 @@ public class GUI extends JFrame {
     private final CardLayout layout;
     private final JPanel simUI;
     private final JPanel cardLayout;
+
+    public final String PARAMETER_CARD = "PARAMETER_CARD";
+    public final String SIMULATION_CARD = "SIMULATION_CARD";
+    public final String LOADING_CARD = "LOADING_CARD";
+    private final LoadingScreen loading;
+
 
     public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
         this.setTitle("Simulation");
@@ -36,18 +43,30 @@ public class GUI extends JFrame {
         simUI.add(userInteractionUi, BorderLayout.AFTER_LINE_ENDS);
         this.setLayout(new BorderLayout());
         layout = new CardLayout();
+        loading = new LoadingScreen();
         cardLayout = new JPanel(layout);
-        cardLayout.add(variableSelectionUI, "Parameter selection");
-        cardLayout.add(simUI, "Simulation");
+        cardLayout.add(variableSelectionUI, this.PARAMETER_CARD);
+        cardLayout.add(simUI, this.SIMULATION_CARD);
+        cardLayout.add(loading, this.LOADING_CARD);
         this.add(cardLayout);
         pack();
         setVisible(true);
     }
 
-    public void nextCard() {
+
+    public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {
-            layout.next(cardLayout);
-            this.setMinimumSize(new Dimension(1200, 950));
+            this.setMinimumSize(new Dimension(1400, 950));
+            layout.show(cardLayout, card);
         });
+    }
+
+    /**
+     * Throws an error to the user, and returns them to the main menu
+     * @param string The error to provide. It's recommended to also include <code> Error.getLocalizedMessage() </code> with the message.
+     */
+    public void throwError(String string) {
+         JOptionPane.showMessageDialog(this, string, "A fatal error has occurred", JOptionPane.ERROR_MESSAGE);
+         layout.first(cardLayout);
     }
 }

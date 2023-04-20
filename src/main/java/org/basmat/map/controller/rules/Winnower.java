@@ -10,6 +10,7 @@ import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.path.Node;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -24,10 +25,10 @@ public class Winnower {
     private final Controller controller;
     private final ModelStructure modelStructure;
     private final LinkedList<Point> globalSocietyCellList;
-    private final LinkedList<Point> globalLifeCellList;
-    private final LinkedList<LinkedList<Node>> listOfPaths;
+    private final ArrayList<Point> globalLifeCellList;
+    private final ArrayList<LinkedList<Node>> listOfPaths;
 
-    public Winnower(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList, LinkedList<LinkedList<Node>> listOfPaths) {
+    public Winnower(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, ArrayList<Point> globalLifeCellList, ArrayList<LinkedList<Node>> listOfPaths) {
         this.controller = controller;
         this.modelStructure = modelStructure;
         this.globalSocietyCellList = globalSocietyCellList;
@@ -63,7 +64,7 @@ public class Winnower {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
             int population = coordinate.getPopulationCount();
             int nutrientCapacity = coordinate.getNutrientCapacity();
-            //If the ratio of nutrient to population goes below 0.6, i.e food cannot be split much more than 33% below then a random cell cannot be fed and will die
+            //If the ratio of nutrient to population goes below 0.6, i.e. food cannot be split much more than 33% below then a random cell cannot be fed and will die
             if (nutrientCapacity / population < controller.getSimulationProperties().foodThreshold()) {
                 //get all cells allocated to a society cell and put them in a list, then randomly kill one
                 List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();

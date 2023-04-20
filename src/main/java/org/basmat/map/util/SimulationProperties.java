@@ -1,5 +1,7 @@
 package org.basmat.map.util;
 
+import java.io.Serializable;
+
 /**
  * @param societyCount The amount of societies to set in the simulation
  * @param nutrientCount The amount of nutrient cells to apply to the simulation
@@ -9,4 +11,4 @@ package org.basmat.map.util;
  * @param ratioThreshold The land to life cell ratio that all societies have before they collapse
  * @param foodThreshold The food to life cell ratio that all societies have before they kill a life cell.
  */
-public record SimulationProperties(int societyCount, int nutrientCount, int initialNutrientCount, int attritionThreshold, int overcrowdThreshold, int ratioThreshold, Double foodThreshold) { }
+public record SimulationProperties(int societyCount, int nutrientCount, int initialNutrientCount, int attritionThreshold, int overcrowdThreshold, int ratioThreshold, Double foodThreshold) implements Serializable { }

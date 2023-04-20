@@ -28,7 +28,6 @@ public class TextureHelper {
                 System.out.println("Accessing file path: " + cellType.getPath());
             }
         }
-        //System.out.println("Finished");
         return imageCache;
     }
 

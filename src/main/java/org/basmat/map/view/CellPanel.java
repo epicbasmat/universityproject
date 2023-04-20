@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * CellPanel provides the view implementation for M-C-V for a specific cell, rendering an image provided a texture.
+ * CellPanel represents a specific cell within the overall SimulationUI.
  */
 public class CellPanel extends JPanel {
     private BufferedImage texture;

@@ -5,6 +5,7 @@ import org.basmat.map.model.ModelStructure;
 import org.basmat.map.util.path.Node;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -30,8 +31,8 @@ public class RuleApplier {
      * @param globalSocietyCellList The list of all society cell's coordinates.
      * @param globalLifeCellList The list of all life cell's coordinates
      */
-    public RuleApplier(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, LinkedList<Point> globalLifeCellList) {
-        LinkedList<LinkedList<Node>> listOfPaths = new LinkedList<>();
+    public RuleApplier(Controller controller, ModelStructure modelStructure, LinkedList<Point> globalSocietyCellList, ArrayList<Point> globalLifeCellList) {
+        ArrayList<LinkedList<Node>> listOfPaths = new ArrayList<>();
         this.gardener = new Gardener(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
         this.winnower = new Winnower(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
     }
