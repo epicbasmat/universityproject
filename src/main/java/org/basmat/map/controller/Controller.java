@@ -22,6 +22,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
+/**
+ * The controller is the main class in this system that acts as a proxy between the model and the view. It handles all user events and responds with the appropriate methods.
+ * This class also invokes the rules on a given time step, so also contains the Swing Timer and contains the Pause/Play functionality.
+ *
+ * @author George Brilus
+ */
 public class Controller {
     private int seed;
     private final SimulationUI simulationUI;
