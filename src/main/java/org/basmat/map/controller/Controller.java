@@ -23,8 +23,6 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 public class Controller {
-
-    private final File screenshotDir;
     private int seed;
     private final SimulationUI simulationUI;
     private ModelStructure modelStructure;
@@ -51,10 +49,22 @@ public class Controller {
             userInteractionUi.incrementTimeStep();
         };
         timer = new Timer(1000, updateAction);
-        screenshotDir = new File("./screenshots");
+        File screenshotDir = new File("./screenshots");
         if (!screenshotDir.exists()){
             screenshotDir.mkdirs();
         }
+        File saveDir = new File("./saves");
+        if (!saveDir.exists()){
+            saveDir.mkdirs();
+        }
+    }
+
+    public int getAmountOfSocieties() {
+        return this.globalSocietyCellList.size();
+    }
+
+    public int getAmountOfLifeCells() {
+        return this.globalLifeCellList.size();
     }
 
     public void pause() {
@@ -74,16 +84,20 @@ public class Controller {
     }
 
     public void constructSimulation(SimulationProperties simulationProperties) {
-        this.simulationProperties = simulationProperties;
-        ModelSetup modelSetup = new ModelSetup(this, modelStructure, globalSocietyCellList, globalLifeCellList);
-        ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
-        try {
-            modelSetup.setupMap();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        ViewSetup.setupView(simulationUI, modelStructure);
-        primaryGui.goToCard(primaryGui.SIMULATION_CARD);
+        primaryGui.goToCard(primaryGui.LOADING_CARD);
+        new Thread(() -> {
+            this.simulationProperties = simulationProperties;
+            ModelSetup modelSetup = new ModelSetup(this, modelStructure, globalSocietyCellList, globalLifeCellList);
+            ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
+            try {
+                modelSetup.setupMap();
+                userInteractionUi.incrementTimeStep();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            ViewSetup.setupView(simulationUI, modelStructure);
+            primaryGui.goToCard(primaryGui.SIMULATION_CARD);
+        }).start();
     }
 
     /**
@@ -111,6 +125,7 @@ public class Controller {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
         for (int x = 0; x < 150; x++) {
             for (int y = 0; y < 150; y++) {
+                //For each coordinate in modelstructure, grab the texture of the point and apply it to a blank bufferedimage
                 g2d.drawImage(modelStructure.getCoordinate(new Point(x, y)).getTexture(),x * 5, y * 5, null);
             }
         }
@@ -118,55 +133,61 @@ public class Controller {
         String s = UUID.randomUUID() + ".png";
         try {
             ImageIO.write(screenshot, "png", new File("./screenshots/" + s));
+            pushText("Screenshot saved as: " + s + ".");
         } catch (IOException e) {
             primaryGui.throwError("Saving the file as an image has failed. \nError: " + e.getLocalizedMessage());
         }
-        pushText("Screenshot saved as: " + s + ".");
         userInteractionUi.enableUserInput();
     }
 
     public void saveAsData() {
-        primaryGui.goToCard(primaryGui.SIMULATION_CARD);
+        primaryGui.goToCard(primaryGui.LOADING_CARD);
         pushText("Saving data to file. This may take a minute.");
         userInteractionUi.disableUserInput();
         timer.stop();
         String name = "./saves/" + UUID.randomUUID() + ".dat";
-        try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(name)))) {
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("societycells", globalSocietyCellList);
-            data.put("lifecells", globalLifeCellList);
-            data.put("properties", simulationProperties);
-            data.put("model", modelStructure);
-            out.writeObject(data);
-            pushText("Save complete! Saved at " + name + ".");
-            out.close();
-        } catch (IOException e) {
-            primaryGui.throwError("Serialization of data has failed. \nError: " + e.getLocalizedMessage());
-        }
-        userInteractionUi.enableUserInput();
+        new Thread(() -> {
+            try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(name)))) {
+                //Put all objects into a hash map to enable easier serialization for multiple objects
+                HashMap<String, Object> data = new HashMap<>();
+                data.put("societycells", globalSocietyCellList);
+                data.put("lifecells", globalLifeCellList);
+                data.put("properties", simulationProperties);
+                data.put("model", modelStructure);
+                out.writeObject(data);
+                pushText("Save complete! Saved at " + name + ".");
+            } catch (IOException e) {
+                primaryGui.throwError("Serialization of data has failed. \nError: " + e.getLocalizedMessage());
+            }
+            userInteractionUi.enableUserInput();
+            primaryGui.goToCard(primaryGui.SIMULATION_CARD);
+        }).start();
     }
 
     @SuppressWarnings("unchecked")
     public void loadFromFile(File currentDirectory) {
-        primaryGui.goToCard(primaryGui.SIMULATION_CARD);
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(currentDirectory));
-            HashMap<String, Object> data = (HashMap<String, Object>) objectInputStream.readObject();
-            this.globalLifeCellList = (ArrayList<Point>) data.get("lifecells");
-            this.simulationProperties = (SimulationProperties) data.get("properties");
-            this.globalSocietyCellList = (LinkedList<Point>) data.get("societycells");
-            this.modelStructure = (ModelStructure) data.get("model");
-            ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
-            ViewSetup.setupView(simulationUI, modelStructure);
-            primaryGui.validate();
-        } catch (IOException e) {
-            primaryGui.throwError("A File reading error has occurred. \nError: " + e.getLocalizedMessage());
-        } catch (ClassNotFoundException e) {
-            primaryGui.throwError("Class cannot be found, this could be due to an incompatible data file. \nError: " + e.getLocalizedMessage());
-        } catch (ClassCastException e) {
-            primaryGui.throwError("Class cannot be cast, this could be due to an incompatible data file, or has been corrupted. \nError: " + e.getLocalizedMessage());
-        } catch (IllegalStateException e) {
-            primaryGui.throwError("State of the file is not absolute. This could be due to an incompatible data file, however it is most likely a corrupt data file. \nError: " + e.getLocalizedMessage());
-        }
+        primaryGui.goToCard(primaryGui.LOADING_CARD);
+        new Thread(() -> {
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(currentDirectory));
+                HashMap<String, Object> data = (HashMap<String, Object>) objectInputStream.readObject();
+                this.globalLifeCellList = (ArrayList<Point>) data.get("lifecells");
+                this.simulationProperties = (SimulationProperties) data.get("properties");
+                this.globalSocietyCellList = (LinkedList<Point>) data.get("societycells");
+                this.modelStructure = (ModelStructure) data.get("model");
+                ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
+                ViewSetup.setupView(simulationUI, modelStructure);
+                primaryGui.validate();
+                primaryGui.goToCard(primaryGui.SIMULATION_CARD);
+            } catch (IOException e) {
+                primaryGui.throwError("A File reading error has occurred. \nError: " + e.getLocalizedMessage());
+            } catch (ClassNotFoundException e) {
+                primaryGui.throwError("Class cannot be found, this could be due to an incompatible data file. \nError: " + e.getLocalizedMessage());
+            } catch (ClassCastException e) {
+                primaryGui.throwError("Class cannot be cast, this could be due to an incompatible data file, or has been corrupted. \nError: " + e.getLocalizedMessage());
+            } catch (IllegalStateException e) {
+                primaryGui.throwError("State of the file is not absolute. This could be due to an incompatible data file, however it is most likely a corrupt data file. \nError: " + e.getLocalizedMessage());
+            }
+        }).start();
     }
 }

@@ -24,6 +24,7 @@ public class GUI extends JFrame {
     public final String PARAMETER_CARD = "PARAMETER_CARD";
     public final String SIMULATION_CARD = "SIMULATION_CARD";
     public final String LOADING_CARD = "LOADING_CARD";
+    private final LoadingScreen loading;
 
 
     public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
@@ -42,9 +43,11 @@ public class GUI extends JFrame {
         simUI.add(userInteractionUi, BorderLayout.AFTER_LINE_ENDS);
         this.setLayout(new BorderLayout());
         layout = new CardLayout();
+        loading = new LoadingScreen();
         cardLayout = new JPanel(layout);
         cardLayout.add(variableSelectionUI, this.PARAMETER_CARD);
         cardLayout.add(simUI, this.SIMULATION_CARD);
+        cardLayout.add(loading, this.LOADING_CARD);
         this.add(cardLayout);
         pack();
         setVisible(true);
@@ -54,7 +57,7 @@ public class GUI extends JFrame {
     public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {
             layout.show(cardLayout, card);
-            this.setMinimumSize(new Dimension(1200, 950));
+            this.setMinimumSize(new Dimension(1400, 950));
         });
     }
 

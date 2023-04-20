@@ -38,14 +38,29 @@ public class SimulationInteractionUI extends JPanel {
 
     private void timeStepSetup() {
         timeStepTextInfo = new JTextArea(1, 1);
+        timeStepTextInfo.setFont(new java.awt.Font("Consolas", Font.PLAIN, 12));
         timeStepTextInfo.setEditable(false);
         timeStepTextInfo.setSize(10, 10);
-        timestep = 0;
+        //Initialize to -1 so when incrementTimeStep is initially called, it gets set to zero
+        timestep = -1;
     }
 
     public void incrementTimeStep() {
         timestep++;
-        timeStepTextInfo.setText(Integer.toString(timestep) + "\n" + "Seed: " + controller.getSeed());
+        //timeStepTextInfo.setText(Integer.toString(timestep) + "\n" + "Seed: " + controller.getSeed());
+        timeStepTextInfo.setText("Amount of societies: " + controller.getAmountOfSocieties() + "\n" +
+                "Amount of Life Cells: " + controller.getAmountOfLifeCells() + "\n" +
+                "Attrition threshold: " + controller.getSimulationProperties().attritionThreshold() + "\n" +
+                "Food / life cell before starvation: " + controller.getSimulationProperties().foodThreshold() + "\n" +
+                "Land / Life Cell before collapse: " + controller.getSimulationProperties().ratioThreshold() + "\n" +
+                "Initial Nutrient Cells / Society: " + controller.getSimulationProperties().initialNutrientCount() + "\n" +
+                "Total Nutrient Cells: " + controller.getSimulationProperties().nutrientCount() + "\n" +
+                "Overcrowding threshold: " + controller.getSimulationProperties().overcrowdThreshold()+ "\n" +
+                "Seed: " + controller.getSeed() + "\n" +
+                "**======================**\n" +
+                "||Current timestep: " + timestep + "\n" +
+                "**======================**\n");
+
     }
 
     private void setupButtonPanel() {
