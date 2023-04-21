@@ -41,6 +41,7 @@ public class Controller {
     private ArrayList<Point> globalLifeCellList;
     private SimulationProperties simulationProperties;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public Controller(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new ArrayList<>();
@@ -73,10 +74,16 @@ public class Controller {
         return this.globalLifeCellList.size();
     }
 
+    /**
+     * Pause the currently instantiated timer
+     */
     public void pause() {
         timer.stop();
     }
 
+    /**
+     * Play the currently instantiated timer
+     */
     public void play() {
         timer.start();
     }
@@ -89,6 +96,10 @@ public class Controller {
         this.seed = seed;
     }
 
+    /**
+     * Construct a simulation given a SimulationProperties parameter. This will generate the entire map and fill it with cells.
+     * @param simulationProperties The SimulationProperties to provide the setup with.
+     */
     public void constructSimulation(SimulationProperties simulationProperties) {
         primaryGui.goToCard(primaryGui.LOADING_CARD);
         new Thread(() -> {
@@ -114,10 +125,18 @@ public class Controller {
         pushText(modelStructure.getCoordinate(e).toString());
     }
 
+    /**
+     * Get the simulation properties set by the system.
+     * @return the currently invoked SimulationProperties
+     */
     public SimulationProperties getSimulationProperties() {
         return this.simulationProperties;
     }
 
+    /**
+     * Push the provided text to the view
+     * @param string The string to show to the user
+     */
     public void pushText(String string) {
         userInteractionUi.appendText(string + "\n");
     }
@@ -146,6 +165,9 @@ public class Controller {
         userInteractionUi.enableUserInput();
     }
 
+    /**
+     * Save a file to the standard directory. This serializes all the relevant objects in the Controller and Model. Any errors will get thrown to the user.
+     */
     public void saveAsData() {
         primaryGui.goToCard(primaryGui.LOADING_CARD);
         pushText("Saving data to file. This may take a minute.");
@@ -170,6 +192,10 @@ public class Controller {
         }).start();
     }
 
+    /**
+     * Load a file from the provided directory. The system will throw any errors to the user if caught.
+     * @param currentDirectory The directory to open
+     */
     @SuppressWarnings("unchecked")
     public void loadFromFile(File currentDirectory) {
         primaryGui.goToCard(primaryGui.LOADING_CARD);

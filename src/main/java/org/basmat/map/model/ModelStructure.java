@@ -63,6 +63,7 @@ public class ModelStructure implements Serializable {
         return getFrontLayer(point) == null ? (T) getBackLayer(point) : getFrontLayer(point);
     }
 
+
     /**
      * Deletes a Coordinate within the system. Can delete the back layer.
      * @param point The coordinate to delete, uses getCoordinate() to get the priority object
@@ -75,13 +76,29 @@ public class ModelStructure implements Serializable {
         }
     }
 
+    /**
+     * Deletes a Coordinate in the back layer of the system.
+     * @param point The coordinate to delete
+     */
+    public void deleteBackLayer(Point point) {
+        backLayer.remove(new Coordinates(point));
+    }
+
+    /**
+     * Deletes a Coordinate in the back layer of the system.
+     * @param point The coordinate to delete
+     */
+    public void deleteFrontLayer(Point point) {
+        frontLayer.remove(new Coordinates(point));
+    }
+
     /** Replaces the current Coordinate with a new Coordinate.
      * @param toDelete The coordinate to delete
      * @param toReplaceAt The coordinate to replace at
      */
     public <T extends IMapCell> void replaceFrontLayerAt(Point toDelete, Point toReplaceAt) {
         T model = getFrontLayer(toDelete);
-        deleteCoordinate(toDelete);
+        deleteFrontLayer(toDelete);
         setFrontLayer(toReplaceAt, model);
     }
 }

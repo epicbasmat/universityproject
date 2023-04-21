@@ -14,12 +14,9 @@ public class SimulationInteractionUI extends JPanel {
     private final Controller controller;
     private JTextArea simulationTextInfo;
     private JTextArea timeStepTextInfo;
-    private JScrollPane textScrollArea;
     private int timestep;
     private Button play;
     private Button pause;
-    private Button saveAsPng;
-    private Button saveData;
 
     public SimulationInteractionUI(Controller controller) {
         userPanel = new JPanel();
@@ -33,7 +30,7 @@ public class SimulationInteractionUI extends JPanel {
         this.add(userPanel);
         timeStepSetup();
         userPanel.add(timeStepTextInfo);
-        textArea();
+        setupSimulationOutput();
     }
 
     private void timeStepSetup() {
@@ -58,7 +55,7 @@ public class SimulationInteractionUI extends JPanel {
                 "Overcrowding threshold: " + controller.getSimulationProperties().overcrowdThreshold()+ "\n" +
                 "Seed: " + controller.getSeed() + "\n" +
                 "**======================**\n" +
-                "||Current timestep: " + timestep + "\n" +
+                "|| Current timestep: " + timestep + "\n" +
                 "**======================**\n");
 
     }
@@ -69,8 +66,8 @@ public class SimulationInteractionUI extends JPanel {
         buttonPanel.setLayout(new GridBagLayout());
         play = new Button("Play simulation");
         pause = new Button("Pause simulation");
-        saveAsPng = new Button("Save as PNG");
-        saveData = new Button("Save data");
+        Button saveAsPng = new Button("Save as PNG");
+        Button saveData = new Button("Save data");
         GridBagConstraints c = new GridBagConstraints();
         pause.setEnabled(false);
         play.addActionListener((point) -> {
@@ -118,12 +115,14 @@ public class SimulationInteractionUI extends JPanel {
         revalidate();
     }
 
-    private void textArea() {
+    private void setupSimulationOutput() {
         simulationTextInfo = new JTextArea(null, null, 10, 10);
-        textScrollArea = new JScrollPane(simulationTextInfo);
-        textScrollArea.setPreferredSize(new Dimension(400, 300));
+        JScrollPane simulationOutput = new JScrollPane(simulationTextInfo);
+        simulationOutput.setAutoscrolls(true);
+        simulationTextInfo.setAutoscrolls(true);
+        simulationOutput.setPreferredSize(new Dimension(400, 300));
         simulationTextInfo.setEditable(false);
-        this.add(textScrollArea);
+        this.add(simulationOutput);
     }
 
 
