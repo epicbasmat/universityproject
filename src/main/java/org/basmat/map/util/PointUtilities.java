@@ -76,15 +76,17 @@ public class PointUtilities {
         illegalCellTypes.add(ECellType.WATER);
         forPointsInCircle(radius, centralCoordinate, (point) -> {
             WorldCell worldCell = modelStructure.getBackLayer(point);
+            //For the points in the circle, make sure they're both not owned and an illegal cell type and apply ownership & tinting
             if (!illegalCellTypes.contains(worldCell.getECellType()) && worldCell.getOwner() == null) {
-                BufferedImage texture = modelStructure.getCoordinate(point).getTexture();
+                BufferedImage texture = modelStructure.getBackLayer(point).getTexture();
                 for (int x = 0; x < texture.getWidth(); x++) {
                     for (int y = 0; y < texture.getHeight(); y++) {
                         texture.setRGB(x, y, texture.getRGB(x, y) | tint);
                     }
                 }
                 worldCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
-                if (modelStructure.getFrontLayer(point) instanceof NutrientCell nutrientCell) {
+                if (modelStructure.getCoordinate(point) instanceof NutrientCell nutrientCell) {
+                    //Add the nutrient cell to the expanding society & set it as nutrient's owner
                     ((SocietyCell) modelStructure.getCoordinate(centralCoordinate)).addNutrientCells(nutrientCell);
                     nutrientCell.setOwner(modelStructure.getCoordinate(centralCoordinate));
                 }
@@ -102,16 +104,15 @@ public class PointUtilities {
         CellFactory cellFactory = new CellFactory();
         SocietyCell coordinate = modelStructure.getCoordinate(centralCoordinate);
         forPointsInCircle(radius, centralCoordinate, (point) -> {
-            if (modelStructure.getCoordinate(point) instanceof IOwnedCell iOwnedCell) {
-                if (iOwnedCell.getOwner() == coordinate) {
-                    //Reset the world cell by getting the cell type and creating a new object with the same cell type and set it to the same coordinates.
-                    //As the tint is applied with an OR operator, it cannot be reversed as OR operations are destructive
-                    //So we need to reset the texture by re-applying it from the cache, which means making a new object.
-                    ECellType celltype = modelStructure.getBackLayer(point).getECellType();
-                    modelStructure.deleteCoordinate(point);
-                    WorldCell worldCell = cellFactory.createWorldCell(celltype);
-                    modelStructure.setBackLayer(point, worldCell);
-                }
+            if (modelStructure.getCoordinate(point) instanceof WorldCell) {
+                //Reset the world cell by getting the cell type and creating a new object with the same cell type and set it to the same coordinates.
+                //As the tint is applied with an OR operator, it cannot be reversed as OR operations are destructive
+                //So we need to reset the texture by re-applying it from the cache, which means making a new object.
+                ECellType celltype = modelStructure.getBackLayer(point).getECellType();
+                modelStructure.deleteBackLayer(point);
+                modelStructure.setBackLayer(point, cellFactory.createWorldCell(celltype));
+            } else if (modelStructure.getCoordinate(point) instanceof NutrientCell nutrientCell) {
+                nutrientCell.setOwner(null);
             }
         });
     }

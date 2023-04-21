@@ -33,7 +33,7 @@ public class VariableSelectionUI extends JPanel {
         nutrientCount = new JSpinner(new SpinnerNumberModel(100, 5, 300, 5));
         setSystemVariable(c, "Nutrient Count", nutrientCount);
         initialNutrientCount = new JSpinner(new SpinnerNumberModel(1, 0, 4, 1));
-        setSystemVariable(c, "Initial Nutrient Cells per Society", initialNutrientCount);
+        setSystemVariable(c, "Minimum Nutrient Cells per Society", initialNutrientCount);
         attritionThreshold = new JSpinner(new SpinnerNumberModel(20, 1, 40, 2));
         setSystemVariable(c, "Time steps before attrition kill", attritionThreshold);
         overcrowdThreshold = new JSpinner(new SpinnerNumberModel(5, 1, 8, 1));

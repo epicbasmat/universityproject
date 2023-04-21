@@ -20,17 +20,16 @@ import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RuleTest {
+class GardenerTest {
 
     private final ModelStructure modelStructure;
     private final CellFactory cellFactory;
-    private final Winnower winnower;
     private final Gardener gardener;
     private final LinkedList<Point> globalSocietyCellList;
     private final ArrayList<Point> globalLifeCellList;
     private final ArrayList<LinkedList<Node>> listOfPaths;
 
-    RuleTest() throws InterruptedException {
+    GardenerTest() throws InterruptedException {
         cellFactory = new CellFactory();
         modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
@@ -41,7 +40,6 @@ class RuleTest {
         listOfPaths = new ArrayList<>();
         Controller c = new Controller(150,150);
         gardener = new Gardener(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
-        winnower = new Winnower(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
     }
 
     @Test

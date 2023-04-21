@@ -113,7 +113,7 @@ public class Winnower {
                 controller.pushText("Society collapsed, the population was overstretched too much over the land it had at:  " + point);
                 globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
                 PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);
-                modelStructure.deleteCoordinate(point);
+                modelStructure.deleteFrontLayer(point);
                 globalSocietyCellList.remove(point);
             }
         }
@@ -130,7 +130,7 @@ public class Winnower {
         // - The global list of life cells
         // - the List of Paths
         ((SocietyCell) modelStructure.getCoordinate(((LifeCell) modelStructure.getCoordinate(lifeCell)).getSocietyCell())).killCell();
-        modelStructure.deleteCoordinate(lifeCell);
+        modelStructure.deleteFrontLayer(lifeCell);
         globalLifeCellList.remove(lifeCell);
         List<LinkedList<Node>> elementsToRemove = listOfPaths.parallelStream().filter(Objects::nonNull).filter(e -> {
             assert e.peek() != null;
