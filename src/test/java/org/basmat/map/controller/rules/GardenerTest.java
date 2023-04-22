@@ -34,7 +34,6 @@ class GardenerTest {
         modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
         SimulationProperties simulationProperties = new SimulationProperties(7, 100, 1, 20, 5, 75, 0.6);
-        SimulationInteractionUI userInteractionUi = new SimulationInteractionUI(null);
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new ArrayList<>();
         listOfPaths = new ArrayList<>();

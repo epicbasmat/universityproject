@@ -27,6 +27,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return false;
+		}
+
 	},
 	DEEP_WATER {
 		@Override
@@ -49,6 +59,16 @@ public enum ECellType {
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
 		}
 
 	},
@@ -75,6 +95,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
+		}
+
 	},
 	LIGHT_WATER {
 		@Override
@@ -90,13 +120,23 @@ public enum ECellType {
 
 		@Override
 		public String getCellName() {
-			return "Shallow Water";
+			return "Shallow water";
 		}
 
 		@Override
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public boolean isPathable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
 		}
 
 	},
@@ -114,13 +154,23 @@ public enum ECellType {
 
 		@Override
 		public String getCellName() {
-			return "Mountain Base";
+			return "Mountain base";
 		}
 
 		@Override
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public boolean isPathable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
 		}
 
 	},
@@ -147,6 +197,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
+		}
+
 	},
 	MOUNTAIN_PEAK {
 		@Override
@@ -169,6 +229,16 @@ public enum ECellType {
 		public
 		boolean isHabitable() {
 			return false;
+		}
+
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
 		}
 
 	},
@@ -195,6 +265,16 @@ public enum ECellType {
 			return true;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
+		}
+
 	},
 	SAND {
 		@Override
@@ -218,6 +298,16 @@ public enum ECellType {
 			return true;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return true;
+		}
+
 	},
 	SOCIETY_CELL {
 		@Override
@@ -233,12 +323,22 @@ public enum ECellType {
 
 		@Override
 		public String getCellName() {
-			return "Society Block";
+			return "Society block";
 		}
 
 		@Override
 		public
 		boolean isHabitable() {
+			return false;
+		}
+
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
 			return false;
 		}
 
@@ -256,12 +356,22 @@ public enum ECellType {
 
 		@Override
 		public String getCellName() {
-			return "Food Source";
+			return "Food source";
 		}
 
 		@Override
 		public boolean isHabitable() {
 			return true;
+		}
+
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return false;
 		}
 
 	},
@@ -287,6 +397,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return false;
+		}
+
 	},
 	MISSING_TEXTURE{
 		@Override
@@ -309,6 +429,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public boolean isPathable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserEditable() {
+			return false;
+		}
+
 	};
 
 	
@@ -316,4 +446,6 @@ public enum ECellType {
 	abstract public String getCellDescription();
 	abstract public String getCellName();
 	abstract public boolean isHabitable();
+	abstract public boolean isPathable();
+	abstract public boolean isUserEditable();
 }
