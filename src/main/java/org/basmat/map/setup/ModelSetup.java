@@ -148,6 +148,7 @@ public class ModelSetup {
                 }
             }
         }
+        //free it for the jvm
         noiseGraph = null;
     }
 
