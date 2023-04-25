@@ -38,7 +38,7 @@ public class PropertiesTest {
         globalLifeCellList = new ArrayList<>();
         listOfPaths = new ArrayList<>();
         Controller c = new Controller(150,150);
-        c.constructSimulation(simulationProperties);
+        c.setSimulationProperties(simulationProperties);
         ModelSetup modelSetup = new ModelSetup(c, modelStructure, globalSocietyCellList, globalLifeCellList);
         modelSetup.setupMap();
         gardener = new Gardener(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);

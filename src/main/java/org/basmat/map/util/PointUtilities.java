@@ -56,7 +56,7 @@ public class PointUtilities {
         do {
             destination = PointUtilities.calculateRandomCoordinates(point, radius);
             breakcnd++;
-        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8);
+        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8 && destination.equals(point));
         return destination;
     }
 

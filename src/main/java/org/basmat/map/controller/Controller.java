@@ -32,7 +32,7 @@ public class Controller {
     private int seed;
     private final SimulationUI simulationUI;
     private ModelStructure modelStructure;
-    private final GUI primaryGui;
+    private GUI primaryGui;
     private final Timer timer;
     private RuleApplier ruleApplier;
     private final SimulationInteractionUI userInteractionUi;
@@ -44,7 +44,7 @@ public class Controller {
     private ECellType selectedCell;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public Controller(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
+    public Controller(int cellMatrixWidth, int cellMatrixHeight) {
         //generate a map, mapping the names of the cell to the cell itself. this is used in cell selection for the view.
         mapNameToCell = new HashMap<>();
         Arrays.stream(ECellType.values()).toList().stream().filter(ECellType::isUserEditable).forEach(cell -> mapNameToCell.put(cell.getCellName(), cell));
@@ -55,7 +55,6 @@ public class Controller {
         simulationUI = new SimulationUI(cellMatrixWidth, cellMatrixHeight, this);
         userInteractionUi = new SimulationInteractionUI(this);
         variableSelectionUi = new VariableSelectionUI(this);
-        primaryGui = new GUI(simulationUI, userInteractionUi, variableSelectionUi);
         ActionListener updateAction = e -> {
             ruleApplier.invokeRules();
             ViewSetup.setupView(simulationUI, modelStructure, ViewSetup.IS_LAZY);
@@ -71,6 +70,10 @@ public class Controller {
             saveDir.mkdirs();
         }
 
+    }
+
+    public void displayUI() {
+        primaryGui = new GUI(simulationUI, userInteractionUi, variableSelectionUi);
     }
 
     public HashMap<String, ECellType> getMapNameToCell() {
@@ -114,7 +117,7 @@ public class Controller {
     public void constructSimulation(SimulationProperties simulationProperties) {
         primaryGui.goToCard(primaryGui.LOADING_CARD);
         new Thread(() -> {
-            this.simulationProperties = simulationProperties;
+            setSimulationProperties(simulationProperties);
             ModelSetup modelSetup = new ModelSetup(this, modelStructure, globalSocietyCellList, globalLifeCellList);
             ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
             try {
@@ -126,6 +129,14 @@ public class Controller {
             ViewSetup.setupView(simulationUI, modelStructure);
             primaryGui.goToCard(primaryGui.SIMULATION_CARD);
         }).start();
+    }
+
+    /**
+     * Manually set the simulationproperties
+     * @param simulationProperties
+     */
+    public void setSimulationProperties(SimulationProperties simulationProperties) {
+        this.simulationProperties = simulationProperties;
     }
 
     /**
@@ -176,6 +187,8 @@ public class Controller {
         try {
             ImageIO.write(screenshot, "png", new File("./screenshots/" + s));
             pushText("Screenshot saved as: " + s + ".");
+        } catch (FileNotFoundException e) {
+            primaryGui.throwError("The path where saving occurs has been deleted. \nError: "  + e.getLocalizedMessage());
         } catch (IOException e) {
             primaryGui.throwError("Saving the file as an image has failed. \nError: " + e.getLocalizedMessage());
         }
@@ -202,11 +215,11 @@ public class Controller {
                 data.put("seed", seed);
                 out.writeObject(data);
                 pushText("Save complete! Saved at " + name + ".");
+                userInteractionUi.enablePlayButton();
+                primaryGui.goToCard(primaryGui.SIMULATION_CARD);
             } catch (IOException e) {
                 primaryGui.throwError("Serialization of data has failed. \nError: " + e.getLocalizedMessage());
             }
-            userInteractionUi.enablePlayButton();
-            primaryGui.goToCard(primaryGui.SIMULATION_CARD);
         }).start();
     }
 
@@ -222,7 +235,7 @@ public class Controller {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(currentDirectory));
                 HashMap<String, Object> data = (HashMap<String, Object>) objectInputStream.readObject();
                 this.globalLifeCellList = (ArrayList<Point>) data.get("lifecells");
-                this.simulationProperties = (SimulationProperties) data.get("properties");
+                setSimulationProperties((SimulationProperties) data.get("properties"));
                 this.globalSocietyCellList = (LinkedList<Point>) data.get("societycells");
                 this.modelStructure = (ModelStructure) data.get("model");
                 this.seed = (int) data.get("seed");

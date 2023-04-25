@@ -361,7 +361,7 @@ public enum ECellType {
 
 		@Override
 		public boolean isHabitable() {
-			return true;
+			return false;
 		}
 
 		@Override

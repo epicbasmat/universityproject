@@ -30,10 +30,10 @@ public class GUI extends JFrame {
 
     public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
         this.setTitle("Simulation");
-        minimumSize = new Dimension(1400, 950);
+        minimumSize = new Dimension(1500, 950);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JTabbedPane tabbedPane = new JTabbedPane();
-        this.setMaximumSize(minimumSize);
+        this.setMinimumSize(minimumSize);
         simUI = new JPanel();
         simUI.setLayout(new BorderLayout());
         simUI.add(viewStructure, BorderLayout.CENTER);
@@ -69,7 +69,6 @@ public class GUI extends JFrame {
 
     public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {
-            this.setMinimumSize(minimumSize);
             layout.show(cardLayout, card);
         });
     }

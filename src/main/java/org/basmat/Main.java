@@ -9,7 +9,8 @@ import java.io.IOException;
  * @author George Brilus
  */
 public class Main {
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException {
         Controller controller = new Controller(150, 150);
+        controller.displayUI();
     }
 }

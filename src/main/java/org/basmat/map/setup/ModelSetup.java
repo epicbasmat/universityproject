@@ -11,10 +11,8 @@ import org.basmat.map.util.PointUtilities;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * MapSetup generates the initial state of the map, and stores it in a ModelStructure.
@@ -182,6 +180,7 @@ public class ModelSetup {
 
 
     private void setupNutrientCells() {
+        //Setup an initial amount of nutrient cells per society. this makes sure they dont start with nothing
         for (Point societyPoint : globalSocietyCellList) {
             SocietyCell societyCell = modelStructure.getCoordinate(societyPoint);
             for (int initialNutrients = 0; initialNutrients < controller.getSimulationProperties().initialNutrientCount(); initialNutrients++) {
@@ -218,15 +217,13 @@ public class ModelSetup {
             int i = 0;
             while (i < Math.random() * frontLayer.getNutrientCapacity() * 0.40 + 2) {
                 //Make sure the coordinates generated are within the aoe bounds
-                Point coords = PointUtilities.calculateRandomCoordinates(societyCellPoint, frontLayer.getRadius());
-                if (PointUtilities.validateBounds(coords)) {
-                    //Enforce that whatever we're replacing is not being occupied currently
-                    if (modelStructure.getBackLayer(coords).getECellType().isHabitable() && modelStructure.getFrontLayer(coords) == null) {
-                        i++;
-                        modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(societyCellPoint));
-                        ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells();
-                        globalLifeCellList.add(coords);
-                    }
+                Point coords = PointUtilities.calculateRandomValidCoordinates(societyCellPoint, frontLayer.getRadius(), modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
+                //Enforce that whatever we're replacing is not being occupied currently
+                if (!(Objects.isNull(coords)) && modelStructure.getFrontLayer(coords) == null) {
+                    i++;
+                    modelStructure.setFrontLayer(coords, cellFactory.createLifeCell(societyCellPoint));
+                    ((SocietyCell) modelStructure.getFrontLayer(societyCellPoint)).addLifeCells();
+                    globalLifeCellList.add(coords);
                 }
             }
         }

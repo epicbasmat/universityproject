@@ -65,7 +65,7 @@ public class Winnower {
             int population = coordinate.getPopulationCount();
             int nutrientCapacity = coordinate.getNutrientCapacity();
             //If the ratio of nutrient to population goes below 0.6, i.e. food cannot be split much more than 33% below then a random cell cannot be fed and will die
-            if (nutrientCapacity / population < controller.getSimulationProperties().foodThreshold()) {
+            if (((double) nutrientCapacity / population) < controller.getSimulationProperties().foodThreshold()) {
                 //get all cells allocated to a society cell and put them in a list, then randomly kill one
                 List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();
                 kill(points.get((int) (Math.random() * points.size())));
