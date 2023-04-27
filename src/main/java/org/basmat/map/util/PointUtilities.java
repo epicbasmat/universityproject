@@ -56,7 +56,7 @@ public class PointUtilities {
         do {
             destination = PointUtilities.calculateRandomCoordinates(point, radius);
             breakcnd++;
-        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8 && destination.equals(point));
+        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) ||  breakcnd < 8 || destination.equals(point));
         return destination;
     }
 
@@ -94,12 +94,13 @@ public class PointUtilities {
      * @param radius The radius of the circle
      * @param centralCoordinate The central coordinate of the point, usually a societycell
      * @param modelStructure The current ModelStructure containing all simulation data.
+     * @param ownerToRemove The owner to remove from the model.
      */
-    public static void resetArea(int radius, Point centralCoordinate, ModelStructure modelStructure) {
+    public static void resetArea(int radius, Point centralCoordinate, ModelStructure modelStructure, SocietyCell ownerToRemove) {
         CellFactory cellFactory = new CellFactory();
         SocietyCell coordinate = modelStructure.getCoordinate(centralCoordinate);
         forPointsInCircle(radius, centralCoordinate, (point) -> {
-            if (modelStructure.getCoordinate(point) instanceof WorldCell) {
+            if (modelStructure.getCoordinate(point) instanceof WorldCell worldCell && worldCell.getOwner() == ownerToRemove) {
                 //Reset the world cell by getting the cell type and creating a new object with the same cell type and set it to the same coordinates.
                 //As the tint is applied with an OR operator, it cannot be reversed as OR operations are destructive
                 //So we need to reset the texture by re-applying it from the cache, which means making a new object.

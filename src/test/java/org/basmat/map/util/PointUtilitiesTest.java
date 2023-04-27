@@ -1,6 +1,7 @@
 package org.basmat.map.util;
 
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.junit.jupiter.api.Test;
@@ -75,9 +76,10 @@ class PointUtilitiesTest {
     void resetArea_setsAllPointsInCircleToNull_IsAllNull() {
         ModelStructure modelStructureTinted = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructureTinted, ECellType.GRASS);
-        modelStructureTinted.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff00ff));
+        SocietyCell test = new CellFactory().createSocietyCell("test", 10, 0x00ff00ff);
+        modelStructureTinted.setFrontLayer(new Point(50, 50), test);
         PointUtilities.tintArea(10, new Point(50, 50), 0x00f009f0, modelStructureTinted);
-        PointUtilities.resetArea(10, new Point(50, 50), modelStructureTinted);
+        PointUtilities.resetArea(10, new Point(50, 50), modelStructureTinted, test);
         PointUtilities.forPointsInCircle(10, new Point(50, 50), point -> {
             if(modelStructureTinted.getCoordinate(point) instanceof WorldCell worldCell) {
                 assertNull(worldCell.getOwner());

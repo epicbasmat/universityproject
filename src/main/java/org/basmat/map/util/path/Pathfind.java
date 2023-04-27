@@ -58,14 +58,18 @@ public class Pathfind {
 
             if (current.point().equals(destination)) {
                 LinkedList<Node> path = new LinkedList<>();
-                Node temp = closedList.getLast();
-                while (temp.parent() != null) {
+                try {
+                    Node temp = closedList.getLast();
+                    while (temp.parent() != null) {
+                        path.add(temp);
+                        temp = temp.parent();
+                    }
                     path.add(temp);
-                    temp = temp.parent();
+                    Collections.reverse(path);
+                    return path;
+                } catch (Exception e) {
+                    return new LinkedList<>();
                 }
-                path.add(temp);
-                Collections.reverse(path);
-                return path;
             }
 
             //For each validated neighbours, calculate their h and g score and add them to the open list.

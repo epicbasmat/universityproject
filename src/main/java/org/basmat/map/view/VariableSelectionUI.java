@@ -38,7 +38,7 @@ public class VariableSelectionUI extends JPanel {
         setSystemVariable(c, "Time steps before attrition kill", attritionThreshold);
         overcrowdThreshold = new JSpinner(new SpinnerNumberModel(5, 1, 8, 1));
         setSystemVariable(c, "Overcrowd threshold", overcrowdThreshold);
-        ratioThreshold = new JSpinner(new SpinnerNumberModel(75, 25, 150, 5));
+        ratioThreshold = new JSpinner(new SpinnerNumberModel(55, 10, 100, 5));
         setSystemVariable(c, "Ratio of land to life cell before collapsing", ratioThreshold);
         foodThreshold = new JSpinner(new SpinnerNumberModel(0.6, 0.1, 1, 0.1));
         setSystemVariable(c, "Ratio of food to life cell before a death occurs", foodThreshold);
