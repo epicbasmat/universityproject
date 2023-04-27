@@ -98,8 +98,9 @@ public class SimulationUI extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         //Get the amount of total space occupied by the frame and subtract it from the simulation size (real size), then /2 to create one half of that space
         Dimension difference = new Dimension((int) (this.getSize().getWidth() - 750) / 2, (int) (this.getSize().getHeight() - 750) / 2);
-        //And then apply weird subtractions to align it to (0,0), using quotients to floor the multiple of 5
-        controller.displayData(new Point((e.getPoint().x - difference.width - 8) / 5, (e.getPoint().y - difference.height - 31) / 5));
+        //deduct the difference from the clicked point to align it to (0,0), using quotients to floor the multiple of 5
+        //-33 for some reason? not sure why
+        controller.displayData(new Point((e.getPoint().x - difference.width) / 5 - 33, (e.getPoint().y - difference.height) / 5));
     }
 
     @Override

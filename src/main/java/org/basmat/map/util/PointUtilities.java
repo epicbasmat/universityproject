@@ -56,7 +56,7 @@ public class PointUtilities {
         do {
             destination = PointUtilities.calculateRandomCoordinates(point, radius);
             breakcnd++;
-        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8);
+        } while ((!(validateBounds(destination)) || !(validCells.contains(modelStructure.getCoordinate(destination).getECellType()))) && breakcnd < 8 && destination.equals(point));
         return destination;
     }
 
@@ -69,15 +69,10 @@ public class PointUtilities {
      * @param modelStructure The ModelStructure to manipulate
      */
     public static void tintArea(int radius, Point centralCoordinate, int tint, ModelStructure modelStructure) {
-        HashSet<ECellType> illegalCellTypes = new HashSet<>();
-        illegalCellTypes.add(ECellType.DEEP_WATER);
-        illegalCellTypes.add(ECellType.MOUNTAIN_BODY);
-        illegalCellTypes.add(ECellType.MOUNTAIN_PEAK);
-        illegalCellTypes.add(ECellType.WATER);
         forPointsInCircle(radius, centralCoordinate, (point) -> {
             WorldCell worldCell = modelStructure.getBackLayer(point);
             //For the points in the circle, make sure they're both not owned and an illegal cell type and apply ownership & tinting
-            if (!illegalCellTypes.contains(worldCell.getECellType()) && worldCell.getOwner() == null) {
+            if (worldCell.getECellType().isPathable() && worldCell.getOwner() == null) {
                 BufferedImage texture = modelStructure.getBackLayer(point).getTexture();
                 for (int x = 0; x < texture.getWidth(); x++) {
                     for (int y = 0; y < texture.getHeight(); y++) {

@@ -35,19 +35,6 @@ public class Pathfind {
         };
     }
 
-
-    /**
-     * Returns a boolean
-     * @param cellType
-     * @return
-     */
-    public static boolean isInvalid(ECellType cellType) {
-        return switch (cellType) {
-            case NUTRIENTS, SOCIETY_CELL, LIFE_CELL, MOUNTAIN_PEAK, DEEP_WATER, WATER, MOUNTAIN_BODY -> true;
-            default -> false;
-        };
-    }
-
     /**
      * A basic implementation of the A Star pathfinding algorithm, which returns a LinkedList from Point Origin to Point Destination if the pathfinding algorithm can find an appropriate path within the maximum allowed iterations.
      * @param allowedIterations The maximum allowed amount of iterations before the pathfinding algorithm is overridden and fails
@@ -96,7 +83,7 @@ public class Pathfind {
                     break;
                 }
 
-                if (!isInvalid(modelStructure.getCoordinate(point).getECellType())) {
+                if (modelStructure.getCoordinate(point).getECellType().isPathable()) {
                     ECellType candidate  = modelStructure.getCoordinate(point).getECellType();
                     int nextCost = current.g() + weight(candidate);
                     Node neighbour = new Node(point, nextCost + h(point, destination), nextCost, candidate, current);
