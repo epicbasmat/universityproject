@@ -3,8 +3,10 @@ package org.basmat.map.controller;
 
 import org.basmat.map.controller.rules.RuleApplier;
 import org.basmat.map.model.ModelStructure;
+import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.setup.ViewSetup;
+import org.basmat.map.util.ECellType;
 import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.view.SimulationInteractionUI;
 import org.basmat.map.view.SimulationUI;
@@ -12,15 +14,12 @@ import org.basmat.map.view.VariableSelectionUI;
 import org.basmat.userui.GUI;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The controller is the main class in this system that acts as a proxy between the model and the view. It handles all user events and responds with the appropriate methods.
@@ -29,10 +28,11 @@ import java.util.UUID;
  * @author George Brilus
  */
 public class Controller {
+    private final HashMap<String, ECellType> mapNameToCell;
     private int seed;
     private final SimulationUI simulationUI;
     private ModelStructure modelStructure;
-    private final GUI primaryGui;
+    private GUI primaryGui;
     private final Timer timer;
     private RuleApplier ruleApplier;
     private final SimulationInteractionUI userInteractionUi;
@@ -40,16 +40,21 @@ public class Controller {
     private LinkedList<Point> globalSocietyCellList;
     private ArrayList<Point> globalLifeCellList;
     private SimulationProperties simulationProperties;
+    private boolean editing;
+    private ECellType selectedCell;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public Controller(int cellMatrixWidth, int cellMatrixHeight) throws InterruptedException {
+    public Controller(int cellMatrixWidth, int cellMatrixHeight) {
+        //generate a map, mapping the names of the cell to the cell itself. this is used in cell selection for the view.
+        mapNameToCell = new HashMap<>();
+        Arrays.stream(ECellType.values()).toList().stream().filter(ECellType::isUserEditable).forEach(cell -> mapNameToCell.put(cell.getCellName(), cell));
+        selectedCell = ECellType.WATER;
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new ArrayList<>();
         modelStructure = new ModelStructure();
         simulationUI = new SimulationUI(cellMatrixWidth, cellMatrixHeight, this);
         userInteractionUi = new SimulationInteractionUI(this);
         variableSelectionUi = new VariableSelectionUI(this);
-        primaryGui = new GUI(simulationUI, userInteractionUi, variableSelectionUi);
         ActionListener updateAction = e -> {
             ruleApplier.invokeRules();
             ViewSetup.setupView(simulationUI, modelStructure, ViewSetup.IS_LAZY);
@@ -64,6 +69,15 @@ public class Controller {
         if (!saveDir.exists()){
             saveDir.mkdirs();
         }
+
+    }
+
+    public void displayUI() {
+        primaryGui = new GUI(simulationUI, userInteractionUi, variableSelectionUi);
+    }
+
+    public HashMap<String, ECellType> getMapNameToCell() {
+        return mapNameToCell;
     }
 
     public int getAmountOfSocieties() {
@@ -103,7 +117,7 @@ public class Controller {
     public void constructSimulation(SimulationProperties simulationProperties) {
         primaryGui.goToCard(primaryGui.LOADING_CARD);
         new Thread(() -> {
-            this.simulationProperties = simulationProperties;
+            setSimulationProperties(simulationProperties);
             ModelSetup modelSetup = new ModelSetup(this, modelStructure, globalSocietyCellList, globalLifeCellList);
             ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
             try {
@@ -118,11 +132,25 @@ public class Controller {
     }
 
     /**
+     * Manually set the simulationproperties
+     * @param simulationProperties
+     */
+    public void setSimulationProperties(SimulationProperties simulationProperties) {
+        this.simulationProperties = simulationProperties;
+    }
+
+    /**
      * Provides a temporary method for viewing data requested by the cell matrix view.
      * @param e the MouseEvent that the cell captures
      */
     public void displayData(Point e) {
-        pushText(modelStructure.getCoordinate(e).toString());
+        if (!editing) {
+            pushText(modelStructure.getCoordinate(e).toString());
+        } else {
+            modelStructure.deleteBackLayer(e);
+            modelStructure.setBackLayer(e, new CellFactory().createWorldCell(selectedCell));
+            ViewSetup.setupView(simulationUI, modelStructure, ViewSetup.IS_LAZY);
+        }
     }
 
     /**
@@ -142,7 +170,7 @@ public class Controller {
     }
 
     public void saveAsImage(){
-        userInteractionUi.disableUserInput();
+        userInteractionUi.disableTimeButtons();
         timer.stop();
         pushText("Screenshot is being saved.");
         BufferedImage screenshot = new BufferedImage(750, 750, BufferedImage.TYPE_INT_ARGB);
@@ -159,10 +187,12 @@ public class Controller {
         try {
             ImageIO.write(screenshot, "png", new File("./screenshots/" + s));
             pushText("Screenshot saved as: " + s + ".");
+        } catch (FileNotFoundException e) {
+            primaryGui.throwError("The path where saving occurs has been deleted. \nError: "  + e.getLocalizedMessage());
         } catch (IOException e) {
             primaryGui.throwError("Saving the file as an image has failed. \nError: " + e.getLocalizedMessage());
         }
-        userInteractionUi.enableUserInput();
+        userInteractionUi.enablePlayButton();
     }
 
     /**
@@ -171,7 +201,7 @@ public class Controller {
     public void saveAsData() {
         primaryGui.goToCard(primaryGui.LOADING_CARD);
         pushText("Saving data to file. This may take a minute.");
-        userInteractionUi.disableUserInput();
+        userInteractionUi.disableTimeButtons();
         timer.stop();
         String name = "./saves/" + UUID.randomUUID() + ".dat";
         new Thread(() -> {
@@ -182,13 +212,14 @@ public class Controller {
                 data.put("lifecells", globalLifeCellList);
                 data.put("properties", simulationProperties);
                 data.put("model", modelStructure);
+                data.put("seed", seed);
                 out.writeObject(data);
                 pushText("Save complete! Saved at " + name + ".");
+                userInteractionUi.enablePlayButton();
+                primaryGui.goToCard(primaryGui.SIMULATION_CARD);
             } catch (IOException e) {
                 primaryGui.throwError("Serialization of data has failed. \nError: " + e.getLocalizedMessage());
             }
-            userInteractionUi.enableUserInput();
-            primaryGui.goToCard(primaryGui.SIMULATION_CARD);
         }).start();
     }
 
@@ -204,9 +235,10 @@ public class Controller {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(currentDirectory));
                 HashMap<String, Object> data = (HashMap<String, Object>) objectInputStream.readObject();
                 this.globalLifeCellList = (ArrayList<Point>) data.get("lifecells");
-                this.simulationProperties = (SimulationProperties) data.get("properties");
+                setSimulationProperties((SimulationProperties) data.get("properties"));
                 this.globalSocietyCellList = (LinkedList<Point>) data.get("societycells");
                 this.modelStructure = (ModelStructure) data.get("model");
+                this.seed = (int) data.get("seed");
                 ruleApplier = new RuleApplier(this, modelStructure, globalSocietyCellList, globalLifeCellList);
                 ViewSetup.setupView(simulationUI, modelStructure);
                 primaryGui.validate();
@@ -220,7 +252,17 @@ public class Controller {
                 primaryGui.throwError("Class cannot be cast, this could be due to an incompatible data file, or has been corrupted. \nError: " + e.getLocalizedMessage());
             } catch (IllegalStateException e) {
                 primaryGui.throwError("State of the file is not absolute. This could be due to an incompatible data file, however it is most likely a corrupt data file. \nError: " + e.getLocalizedMessage());
+            } catch (NullPointerException e) {
+                primaryGui.throwError("The file provided is an older file which does not match the current object structure, thus cannot work with the latest application branch. \nError: " + e.getLocalizedMessage());
             }
         }).start();
+    }
+
+    public void setEditing(boolean value) {
+        editing = value;
+    }
+
+    public void setSelectedCell(ECellType eCellType) {
+        this.selectedCell = eCellType;
     }
 }

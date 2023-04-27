@@ -65,7 +65,7 @@ public class Winnower {
             int population = coordinate.getPopulationCount();
             int nutrientCapacity = coordinate.getNutrientCapacity();
             //If the ratio of nutrient to population goes below 0.6, i.e. food cannot be split much more than 33% below then a random cell cannot be fed and will die
-            if (nutrientCapacity / population < controller.getSimulationProperties().foodThreshold()) {
+            if (((double) nutrientCapacity / population) < controller.getSimulationProperties().foodThreshold()) {
                 //get all cells allocated to a society cell and put them in a list, then randomly kill one
                 List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();
                 kill(points.get((int) (Math.random() * points.size())));
@@ -109,7 +109,7 @@ public class Winnower {
         List<Point> copyOfList = new LinkedList<>(globalSocietyCellList);
         for (Point point : copyOfList) {
             SocietyCell coordinate = modelStructure.getCoordinate(point);
-            if (coordinate.getLandPerLifeCell() > controller.getSimulationProperties().ratioThreshold() || coordinate.getPopulationCount() == 0) {
+            if (coordinate.getLandPerLifeCell() > controller.getSimulationProperties().landRatio() || coordinate.getPopulationCount() == 0) {
                 controller.pushText("Society collapsed, the population was overstretched too much over the land it had at:  " + point);
                 globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList().forEach(this::kill);
                 PointUtilities.resetArea(coordinate.getRadius(), point, modelStructure);

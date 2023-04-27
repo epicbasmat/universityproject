@@ -25,18 +25,15 @@ public class GUI extends JFrame {
     public final String SIMULATION_CARD = "SIMULATION_CARD";
     public final String LOADING_CARD = "LOADING_CARD";
     private final LoadingScreen loading;
+    private Dimension minimumSize;
 
 
     public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
         this.setTitle("Simulation");
+        minimumSize = new Dimension(1500, 950);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        try {
-            this.setIconImage(ImageIO.read(new File(ECellType.BASE_PATH.getPath() + "icon.png")));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        this.setMinimumSize(new Dimension(600, 450));
-        addMouseListener(viewStructure);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        this.setMinimumSize(minimumSize);
         simUI = new JPanel();
         simUI.setLayout(new BorderLayout());
         simUI.add(viewStructure, BorderLayout.CENTER);
@@ -48,7 +45,23 @@ public class GUI extends JFrame {
         cardLayout.add(variableSelectionUI, this.PARAMETER_CARD);
         cardLayout.add(simUI, this.SIMULATION_CARD);
         cardLayout.add(loading, this.LOADING_CARD);
-        this.add(cardLayout);
+        tabbedPane.add("Simulation", cardLayout);
+        cardLayout.addMouseListener(viewStructure);
+        try {
+            this.setIconImage(ImageIO.read(new File(ECellType.BASE_PATH.getPath() + "icon.png")));
+            JEditorPane guide = new JEditorPane();
+            guide.setEditable(false);
+            guide.setPage(this.getClass().getClassLoader().getResource("html/guide.html"));
+            JScrollPane jScrollPane = new JScrollPane(guide);
+            jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            tabbedPane.add("Guide", jScrollPane);
+            jScrollPane.setMaximumSize(new Dimension(150, 150));
+            simUI.add(new JLabel(new ImageIcon(ImageIO.read(new File("./assets/legend.png")))), BorderLayout.LINE_START);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //this.add(cardLayout);
+        this.add(tabbedPane);
         pack();
         setVisible(true);
     }
@@ -56,7 +69,6 @@ public class GUI extends JFrame {
 
     public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {
-            this.setMinimumSize(new Dimension(1400, 950));
             layout.show(cardLayout, card);
         });
     }

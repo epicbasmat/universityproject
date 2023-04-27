@@ -22,7 +22,8 @@ import java.util.Objects;
 /*
  In the morning, the gardener pushed the seeds down into the wet loam of the garden to see what they would become
  */
-public class Gardener {
+public class
+Gardener {
     private final LinkedList<Point> globalSocietyCellList;
     private final ArrayList<Point> globalLifeCellList;
 
@@ -102,7 +103,7 @@ public class Gardener {
                         newLifeCell = allValidatedNeighbours.get(((int) (Math.random() * allValidatedNeighbours.size())));
                         breakcnd++;
                         //Repeat if there is no valid spawn place -- try to find one within 4 attempts or failure
-                    } while (Pathfind.isInvalid(modelStructure.getCoordinate(newLifeCell).getECellType()) && breakcnd < 4);/* && !(worldCell.getECellType().isHabitable())*/;
+                    } while (!(modelStructure.getCoordinate(newLifeCell).getECellType().isPathable()) && breakcnd < 4);/* && !(worldCell.getECellType().isHabitable())*/;
                     if (breakcnd == 4) {
                         controller.pushText("A life cell failed to be created! Too many cells in the surrounding area.");
                         continue;
@@ -199,7 +200,7 @@ public class Gardener {
                         controller.pushText("A society has decided to reproduce Life Cells");
                     }
                 } catch (Exception e) {
-                    controller.pushText(e.toString());
+                    controller.pushText("A Life Cell tried to find a mate, but only could find itself");
                 };
             }
         }

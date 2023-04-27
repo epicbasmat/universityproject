@@ -43,7 +43,7 @@ public class WorldCell extends AbstractSerializableCell implements IOwnedCell {
         return ownerString + "\n" +
                 "Cell Name: " + getECellType().getCellName() + "\n" +
                 "Cell Description: " + getECellType().getCellDescription() + "\n" +
-                "Is habitable: " + getECellType().isHabitable();
+                "Is pathable: " + getECellType().isPathable();
     }
 
     @Override

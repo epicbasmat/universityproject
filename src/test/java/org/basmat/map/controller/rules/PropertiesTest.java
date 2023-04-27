@@ -34,12 +34,11 @@ public class PropertiesTest {
         cellFactory = new CellFactory();
         modelStructure = new ModelStructure();
         simulationProperties = new SimulationProperties(7, 100, 1, 20, 5, 75, 0.6);
-        SimulationInteractionUI userInteractionUi = new SimulationInteractionUI(null);
         globalSocietyCellList = new LinkedList<>();
         globalLifeCellList = new ArrayList<>();
         listOfPaths = new ArrayList<>();
         Controller c = new Controller(150,150);
-        c.constructSimulation(simulationProperties);
+        c.setSimulationProperties(simulationProperties);
         ModelSetup modelSetup = new ModelSetup(c, modelStructure, globalSocietyCellList, globalLifeCellList);
         modelSetup.setupMap();
         gardener = new Gardener(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);

@@ -4,19 +4,22 @@ This application focuses on simulating a cellular ecosystem where cells can live
 
 ## The System and Simulation
 ### Initial start-up phase
-The start-up phase shows the system variables that the user can change, within reasonable limits. Once (or if) the user changes the variables, the button `Confirm system variables`
+The start-up phase shows the system variables that the user can change, within reasonable limits.  
+The user can then select ``Generate new simulation`` with the specified parameters, or click ``Alternatively, load from a .dat file`` to load a save from a file.
 will then start the simulation
 
+![image](https://user-images.githubusercontent.com/43749261/233792521-3df82adc-e325-4688-8ee7-7abadc2a04c0.png)
 
-![java_WvT1dEdjS7](https://user-images.githubusercontent.com/43749261/230654623-4234adaf-be85-470e-8ff2-6b9410814887.png)
 
 
 ### The Simulation
-The user will then get directed directly from the start-up phase to the primary simulation once the system generates the model and view, and renders it.
-The primary interface is the simulation, with the ability to click on the simulation to display cellular data. Buttons on the right hand side can pause or play the simulation, 
-and a box to the right of those buttons to display the amount of time steps that have elapsed.
-The box at the bottom shows events that have occurred, such as any deaths or births that have occurred, as well as civilizations failing and displays cellular data from user clicks.
-![java_yUi7SYPr0W](https://user-images.githubusercontent.com/43749261/230654935-96ef4915-8354-40ee-9b75-e005efc00ff9.png)
+
+The user will then get directed to the main simulation interface. This interface contains the rendered simulation, and buttons that the user can click to change the state of the system.  
+The button panel on the right hand side contains the ability to pause/play the simulation, saving the simulation
+as either a PNG or as a .dat file, or enable Editing mode, which when clicked the user can then change the simulation by clicking on it to set the position to a certain cell, designated by the dropdown menu.  
+To the right of the button menu, there is an interface for showing the system variables in place and how many Life Cells / Society Cells there are. The bottom text panel is used for showing events that have occurred, and any clicks on the simulation that show data.
+
+![image](https://user-images.githubusercontent.com/43749261/233792536-febf617e-9358-4ce8-852d-c93427d5ef1e.png)
 
 #### The Simulation - World Cells
 World cells act as the backing for the system, and affect how the cells can interact with the world. Certain World Cells cannot be traversed by Life Cells, or not inhabited.
