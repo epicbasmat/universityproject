@@ -1,13 +1,10 @@
 package org.basmat.map.view;
 
 import org.basmat.map.controller.Controller;
-import org.basmat.map.util.ECellType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * This class contains the JFrame responsible for the primary interface for the user. This panel contains the buttons that the user can click on, as well as system output.
@@ -54,7 +51,7 @@ public class SimulationInteractionUI extends JPanel {
                 "Amount of Life Cells: " + controller.getAmountOfLifeCells() + "\n" +
                 "Attrition threshold: " + controller.getSimulationProperties().attritionThreshold() + "\n" +
                 "Food / life cell before starvation: " + controller.getSimulationProperties().foodThreshold() + "\n" +
-                "Land / Life Cell before collapse: " + controller.getSimulationProperties().ratioThreshold() + "\n" +
+                "Land / Life Cell before collapse: " + controller.getSimulationProperties().landRatio() + "\n" +
                 "Initial Nutrient Cells / Society: " + controller.getSimulationProperties().initialNutrientCount() + "\n" +
                 "Total Nutrient Cells: " + controller.getSimulationProperties().nutrientCount() + "\n" +
                 "Overcrowding threshold: " + controller.getSimulationProperties().overcrowdThreshold()+ "\n" +

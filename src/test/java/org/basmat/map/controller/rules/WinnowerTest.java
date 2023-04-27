@@ -12,7 +12,6 @@ import org.basmat.map.util.PointUtilities;
 import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.TestUtilities;
 import org.basmat.map.util.path.Node;
-import org.basmat.map.view.SimulationInteractionUI;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -34,7 +33,7 @@ public class WinnowerTest {
     private Point societyPoint;
     private Controller c;
 
-    WinnowerTest() throws InterruptedException {
+    WinnowerTest() {
         cellFactory = new CellFactory();
         constructNewSimulation();
     }
@@ -52,6 +51,7 @@ public class WinnowerTest {
         societyCell = cellFactory.createSocietyCell("test", 12, 0);
         societyPoint = new Point(12, 12);
         modelStructure.setFrontLayer(societyPoint, societyCell);
+        globalSocietyCellList.add(societyPoint);
         this.winnower = new Winnower(c, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
     }
 
@@ -111,7 +111,7 @@ public class WinnowerTest {
     }
 
     @Test
-    void overcrowded_LifeCellstDoNotDieToOvercrowdedWithMaxParams_noDeathsOccur() {
+    void overcrowded_LifeCellsDoNotDieToOvercrowdedWithMaxParams_noDeathsOccur() {
         constructNewSimulation();
 
         c.setSimulationProperties(new SimulationProperties(7, 100, 1, 20, 8, 75, 0.6));
@@ -131,7 +131,6 @@ public class WinnowerTest {
     @Test
     void overcrowded_LifeCellsDoNotDieToOvercrowdedWithEdgeCaseParams_noDeathsOccur() {
         constructNewSimulation();
-
         //because it should be greater than the threshold to die, they should not die if 4 are surrounding them with the threshold set to 4
         c.setSimulationProperties(new SimulationProperties(7, 100, 1, 20, 4, 75, 0.6));
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
@@ -215,14 +214,15 @@ public class WinnowerTest {
         societyPoint = new Point(60, 60);
         globalSocietyCellList.add(societyPoint);
         modelStructure.setFrontLayer(societyPoint, societyCell);
+        //Setup an amount of nutrient cells for the society.
         for (int i = 0; i < 10; i++) {
             NutrientCell nutrientCell = cellFactory.createNutrientCell(societyCell);
             modelStructure.setFrontLayer(PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS})), nutrientCell);
             societyCell.addNutrientCells(nutrientCell);
 
         }
-
-        for (int j = 0; j < societyCell.getNutrientCapacity() * 1.7; j++) {
+        //And then add as many life cells as we can
+        for (int j = 0; j < societyCell.getNutrientCapacity() * (c.getSimulationProperties().foodThreshold() + 1.1); j++) {
             Point e = PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
             globalLifeCellList.add(e);
             societyCell.addLifeCells();
@@ -245,17 +245,51 @@ public class WinnowerTest {
             NutrientCell nutrientCell = cellFactory.createNutrientCell(societyCell);
             modelStructure.setFrontLayer(PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS})), nutrientCell);
             societyCell.addNutrientCells(nutrientCell);
-
         }
 
-        for (int j = 0; j < societyCell.getNutrientCapacity() * 1.5; j++) {
+        for (int j = 0; j < societyCell.getNutrientCapacity() * c.getSimulationProperties().foodThreshold() + 0.9; j++) {
             Point e = PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
             globalLifeCellList.add(e);
             societyCell.addLifeCells();
             modelStructure.setFrontLayer(e, cellFactory.createLifeCell(societyPoint));
         }
+
         int snapshot = globalLifeCellList.size();
         winnower.famine();
         assertEquals(snapshot, globalLifeCellList.size());
+    }
+
+    @Test
+    void collapse_societyDoesNotCollapseUnderThreshold_societyIsNotRemoved() {
+        constructNewSimulation();
+        TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
+        do {
+            Point e = PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
+            globalLifeCellList.add(e);
+            societyCell.addLifeCells();
+            modelStructure.setFrontLayer(e, cellFactory.createLifeCell(societyPoint));
+        } while (societyCell.getLandPerLifeCell() > c.getSimulationProperties().landRatio() - 5);
+        int societySnapshot = globalSocietyCellList.size();
+        int lifeSnapshot = globalLifeCellList.size();
+        winnower.collapse();
+        assertEquals(societySnapshot, globalSocietyCellList.size());
+        assertEquals(lifeSnapshot, globalLifeCellList.size());
+    }
+
+    @Test
+    void collapse_societyCollapsesOverThreshold_societyIsNotRemoved() {
+        constructNewSimulation();
+        TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
+        do {
+            Point e = PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS}));
+            globalLifeCellList.add(e);
+            societyCell.addLifeCells();
+            modelStructure.setFrontLayer(e, cellFactory.createLifeCell(societyPoint));
+        } while (societyCell.getLandPerLifeCell() > c.getSimulationProperties().landRatio() + 5);
+        int societySnapshot = globalSocietyCellList.size();
+        int lifeSnapshot = globalLifeCellList.size();
+        winnower.collapse();
+        assertNotEquals(societySnapshot, globalSocietyCellList.size());
+        assertNotEquals(lifeSnapshot, globalLifeCellList.size());
     }
 }
