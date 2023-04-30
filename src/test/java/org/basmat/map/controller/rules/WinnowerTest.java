@@ -155,7 +155,7 @@ public class WinnowerTest {
         modelStructure.setFrontLayer(subject, cellFactory.createLifeCell(societyPoint));
         globalLifeCellList.add(subject);
         int snapshot = ((LifeCell) modelStructure.getFrontLayer(subject)).getAttrition();
-        winnower.stagnation();
+        winnower.loneliness();
         assertNotEquals(snapshot, ((LifeCell) modelStructure.getFrontLayer(subject)).getAttrition());
     }
     @Test
@@ -167,13 +167,13 @@ public class WinnowerTest {
         Point subject1 = new Point(6, 100);
         modelStructure.setFrontLayer(subject1, cellFactory.createLifeCell(societyPoint));
         globalLifeCellList.add(subject1);
-        winnower.stagnation();
-        winnower.stagnation();
+        winnower.loneliness();
+        winnower.loneliness();
         int snapshot = ((LifeCell) modelStructure.getFrontLayer(subject1)).getAttrition();
         Point subject2 = new Point(7, 100);
         modelStructure.setFrontLayer(subject2, cellFactory.createLifeCell(societyPoint));
         globalLifeCellList.add(subject2);
-        winnower.stagnation();
+        winnower.loneliness();
         assertNotEquals(snapshot, ((LifeCell) modelStructure.getFrontLayer(subject1)).getAttrition());
     }
 
@@ -186,7 +186,7 @@ public class WinnowerTest {
         modelStructure.setFrontLayer(subject1, cellFactory.createLifeCell(societyPoint));
         globalLifeCellList.add(subject1);
         for (int i = 0; i < c.getSimulationProperties().attritionThreshold() + 1; i++) {
-            winnower.stagnation();
+            winnower.loneliness();
         }
         assertNull(modelStructure.getFrontLayer(subject1));
     }
@@ -201,7 +201,7 @@ public class WinnowerTest {
         assertNotNull(modelStructure.getFrontLayer(subject1));
         //+ 1 to push it over past threshold
         for (int i = 0; i < c.getSimulationProperties().attritionThreshold() + 1; i++) {
-            winnower.stagnation();
+            winnower.loneliness();
         }
         assertNull(modelStructure.getFrontLayer(subject1));
     }

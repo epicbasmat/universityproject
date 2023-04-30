@@ -18,8 +18,7 @@ In the day between the morning and the evening, the gardener and the winnower pl
  */
 
 /**
- * RuleApplier initializes the Gardener and the Winnower and applies their rules in a sequence,
- * and then re-renders the view with what has changed in the model
+ * RuleApplier initializes the Gardener and the Winnower and applies their rules in a sequence
   */
 public class RuleApplier {
     private final Winnower winnower;
@@ -46,6 +45,6 @@ public class RuleApplier {
         winnower.overcrowded();
         winnower.collapse();
         winnower.famine();
-        winnower.stagnation();
+        winnower.loneliness();
     }
 }

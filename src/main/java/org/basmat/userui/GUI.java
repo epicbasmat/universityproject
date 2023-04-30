@@ -51,6 +51,7 @@ public class GUI extends JFrame {
             this.setIconImage(ImageIO.read(new File(ECellType.BASE_PATH.getPath() + "icon.png")));
             JEditorPane guide = new JEditorPane();
             guide.setEditable(false);
+            guide.setPreferredSize(minimumSize);
             guide.setPage(this.getClass().getClassLoader().getResource("html/guide.html"));
             JScrollPane jScrollPane = new JScrollPane(guide);
             jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

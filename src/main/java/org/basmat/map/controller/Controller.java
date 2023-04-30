@@ -4,6 +4,7 @@ package org.basmat.map.controller;
 import org.basmat.map.controller.rules.RuleApplier;
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.factory.CellFactory;
+import org.basmat.map.model.cells.factory.IMapCell;
 import org.basmat.map.setup.ModelSetup;
 import org.basmat.map.setup.ViewSetup;
 import org.basmat.map.util.ECellType;
@@ -145,7 +146,10 @@ public class Controller {
      */
     public void displayData(Point e) {
         if (!editing) {
-            pushText(modelStructure.getCoordinate(e).toString());
+            IMapCell coordinate = modelStructure.getCoordinate(e);
+            if (!Objects.isNull(coordinate)) {
+                pushText(coordinate.toString());
+            }
         } else {
             modelStructure.deleteBackLayer(e);
             modelStructure.setBackLayer(e, new CellFactory().createWorldCell(selectedCell));

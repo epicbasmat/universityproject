@@ -2,8 +2,11 @@
 <html lang="en">
     <style>
         body {
-            font-size: 4rem;
+            font-size: 1em;
             font-family: Arial, Helvetica, sans-serif;
+        }
+        h1{
+            text-align: center;
         }
     </style>
     <h1>
@@ -40,7 +43,16 @@
         an area of influence over a civilization then the food from the Nutrient Cells get distributed to each Life Cell within a civilization. A Nutrient Cell can support several Life Cells, which is determined by an internal range.</p>
         <h4 id="the-simulation-civilization-cells">The Simulation - Civilization Cells</h4>
         <p>Society or Civilization Cells <img src="https://user-images.githubusercontent.com/43749261/230657455-a51a68b4-3071-49ea-85e4-73139806c22c.png" alt="society"> are the primary structure of how Life Cells operate and Nutrient Cells get distributed.
-        Civilization Cells may fall if the ratio of people to land area exceeds a certain threshold. </p>
+            <br>Civilization Cells may fall if the ratio of people to land area exceeds a certain threshold. </p>
+        <h3 id="panel">The Button Panel</h3>
+        <p> To the left of the simulation, the button panel enables different forms of user interaction. </p>
+        <h4 id = "playpause"> Playing / Pausing </h4> 
+        <p> The Play Simulation and Pause Simulation carry out their respective commands to the controller.<br> If at any point the simulation is interrupted while playing, then the system will auto-pause, and after interruption re-enable the play button.</p> 
+        <h4 id = "saveaspng"> Save as PNG </h4>
+        <p> This button saves the current state of the simulation as a PNG to ./screenshots. <br> If the button is pressed while simulation is playing, it will be paused.</p>  
+        <h4 id = "savedata"> Save as data </h4> 
+        <p> This button saves the current state of the simulation as a .dat file to ./saves. <br> Like the Save as PNG button, saving while the simulation is playing will auto-pause, and will re-enable the play button after saving has ended. 
+        <h4 id = "editingmode"> Enable /  Disable editing mode </h4> 
+        <p>This toggle button will either enable or disable editing mode. While in editing mode, the user can click anywhere on the simulation to set the World Cell according to the selected dropdown element. <br> Enabling Editing Mode with the simulation playing will auto-pause, and only re-enable the play button after ediitng mode is closed</p> 
     </body>
-
 </html>

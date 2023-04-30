@@ -67,7 +67,11 @@ public class Winnower {
             //If the ratio of nutrient to population goes below 0.6, i.e. food cannot be split much more than 33% below then a random cell cannot be fed and will die
             if (((double) nutrientCapacity / population) < controller.getSimulationProperties().foodThreshold()) {
                 //get all cells allocated to a society cell and put them in a list, then randomly kill one
-                List<Point> points = globalLifeCellList.parallelStream().filter(p -> modelStructure.getCoordinate(p) instanceof LifeCell lifeCell && lifeCell.getSocietyCell() == point).toList();
+                List<Point> points = globalLifeCellList.parallelStream()
+                        .filter(p ->
+                                modelStructure.getCoordinate(p) instanceof LifeCell lifeCell &&
+                                        lifeCell.getSocietyCell() == point)
+                        .toList();
                 kill(points.get((int) (Math.random() * points.size())));
                 controller.pushText("A death has occurred due to starvation!");
             }
@@ -79,7 +83,7 @@ public class Winnower {
      * Stagnation goes through each life cell and looks at each life cell and determines if it dies to attrition. If the cell hits
      * the attrition threshold then it is killed as it has not been visited by an amount of steps determined by the user.
      */
-    public void stagnation() {
+    public void loneliness() {
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point point : copyOfList) {
             LifeCell lifeCell = modelStructure.getCoordinate(point);
