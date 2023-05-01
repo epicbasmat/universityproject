@@ -109,6 +109,7 @@ public class PointUtilities {
                 modelStructure.setBackLayer(point, cellFactory.createWorldCell(celltype));
             } else if (modelStructure.getCoordinate(point) instanceof NutrientCell nutrientCell) {
                 nutrientCell.setOwner(null);
+                nutrientCell.resetSupportingCount();
             }
         });
     }

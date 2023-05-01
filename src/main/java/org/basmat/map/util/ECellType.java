@@ -1,48 +1,17 @@
 package org.basmat.map.util;
 
+import java.net.URISyntaxException;
+import java.util.Objects;
+
 public enum ECellType {
 	/**
 	 * This Enum class contains the reference URI for a texture, as well as any associated descriptions and names.
 	 */
-	
-	BASE_PATH {
-		@Override
-		public String getPath() {
-			return "./assets/";
-		}
-		@Override
-		public
-		String getCellDescription() {
-			return null;
-		}
 
-		@Override
-		public String getCellName() {
-			return null;
-		}
-
-		@Override
-		public
-		boolean isHabitable() {
-			return false;
-		}
-
-		@Override
-		public boolean isPathable() {
-			return false;
-		}
-
-		@Override
-		public boolean isUserEditable() {
-			return false;
-		}
-
-	},
 	DEEP_WATER {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "deep_water.png";
+		public String getPath() {
+			return "textures/deep_water.png";
 		}
 		@Override
 		public
@@ -74,9 +43,8 @@ public enum ECellType {
 	},
 	WATER {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "water.png";
+		public String getPath() {
+			return "textures/water.png";
 		}
 		@Override
 		public
@@ -108,9 +76,8 @@ public enum ECellType {
 	},
 	LIGHT_WATER {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "light_water.png";
+		public String getPath() {
+			return "textures/light_water.png";
 		}
 		@Override
 		public
@@ -142,9 +109,8 @@ public enum ECellType {
 	},
 	MOUNTAIN_BASE {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "mountain_base.png";
+		public String getPath() {
+			return "textures/mountain_base.png";
 		}
 		@Override
 		public
@@ -176,9 +142,8 @@ public enum ECellType {
 	},
 	MOUNTAIN_BODY {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "mountain_body.png";
+		public String getPath() {
+			return "textures/mountain_body.png";
 		}
 		@Override
 		public
@@ -210,9 +175,8 @@ public enum ECellType {
 	},
 	MOUNTAIN_PEAK {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "mountain_peak.png";
+		public String getPath() {
+			return "textures/mountain_peak.png";
 		}
 		@Override
 		public
@@ -244,9 +208,8 @@ public enum ECellType {
 	},
 	GRASS {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "grass.png";
+		public String getPath() {
+			return "textures/grass.png";
 		}
 		@Override
 		public
@@ -278,9 +241,8 @@ public enum ECellType {
 	},
 	SAND {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "sand.png";
+		public String getPath() {
+			return "textures/sand.png";
 		}
 		@Override
 		public
@@ -311,9 +273,8 @@ public enum ECellType {
 	},
 	SOCIETY_CELL {
 		@Override
-		public
-		String getPath() {
-			return BASE_PATH.getPath() + "society.png";
+		public String getPath() {
+			return "textures/society.png";
 		}
 		@Override
 		public
@@ -346,7 +307,7 @@ public enum ECellType {
 	NUTRIENTS{
 		@Override
 		public String getPath() {
-			return BASE_PATH.getPath() + "nutrient.png";
+			return "textures/nutrient.png";
 		}
 
 		@Override
@@ -379,7 +340,7 @@ public enum ECellType {
 	LIFE_CELL {
 		@Override
 		public String getPath() {
-			return BASE_PATH.getPath() + "./life.png";
+			return "textures/life.png";
 		}
 
 		@Override
@@ -411,7 +372,7 @@ public enum ECellType {
 	MISSING_TEXTURE{
 		@Override
 		public String getPath() {
-			return BASE_PATH.getPath() + "missing_texture.png";
+			return "textures/missing_texture.png";
 		}
 
 		@Override
@@ -438,11 +399,10 @@ public enum ECellType {
 		public boolean isUserEditable() {
 			return false;
 		}
-
 	};
 
-	
-	abstract public String getPath();
+
+	abstract public String getPath() throws URISyntaxException;
 	abstract public String getCellDescription();
 	abstract public String getCellName();
 	abstract public boolean isHabitable();

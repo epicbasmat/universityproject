@@ -15,8 +15,6 @@ Thanks to https://icons8.com/preloaders/ for providing the icon used for the loa
 public class LoadingScreen extends JPanel {
 
     public LoadingScreen() {
-        System.out.println(LoadingScreen.class.getResource(ECellType.BASE_PATH.getPath() + "loading.gif"));
-        System.out.println(this.getClass().getResource("/assets/mountain_base.png"));
         this.validate();
         this.setLayout(new BorderLayout());
         JFrame layout = new JFrame();

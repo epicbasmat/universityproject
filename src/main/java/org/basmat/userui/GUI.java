@@ -1,6 +1,6 @@
 package org.basmat.userui;
 
-import org.basmat.map.util.ECellType;
+import org.apache.commons.io.IOUtils;
 import org.basmat.map.view.LoadingScreen;
 import org.basmat.map.view.SimulationInteractionUI;
 import org.basmat.map.view.SimulationUI;
@@ -9,8 +9,11 @@ import org.basmat.map.view.VariableSelectionUI;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Parent JFrame to hold all components of the simulation UI, such as the matrix, outputs, buttons etc.
@@ -30,7 +33,7 @@ public class GUI extends JFrame {
 
     public GUI(SimulationUI viewStructure, SimulationInteractionUI userInteractionUi, VariableSelectionUI variableSelectionUI) {
         this.setTitle("Simulation");
-        minimumSize = new Dimension(1500, 950);
+        minimumSize = new Dimension(1500, 850);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JTabbedPane tabbedPane = new JTabbedPane();
         this.setMinimumSize(minimumSize);
@@ -48,20 +51,22 @@ public class GUI extends JFrame {
         tabbedPane.add("Simulation", cardLayout);
         cardLayout.addMouseListener(viewStructure);
         try {
-            this.setIconImage(ImageIO.read(new File(ECellType.BASE_PATH.getPath() + "icon.png")));
+            this.setIconImage(ImageIO.read(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("textures/icon.png"))));
             JEditorPane guide = new JEditorPane();
             guide.setEditable(false);
             guide.setPreferredSize(minimumSize);
-            guide.setPage(this.getClass().getClassLoader().getResource("html/guide.html"));
+            guide.setContentType("text/html");
+            InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("html/guide.html");
+            assert resourceAsStream != null;
+            guide.setText(new BufferedReader(new InputStreamReader(resourceAsStream)).lines().collect(Collectors.joining(System.lineSeparator())));
             JScrollPane jScrollPane = new JScrollPane(guide);
             jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             tabbedPane.add("Guide", jScrollPane);
             jScrollPane.setMaximumSize(new Dimension(150, 150));
-            simUI.add(new JLabel(new ImageIcon(ImageIO.read(new File("./assets/legend.png")))), BorderLayout.LINE_START);
+            simUI.add(new JLabel(new ImageIcon(ImageIO.read(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("textures/legend.png"))))), BorderLayout.LINE_START);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //this.add(cardLayout);
         this.add(tabbedPane);
         pack();
         setVisible(true);
