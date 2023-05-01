@@ -78,7 +78,7 @@ public class FactoryTest {
     }
 
     @Test
-    void createWorldCell_worldCellHasCorrectTexture_worldCellIHasGrassTexture() throws IOException, URISyntaxException {
+    void createWorldCell_worldCellHasCorrectTexture_worldCellHasGrassTexture() throws IOException, URISyntaxException {
         WorldCell worldCell = cellFactory.createWorldCell(ECellType.GRASS);
         assertInstanceOf(WorldCell.class, worldCell);
 
