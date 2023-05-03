@@ -11,8 +11,8 @@ import org.basmat.map.util.PointUtilities;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * MapSetup generates the initial state of the map, and stores it in a ModelStructure.

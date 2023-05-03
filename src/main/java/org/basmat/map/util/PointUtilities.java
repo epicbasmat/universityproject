@@ -6,7 +6,6 @@ import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.model.cells.factory.IOwnedCell;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

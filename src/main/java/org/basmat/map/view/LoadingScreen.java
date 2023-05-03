@@ -1,13 +1,9 @@
 package org.basmat.map.view;
 
-import org.basmat.map.util.ECellType;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Objects;
 
 

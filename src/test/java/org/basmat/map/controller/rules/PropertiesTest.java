@@ -9,7 +9,6 @@ import org.basmat.map.util.ECellType;
 import org.basmat.map.util.SimulationProperties;
 import org.basmat.map.util.TestUtilities;
 import org.basmat.map.util.path.Node;
-import org.basmat.map.view.SimulationInteractionUI;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;

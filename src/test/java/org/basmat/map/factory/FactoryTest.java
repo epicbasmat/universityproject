@@ -6,7 +6,6 @@ import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.ECellType;
-import org.basmat.map.util.TextureHelper;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
