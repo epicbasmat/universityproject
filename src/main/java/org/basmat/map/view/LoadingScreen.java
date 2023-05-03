@@ -14,6 +14,10 @@ import java.util.Objects;
 /*
 Thanks to https://icons8.com/preloaders/ for providing the icon used for the loading screen
  */
+
+/**
+ * Thic class is the main implementation of the Loading Screen. It loads the loading.gif on intiialization and will continue to render it so long as it's in focus
+ */
 public class LoadingScreen extends JPanel {
     public LoadingScreen() {
         this.setLayout(new BorderLayout());

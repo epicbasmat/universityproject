@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 /**
- * CellMatrixPanel provides a container to child all individual CellPanels, extending a JPanel. This JPanel also deals with mouse events.
+ * SimulationUI provides a container to child all individual CellPanels, extending a JPanel. This JPanel also deals with mouse events.
  * @see CellPanel
  */
 public class SimulationUI extends JPanel implements MouseListener {

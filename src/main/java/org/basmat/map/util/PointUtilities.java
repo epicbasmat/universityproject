@@ -186,10 +186,20 @@ public class PointUtilities {
                                    Point.class);
     }
 
+    /**
+     * Returns the Moore neighbourhood for a specified point, guaranteeing no illegal cells exist within the list.
+     * @param point the point to get the neighbourhood
+     * @return The Moore neighbourhood of a specific Point
+     */
     public static List<Point> getAllValidatedNeighbours(Point point) {
         return Arrays.stream(getAllNeighbours(point)).filter(PointUtilities::validateBounds).toList();
     }
 
+    /**
+     * Returns the neighbouring cell within 1 cell of all cardinal direction, guaranteeing no illegal cells exist within the List.
+     * @param point The point to get the neighbourhood.
+     * @return The neighnouring cell, within 1 cell of all cardinal directions
+     */
     public static List<Point> getImmediateValidatedNeighbours(Point point) {
         return Arrays.stream(getImmediateNeighbours(point)).filter(PointUtilities::validateBounds).toList();
     }

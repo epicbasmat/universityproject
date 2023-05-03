@@ -1,7 +1,6 @@
 package org.basmat.map.util;
 
 import java.net.URISyntaxException;
-import java.util.Objects;
 
 public enum ECellType {
 	/**

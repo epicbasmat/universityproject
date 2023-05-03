@@ -11,6 +11,7 @@ import java.awt.*;
  * @param f f(n) in A* traversal, a combination of g(n) + h(n)
  * @param g g(n) in A* traversal, the culmination of every prior search's g(n) function. Represents the cost from the initial node to the current node
  * @param cellType The CellType that the modelStructures `getCoordinate()` returns
+ * @param parent The parent node, or predecessor.
  */
 public record Node(Point point, int f, int g, ECellType cellType, Node parent) implements Comparable<Node> {
     @Override

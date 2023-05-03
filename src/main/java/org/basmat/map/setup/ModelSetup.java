@@ -86,7 +86,7 @@ public class ModelSetup {
                 if (alphaValue >= -130 && alphaValue < -60) {//Light water
                     noiseGraph.setRGB(i, j, new Color(0, 0, 255).getRGB());
                 }
-                if (alphaValue > -60 && alphaValue < -35) { //Beach
+                if (alphaValue >= -60 && alphaValue < -35) { //Beach
                     noiseGraph.setRGB(i, j, new Color(255, 0, 0).getRGB());
                 }
                 if (alphaValue >= -35 & alphaValue < 130) { //Land

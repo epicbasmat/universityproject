@@ -44,9 +44,11 @@ public class SimulationInteractionUI extends JPanel {
         timestep = -1;
     }
 
+    /**
+     * Increments the current time step, and updates the view to match it.
+     */
     public void incrementTimeStep() {
         timestep++;
-        //timeStepTextInfo.setText(Integer.toString(timestep) + "\n" + "Seed: " + controller.getSeed());
         timeStepTextInfo.setText("Amount of societies: " + controller.getAmountOfSocieties() + "\n" +
                 "Amount of Life Cells: " + controller.getAmountOfLifeCells() + "\n" +
                 "Attrition threshold: " + controller.getSimulationProperties().attritionThreshold() + "\n" +

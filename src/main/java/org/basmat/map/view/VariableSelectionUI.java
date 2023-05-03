@@ -28,6 +28,7 @@ public class VariableSelectionUI extends JPanel {
         spinnerList = new LinkedList<>();
         GridBagConstraints c = new GridBagConstraints();
         this.setLayout(new GridBagLayout());
+        //Setup the spinners. each spinner has a counterpart label which explains what the spinner changes to the user.
         societyCount = new JSpinner(new SpinnerNumberModel(7, 1, 14, 1));
         setSystemVariable(c, "Society count", societyCount);
         nutrientCount = new JSpinner(new SpinnerNumberModel(100, 5, 300, 5));
