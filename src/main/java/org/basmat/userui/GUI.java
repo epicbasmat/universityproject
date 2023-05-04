@@ -63,7 +63,7 @@ public class GUI extends JFrame {
             guide.setContentType("text/html");
             InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("html/guide.html");
             assert resourceAsStream != null;
-            //to parse the text through getResourceAsStream, we need read it's bytes and convert it to a recognizable format.
+            //to parse the text through getResourceAsStream, we need read its bytes and convert it to a recognizable format.
             guide.setText(new BufferedReader(new InputStreamReader(resourceAsStream)).lines().collect(Collectors.joining(System.lineSeparator())));
             JScrollPane jScrollPane = new JScrollPane(guide);
             jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -82,7 +82,7 @@ public class GUI extends JFrame {
     /**
      * Sets the currently visible card within the internal cardLayout.
      * It's recommended to use the static final Strings implemented in this class.
-     * @param card The cards ID to flip to.
+     * @param card The card ID to flip to.
      */
     public void goToCard(String card) {
         SwingUtilities.invokeLater(() -> {

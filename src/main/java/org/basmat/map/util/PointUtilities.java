@@ -197,7 +197,7 @@ public class PointUtilities {
     /**
      * Returns the neighbouring cell within 1 cell of all cardinal direction, guaranteeing no illegal cells exist within the List.
      * @param point The point to get the neighbourhood.
-     * @return The neighnouring cell, within 1 cell of all cardinal directions
+     * @return The neighbouring cell, within 1 cell of all cardinal directions
      */
     public static List<Point> getImmediateValidatedNeighbours(Point point) {
         return Arrays.stream(getImmediateNeighbours(point)).filter(PointUtilities::validateBounds).toList();

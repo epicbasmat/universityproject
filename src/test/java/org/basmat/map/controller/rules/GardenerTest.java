@@ -166,6 +166,4 @@ class GardenerTest {
         gardener.checkForValidReproduction();
         assertEquals(snapshot, globalLifeCellList.size());
     }
-
-
 }
