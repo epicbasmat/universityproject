@@ -54,7 +54,7 @@ public class ModelSetup {
         controller.pushText("Generating gradient graph");
         setupGradientGraph(-1);
         controller.pushText("Applying texture filter");
-        setupWorldCells(5);
+        setupWorldCells();
         controller.pushText("Applying society cells and rendering area of effect");
         setupSocietyCells();
         controller.pushText("Applying nutrient cells");
@@ -77,28 +77,28 @@ public class ModelSetup {
                 double noise = ci.noiseGenerator(i, j, 110);
                 // times by 200 to easily separate values when determining RGB values
                 int alphaValue = (int) Math.floor(noise * 200);
-                if (alphaValue <= -220) { //Deep water
+                if (alphaValue <= ECellType.DEEP_WATER.lowerBounds()) {
                     noiseGraph.setRGB(i, j, new Color(0, 0, 100).getRGB());
                 }
-                if (alphaValue > -220 && alphaValue < -130) { //Water
+                if (alphaValue >= ECellType.WATER.lowerBounds() && alphaValue < ECellType.WATER.upperBounds()) {
                     noiseGraph.setRGB(i, j, new Color(0, 0, 190).getRGB());
                 }
-                if (alphaValue >= -130 && alphaValue < -60) {//Light water
+                if (alphaValue >= ECellType.LIGHT_WATER.lowerBounds() && alphaValue < ECellType.LIGHT_WATER.upperBounds()) {
                     noiseGraph.setRGB(i, j, new Color(0, 0, 255).getRGB());
                 }
-                if (alphaValue >= -60 && alphaValue < -35) { //Beach
+                if (alphaValue >= ECellType.SAND.lowerBounds() && alphaValue < ECellType.SAND.upperBounds()) {
                     noiseGraph.setRGB(i, j, new Color(255, 0, 0).getRGB());
                 }
-                if (alphaValue >= -35 & alphaValue < 130) { //Land
+                if (alphaValue >= ECellType.GRASS.lowerBounds() && alphaValue < ECellType.GRASS.upperBounds()) {
                     noiseGraph.setRGB(i, j, new Color(0, 250, 0).getRGB());
                 }
-                if (alphaValue >= 130 && alphaValue < 160) { //Base mountain
+                if (alphaValue >=  ECellType.MOUNTAIN_BASE.lowerBounds() && alphaValue < ECellType.MOUNTAIN_BASE.upperBounds()) {
                     noiseGraph.setRGB(i, j, new Color(0, 200, 0).getRGB());
                 }
-                if (alphaValue >= 160 && alphaValue < 220) { //Mountain body
+                if (alphaValue >=  ECellType.MOUNTAIN_BODY.lowerBounds() && alphaValue < ECellType.MOUNTAIN_BODY.upperBounds()) {
                     noiseGraph.setRGB(i, j, new Color(0, 150, 0).getRGB());
                 }
-                if (alphaValue >= 220) { //Mountain peak
+                if (alphaValue >= ECellType.MOUNTAIN_PEAK.lowerBounds()) { //Mountain peak
                     noiseGraph.setRGB(i, j, new Color(0, 100, 0).getRGB());
                 }
             }
@@ -107,21 +107,20 @@ public class ModelSetup {
 
     /**
      * Sets up the world cell generation and maps an RGB range to a cell type and texture.
-     * @param cellSize The cell size to provide
      */
-    private void setupWorldCells(int cellSize) {
+    private void setupWorldCells() {
         for (int x = 0; x <= 150 - 1; x++) {
             for (int y = 0; y <= 150 - 1; y++) {
                 int average = 0;
                 //Calculate average RGB value of a 5x5 grid
-                for (int i = x * cellSize; i < x * cellSize + 5; i++) {
-                    for (int j = y * cellSize; j < y * cellSize + 5; j++) {
+                for (int i = x * 5; i < x * 5 + 5; i++) {
+                    for (int j = y * 5; j < y * 5 + 5; j++) {
                         average += noiseGraph.getRGB(i, j);
                     }
                 }
                 Point point = new Point(x, y);
                 //Sets the texture according to the averaged colour's RGB bands
-                Color averagedColour = new Color(average / (cellSize * cellSize));
+                Color averagedColour = new Color(average / (5 * 5));
                 if ((averagedColour.getBlue() > 0 && averagedColour.getBlue() < 160) && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //DEEP_WATER
                     modelStructure.setBackLayer(point, cellFactory.createWorldCell(ECellType.DEEP_WATER));
                 } else if ((averagedColour.getBlue() >= 160 && averagedColour.getBlue() < 220)  && averagedColour.getGreen() < 10 && averagedColour.getRed() < 10) { //WATER

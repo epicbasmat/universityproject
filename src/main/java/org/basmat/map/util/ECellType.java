@@ -39,6 +39,16 @@ public enum ECellType {
 			return true;
 		}
 
+		@Override
+		public int lowerBounds() {
+			return -220;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 0;
+		}
+
 	},
 	WATER {
 		@Override
@@ -70,6 +80,16 @@ public enum ECellType {
 		@Override
 		public boolean isUserEditable() {
 			return true;
+		}
+
+		@Override
+		public int lowerBounds() {
+			return -220;
+		}
+
+		@Override
+		public int upperBounds() {
+			return -130;
 		}
 
 	},
@@ -105,6 +125,16 @@ public enum ECellType {
 			return true;
 		}
 
+		@Override
+		public int lowerBounds() {
+			return -130;
+		}
+
+		@Override
+		public int upperBounds() {
+			return -60;
+		}
+
 	},
 	MOUNTAIN_BASE {
 		@Override
@@ -136,6 +166,16 @@ public enum ECellType {
 		@Override
 		public boolean isUserEditable() {
 			return true;
+		}
+
+		@Override
+		public int lowerBounds() {
+			return 130;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 160;
 		}
 
 	},
@@ -171,6 +211,16 @@ public enum ECellType {
 			return true;
 		}
 
+		@Override
+		public int lowerBounds() {
+			return 160;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 220;
+		}
+
 	},
 	MOUNTAIN_PEAK {
 		@Override
@@ -202,6 +252,16 @@ public enum ECellType {
 		@Override
 		public boolean isUserEditable() {
 			return true;
+		}
+
+		@Override
+		public int lowerBounds() {
+			return 220;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 0;
 		}
 
 	},
@@ -237,6 +297,16 @@ public enum ECellType {
 			return true;
 		}
 
+		@Override
+		public int lowerBounds() {
+			return -35;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 130;
+		}
+
 	},
 	SAND {
 		@Override
@@ -267,6 +337,16 @@ public enum ECellType {
 		@Override
 		public boolean isUserEditable() {
 			return true;
+		}
+
+		@Override
+		public int lowerBounds() {
+			return -60;
+		}
+
+		@Override
+		public int upperBounds() {
+			return -35;
 		}
 
 	},
@@ -302,6 +382,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public int lowerBounds() {
+			return 0;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 0;
+		}
+
 	},
 	NUTRIENTS{
 		@Override
@@ -332,6 +422,16 @@ public enum ECellType {
 		@Override
 		public boolean isUserEditable() {
 			return false;
+		}
+
+		@Override
+		public int lowerBounds() {
+			return 0;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 0;
 		}
 
 	},
@@ -367,6 +467,16 @@ public enum ECellType {
 			return false;
 		}
 
+		@Override
+		public int lowerBounds() {
+			return 0;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 0;
+		}
+
 	},
 	MISSING_TEXTURE{
 		@Override
@@ -398,13 +508,25 @@ public enum ECellType {
 		public boolean isUserEditable() {
 			return false;
 		}
+
+		@Override
+		public int lowerBounds() {
+			return 0;
+		}
+
+		@Override
+		public int upperBounds() {
+			return 0;
+		}
 	};
 
 
-	abstract public String getPath() throws URISyntaxException;
+	abstract public String getPath();
 	abstract public String getCellDescription();
 	abstract public String getCellName();
 	abstract public boolean isHabitable();
 	abstract public boolean isPathable();
 	abstract public boolean isUserEditable();
+	abstract public int lowerBounds();
+	abstract public int upperBounds();
 }

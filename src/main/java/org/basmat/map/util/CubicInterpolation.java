@@ -1,5 +1,6 @@
 package org.basmat.map.util;
 
+
 public class CubicInterpolation {
 	
 	private int seed;
