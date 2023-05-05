@@ -6,7 +6,6 @@ import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
 import org.basmat.map.util.ECellType;
-import org.basmat.map.util.TextureHelper;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -14,6 +13,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -76,14 +77,14 @@ public class FactoryTest {
     }
 
     @Test
-    void createWorldCell_worldCellHasCorrectTexture_worldCellIHasGrassTexture() throws IOException {
+    void createWorldCell_worldCellHasCorrectTexture_worldCellHasGrassTexture() throws IOException, URISyntaxException {
         WorldCell worldCell = cellFactory.createWorldCell(ECellType.GRASS);
         assertInstanceOf(WorldCell.class, worldCell);
 
         int width  = worldCell.getTexture().getWidth();
         int height = worldCell.getTexture().getHeight();
 
-        BufferedImage toCompare = ImageIO.read(new File(ECellType.BASE_PATH.getPath() + "grass.png"));
+        BufferedImage toCompare = ImageIO.read(new File(Objects.requireNonNull(this.getClass().getClassLoader().getResource("textures/grass.png")).toURI()));
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {

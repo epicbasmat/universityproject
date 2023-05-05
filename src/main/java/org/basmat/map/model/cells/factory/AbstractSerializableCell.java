@@ -9,10 +9,10 @@ import java.io.Serializable;
 /**
  * This class is an abstract class which details how a Cell can be serializable.
  * All Cells need a texture to be rendered to the user, however BufferedImages cannot be Serialized.
- * For this reason, Abstract Class exists to enable Serialization easily for Cell Objects.
+ * For this reason, this class exists to enable Serialization easily for Cell Objects.
  * It is recommended for all Cell classes to extend this Class.
  */
-public class AbstractSerializableCell implements Serializable {
+public abstract class AbstractSerializableCell implements Serializable {
 
     private transient BufferedImage texture;
 

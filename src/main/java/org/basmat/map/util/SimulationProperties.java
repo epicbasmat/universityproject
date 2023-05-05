@@ -3,6 +3,7 @@ package org.basmat.map.util;
 import java.io.Serializable;
 
 /**
+ * Contains the final properties for the simulation.
  * @param societyCount The amount of societies to set in the simulation
  * @param nutrientCount The amount of nutrient cells to apply to the simulation
  * @param initialNutrientCount The initial amount of nutrient cells to apply to every society cell

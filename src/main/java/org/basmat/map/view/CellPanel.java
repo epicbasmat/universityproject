@@ -12,7 +12,7 @@ public class CellPanel extends JPanel {
     private Graphics2D g2d;
 
     /**
-     * Instantiate CellPanel with associated parameters
+     * Instantiate CellPanel with the provided texture to render
      * @param texture the texture to render for the cell
      */
     public CellPanel(BufferedImage texture) {

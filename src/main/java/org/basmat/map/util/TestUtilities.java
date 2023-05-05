@@ -2,7 +2,6 @@ package org.basmat.map.util;
 
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.model.cells.factory.IMapCell;
 
 import java.awt.*;
 

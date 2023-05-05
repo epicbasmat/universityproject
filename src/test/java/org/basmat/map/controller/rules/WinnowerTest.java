@@ -215,7 +215,7 @@ public class WinnowerTest {
         globalSocietyCellList.add(societyPoint);
         modelStructure.setFrontLayer(societyPoint, societyCell);
         //Setup an amount of nutrient cells for the society.
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             NutrientCell nutrientCell = cellFactory.createNutrientCell(societyCell);
             modelStructure.setFrontLayer(PointUtilities.calculateRandomValidCoordinates(societyPoint, 12, modelStructure, List.of(new ECellType[]{ECellType.GRASS})), nutrientCell);
             societyCell.addNutrientCells(nutrientCell);

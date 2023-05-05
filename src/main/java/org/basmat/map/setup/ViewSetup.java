@@ -17,6 +17,12 @@ public class ViewSetup {
         setupView(viewStructure, modelStructure, IS_NOT_LAZY);
     }
 
+    /**
+     * Reconstructs the user view to match the model.
+     * @param viewStructure The viewStructure to update.
+     * @param modelStructure The modelStructure to match against
+     * @param isLazy Determines if the logic is lazy. If there is no change to the cell, then the system will not re-render the texture.
+     */
     public static void setupView(SimulationUI viewStructure, ModelStructure modelStructure, int isLazy) {
         //TODO: Release 145 from it's hardcoded hell
         SwingUtilities.invokeLater(() -> {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * RuleApplier unvokes the gardener and the winnower in a set order.
+ * RuleApplier invokes the gardener and the winnower in a set order.
  */
 
 /*
@@ -36,6 +36,9 @@ public class RuleApplier {
         this.winnower = new Winnower(controller, modelStructure, globalSocietyCellList, globalLifeCellList, listOfPaths);
     }
 
+    /**
+     * Applies the rules to the loaded modelStructure in a set sequence.
+     */
     public void invokeRules(){
         gardener.checkForValidReproduction();
         gardener.reproduce();

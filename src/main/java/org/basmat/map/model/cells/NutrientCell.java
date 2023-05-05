@@ -34,10 +34,6 @@ public class NutrientCell extends AbstractSerializableCell implements IOwnedCell
         return owner;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
     public int getCapacity() {
         return this.capacity;
     }
@@ -55,6 +51,7 @@ public class NutrientCell extends AbstractSerializableCell implements IOwnedCell
         return supporting;
     }
 
+    public void resetSupportingCount() { supporting = 0; }
     /**
      * Increments the amount of nutrient cells that are being supported by one. If the capacity is at maximum, it cannot be incremented.
      */

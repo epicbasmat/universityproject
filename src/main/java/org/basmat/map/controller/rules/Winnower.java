@@ -41,9 +41,11 @@ public class Winnower {
      * than the LifeCell threshold then the life cell is suffocated or overcrowded.
      */
     public void overcrowded() {
+        // another copy of list to prevent concurrency exceptions
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
         for (Point lifeCell : copyOfList) {
             int overcrowd = 0;
+            //for every life cell, check their neighbours and see if the count exceed the threshold, if so - die
             for (Point coords : PointUtilities.getAllValidatedNeighbours(lifeCell)) {
                 if (modelStructure.getCoordinate(coords).getECellType() == ECellType.LIFE_CELL) {
                     overcrowd++;
@@ -85,6 +87,7 @@ public class Winnower {
      */
     public void loneliness() {
         List<Point> copyOfList = new LinkedList<>(globalLifeCellList);
+        //for every life cell, look at the direct neighbours. if the cell has one, the attrition gets reset, else increment attrition and check threshold for kill
         for (Point point : copyOfList) {
             LifeCell lifeCell = modelStructure.getCoordinate(point);
             boolean hasPartner = false;
@@ -128,7 +131,7 @@ public class Winnower {
      * Removes all instances of the lifecell from the simulation.
      * @param lifeCell The life cell to remove
      */
-    public void kill(Point lifeCell) {
+    private void kill(Point lifeCell) {
         //To remove every instance that the LifeCell has, we need to remove the coordinate references from
         // - the ModelStructure
         // - The global list of life cells

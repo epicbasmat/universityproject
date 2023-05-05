@@ -6,7 +6,6 @@ import org.basmat.map.model.cells.NutrientCell;
 import org.basmat.map.model.cells.SocietyCell;
 import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
-import org.basmat.map.model.cells.factory.IOwnedCell;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -109,6 +108,7 @@ public class PointUtilities {
                 modelStructure.setBackLayer(point, cellFactory.createWorldCell(celltype));
             } else if (modelStructure.getCoordinate(point) instanceof NutrientCell nutrientCell) {
                 nutrientCell.setOwner(null);
+                nutrientCell.resetSupportingCount();
             }
         });
     }
@@ -185,10 +185,20 @@ public class PointUtilities {
                                    Point.class);
     }
 
+    /**
+     * Returns the Moore neighbourhood for a specified point, guaranteeing no illegal cells exist within the list.
+     * @param point the point to get the neighbourhood
+     * @return The Moore neighbourhood of a specific Point
+     */
     public static List<Point> getAllValidatedNeighbours(Point point) {
         return Arrays.stream(getAllNeighbours(point)).filter(PointUtilities::validateBounds).toList();
     }
 
+    /**
+     * Returns the neighbouring cell within 1 cell of all cardinal direction, guaranteeing no illegal cells exist within the List.
+     * @param point The point to get the neighbourhood.
+     * @return The neighbouring cell, within 1 cell of all cardinal directions
+     */
     public static List<Point> getImmediateValidatedNeighbours(Point point) {
         return Arrays.stream(getImmediateNeighbours(point)).filter(PointUtilities::validateBounds).toList();
     }

@@ -2,8 +2,8 @@ package org.basmat.map.util;
 
 import org.basmat.map.model.ModelStructure;
 import org.basmat.map.model.cells.SocietyCell;
-import org.basmat.map.model.cells.WorldCell;
 import org.basmat.map.model.cells.factory.CellFactory;
+import org.basmat.map.model.cells.factory.IOwnedCell;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -44,7 +44,6 @@ class PointUtilitiesTest {
 
     @Test
     void calculateRandomValidCoordinates_doesNotExceedBoundsAndIsValidType_True() {
-        HashMap<ECellType, BufferedImage> eCellTypeBufferedImageHashMap = TextureHelper.cacheCellTextures();
         ModelStructure modelStructure = new ModelStructure();
         TestUtilities.fillModelWithWorldCell(modelStructure, ECellType.GRASS);
         modelStructure.setFrontLayer(new Point(50, 50), new CellFactory().createSocietyCell("test", 10, 0x00ff09ff));
@@ -81,8 +80,8 @@ class PointUtilitiesTest {
         PointUtilities.tintArea(10, new Point(50, 50), 0x00f009f0, modelStructureTinted);
         PointUtilities.resetArea(10, new Point(50, 50), modelStructureTinted, test);
         PointUtilities.forPointsInCircle(10, new Point(50, 50), point -> {
-            if(modelStructureTinted.getCoordinate(point) instanceof WorldCell worldCell) {
-                assertNull(worldCell.getOwner());
+            if(modelStructureTinted.getCoordinate(point) instanceof IOwnedCell iOwnedCell) {
+                assertNull(iOwnedCell.getOwner());
             }
         });
     }
